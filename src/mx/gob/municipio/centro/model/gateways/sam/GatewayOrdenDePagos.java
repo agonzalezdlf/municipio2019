@@ -88,9 +88,9 @@ public Long insertaOrden( int ejercicio, int tipo,Date  fecha,String  pedido,Str
 	try{
 		
 		Boolean tieneIva = importeIva != 0 ;
-		this.getJdbcTemplate().update("INSERT INTO SAM_ORD_PAGO (EJERCICIO, TIPO, FECHA,  CLV_BENEFI, CVE_PERS,  REEMBOLSOF, CONCURSO, NOTA,  STATUS, IVA, IMPORTE_IVA, ID_DEPENDENCIA, PERIODO, ID_RECURSO, ID_GRUPO, CVE_CONTRATO) " +
-				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-				, new Object[]{ejercicio,tipo,fecha,cveBeneficiario,cvePersona,reembolsoFondo,concurso,nota,status,tieneIva,importeIva,cveUnidad,periodo,tipoGasto,idGrupo, (cve_contrato==0 ? null:cve_contrato)});
+		this.getJdbcTemplate().update("INSERT INTO SAM_ORD_PAGO (EJERCICIO, TIPO, FECHA,  CLV_BENEFI, CVE_PERS,  REEMBOLSOF, CONCURSO, NOTA,  STATUS, IVA, IMPORTE_IVA, ID_DEPENDENCIA, PERIODO, ID_RECURSO, ID_GRUPO) " +
+				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+				, new Object[]{ejercicio,tipo,fecha,cveBeneficiario,cvePersona,reembolsoFondo,concurso,nota,status,tieneIva,importeIva,cveUnidad,periodo,tipoGasto,idGrupo});
 		
 		Long cveOp =getNumeroOrdenNuevo(ejercicio);
 		String folio=rellenarCeros(cveOp.toString(),6);
@@ -109,8 +109,8 @@ public void actualizarOrden(Long cveOp , int tipo,Date  fecha,String  pedido,Str
 		
 		Boolean tieneIva =importeIva!=0;
 		String folio=rellenarCeros(cveOp.toString(),6);
-		this.getJdbcTemplate().update("UPDATE SAM_ORD_PAGO  set  TIPO=?, FECHA=?,  CLV_BENEFI=?, REEMBOLSOF=?, CONCURSO=?,  NOTA=?, STATUS=?,  IVA=?, IMPORTE_IVA=?, PERIODO=?, ID_RECURSO=?, CVE_CONTRATO=? where CVE_OP=? "
-				, new Object[]{tipo,fecha,cveBeneficiario,reembolsoFondo,concurso,nota,status,tieneIva,importeIva,periodo, tipoGasto, cve_contrato, cveOp});
+		this.getJdbcTemplate().update("UPDATE SAM_ORD_PAGO  set  TIPO=?, FECHA=?,  CLV_BENEFI=?, REEMBOLSOF=?, CONCURSO=?,  NOTA=?, STATUS=?,  IVA=?, IMPORTE_IVA=?, PERIODO=?, ID_RECURSO=? where CVE_OP=? "
+				, new Object[]{tipo,fecha,cveBeneficiario,reembolsoFondo,concurso,nota,status,tieneIva,importeIva,periodo, tipoGasto,  cveOp});
 		Map op = getOp(cveOp);
 		//guarda en la bitacora
 		gatewayBitacora.guardarBitacora(gatewayBitacora.OP_ACTUALIZAR, ejercicio, cvePersona, cveOp, folio, "OP", fecha, (String) op.get("PROYECTO"), (String) op.get("CLV_PARTID"), null, Double.parseDouble(op.get("IMPORTE").toString()));

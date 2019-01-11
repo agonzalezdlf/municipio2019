@@ -31,7 +31,9 @@ $(document).ready(function(){
 	
 	
 	$('#cbotipodocumento').on('change',function(event){//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
+		
 		tipoFacturas();
+		
 		$('#cboSearch').selectpicker('val',0);
 		$('#cboSearch').selectpicker('refresh');
 		
@@ -87,14 +89,7 @@ $(document).ready(function(){
 		   return false;
 	   });
 	 
-	  
-	 /*Comentado para ir armando el modulo de facturas............
-
-		 
-		
-	 	
-	 */
-	   
+		   
 	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
 	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
 	 	
@@ -110,11 +105,14 @@ $(document).ready(function(){
 	getMesRequisicion($('#cbomes').val());
 	
 	$('#cbomes').attr('disabled', 'disabled');
-	$('#tr_Programa').hide();
-	$('#tr_PresupuestoLibre').hide();
 	
+	/*Deshabilitar los divs*/
+	/*$('#tr_Programa').hide();
+	$('#tr_PresupuestoLibre').hide();
 	$('#ndocumento').hide();
-	$('#nentrada').hide();
+	$('#nentrada').hide();*/
+	
+	
 	//Entra aqui cuando se esta editando una factura
 	if($('#CVE_FACTURA')!= null && $('#CVE_FACTURA')!=0)
 	{
@@ -213,15 +211,15 @@ function tipoFacturas(){
 		case '4': //Para OS u OT
 				
 				$('#cbo_ProyectoPartida').show();
-				$('#input_ProgramaPartidaPresupuesto').hide();
+				$('#input_ProgramaPartidaPresupuesto').show();
 				$('#ndocumento').show();
-				$('#nentrada').hide();
+				$('#nentrada').show();
 				break;
 		
 		case '3': /*Para PEDIDOS*/
 				
 				$('#cbo_ProyectoPartida').show();
-				$('#input_ProgramaPartidaPresupuesto').hide();
+				$('#input_ProgramaPartidaPresupuesto').show();
 				$('#ndocumento').show();
 				$('#nentrada').show();
 				break;
@@ -233,19 +231,19 @@ function tipoFacturas(){
 		case '6': //Para CONTRATOS
 			
 			$('#cbo_ProyectoPartida').show();
-			$('#input_ProgramaPartidaPresupuesto').hide();
+			$('#input_ProgramaPartidaPresupuesto').show();
 			$('#ndocumento').show();
-			$('#nentrada').hide();
+			$('#nentrada').show();
 			break;
 			
 		case '1': //NOMINAS
 			
 			$('#div_benaficiarioFijo').show();
-			$('#div_beneficiario').hide();
-			$('#cbo_ProyectoPartida').hide();
+			$('#div_beneficiario').show();
+			$('#cbo_ProyectoPartida').show();
 			$('#input_ProgramaPartidaPresupuesto').show();
-			$('#ndocumento').hide();
-			$('#nentrada').hide();
+			$('#ndocumento').show();
+			$('#nentrada').show();
 			break;
 		//muestraContratosaDevengar
 	}
@@ -260,11 +258,11 @@ function tipoFacturasDeductivas()
 	$('#tr_TotalDocumento').show();
 	//$('#tr_Programa').show();
 	//$('#tr_partida').show();
-	$('#div_benaficiario').hide();
+	$('#div_benaficiario').show();
 	$('#tr_PresupuestoLibre').show();
 	$('#tr_ProyectoPartida').show();
 	$('#tr_ProgramaPartidaPresupuesto').hide();
-	$('#div_benaficiarioFijo').hide();
+	$('#div_benaficiarioFijo').show();
 	$('#div_beneficiario').show();
 	
 	switch(tipo){

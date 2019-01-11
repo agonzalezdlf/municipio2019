@@ -39,31 +39,7 @@
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
 <script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
 <script type="text/javascript" src="../../include/js/otros/productos.js"></script>
-<!-- 
 
-
-
-<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
-<link rel="stylesheet" href="../../include/css/black-tie/jquery-ui-1.7.3.custom.css" type="text/css" />
-<link rel="stylesheet" href="../../include/js/autocomplete/jquery.autocomplete.css" type="text/css" />	
- <link rel="stylesheet" href="../../include/css/sweetalert2.min.css" type="text/css">
-<script type="text/javascript" src="../../include/js/jquery-1.3.2.min.js"></script>
-
-<script type="text/javascript" src="../../include/js/jquery.form.js"></script>
-<script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
-
-<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-
-
-
-<link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
-<script src="../../include/css/jquery.tiptip.js"></script>
-<script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
-
- -->
 <style type="text/css">
 a:link {
 	text-decoration: none;
@@ -134,8 +110,8 @@ a:active {
 		                            <select name="cbotipodocumento" class="selectpicker form-control input-sm m-b" id="cbotipodocumento" style="width:100%">
 		                             	 <option value="0">[Seleccione]</option>
           								 <c:forEach items="${tipoDocumentosFAC}" var="item" varStatus="status"> 
-          								 	<option value='<c:out value="${item.Id_TipoFactura}"/>' 
-							                <c:if test='${item.Id_TipoFactura==factura.ID_TIPO}'> selected </c:if>>
+          								 	<option value='<c:out value="${item.ID_TIPO_FAC}"/>' 
+							                <c:if test='${item.ID_TIPO_FAC==factura.ID_TIPO}'> selected </c:if>>
 							                <c:out value='${item.DESCRIPCION}'/>
 							                </option>
 						                </c:forEach>

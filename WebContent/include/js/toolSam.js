@@ -61,6 +61,7 @@ function muestraVales(){
 
 function muestraContratos(){
 	
+	
 	var tipo_gto = $('#tipoGasto').selectpicker('val');//tipoGasto
 	
 	if (tipo_gto ===''){swal('',"Debe seleccionar un tipo de gasto",'question');return false;};
@@ -83,12 +84,15 @@ function muestraContratos(){
 }
 //Funcion que llega desde la vinculacion de una factura al documento a enlazar...........
 function muestraTiposDocumento(){
-	 alert('Dependencia: ' +$('#cbUnidad').val());
+	
+	alert('muestraTiposDocumento ==> Dependencia: ' +$('#cbUnidad').val());
 	var idDependencia= $('#cbUnidad').val();
 	
+	alert('Tipo documento: '+ $('#cbotipodocumento').selectpicker('val'));
 	//var idDependencia = $('#cbodependencia').val();
 	if($('#cbotipodocumento').val()==4)//O.S. y O.T.
 	{
+		
 		if(idDependencia==0||idDependencia=="") {swal('Es necesario seleccionar la Unidad Administrativa para listar las Ordenes de Servicio y Trabajo'); return false;}
 			//jWindow('<iframe width="650" height="400" name="consultaPedido" id="consultaPedido" frameborder="0" src="../consultas/muestra_OT_OS_facturas.action?idDependencia='+idDependencia+'"></iframe>','Listado de O.S. y O.T.', '','Cerrar ',1);
 		swal({

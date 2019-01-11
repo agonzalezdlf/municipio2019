@@ -8,7 +8,7 @@ Vista: configuracion_grupos_tipo_fac.jsp
 $(document).ready(function(){ 	
 	
 	$('#btnGrabar').on('click', function(){
-		guardarValesGrupos();
+		guardarFacturasGrupos();
 	});
 	
 	$('#grupo').on('change', function(){
@@ -20,7 +20,6 @@ $(document).ready(function(){
 	
 $('#todos').click( function (event){ $('input[name=claves]').prop('checked', this.checked); });													
 });						
-						
 
 function limpiar(){
 		quitRow("detallesTabla");
@@ -43,7 +42,7 @@ function limpiar(){
 			  controladorGruposTipoFacRemoto.getGrupoTipoFac(grupo, {
 			        callback:function(items) {
 			        	 jQuery.each(items,function(i) {
-			  		    	pintaTabla( "detallesTabla", i+1 ,this.DESCRIPCION,getHTML(this.ID_GRUPO_TIPO_FAC),this.ID_TIPOFACTURA);
+			  		    	pintaTabla( "detallesTabla", i+1 ,this.DESCRIPCION,getHTML(this.ID_GRUPO_TIPO_FAC),this.ID_TIPO_FAC);
 			         	}); 					   	
 			 			//swal("Good job!", "Grupo guardado con éxito!", "success");
 			 			swal({title: 'Grupo cargado con éxito!',text: '', type: 'success',position: 'top-end',timer: 1500,showConfirmButton: false}).then(function() {false; });
@@ -73,13 +72,14 @@ function limpiar(){
  }
  
  
-function guardarValesGrupos(){
+function guardarFacturasGrupos(){
 	
-	 var checkVales = [];
-     var grupo=$('#grupo').val();
-     $('input[name=claves]:checked').each(function() {checkVales.push($(this).val());});
+	 var checkFacturas = [];
+	 var grupo=$('#grupo').val();
+     
+     $('input[name=claves]:checked').each(function() {checkFacturas.push($(this).val());});
 	 if(grupo==0){swal('','El grupo seleccionado no es valido','warning'); return false;}
-	 
+	
 	 swal({
 		  title: 'Es seguro?',
 		  text: '¿Confirma que desea cerrar el pedido?',
@@ -91,9 +91,10 @@ function guardarValesGrupos(){
 		  showLoaderOnConfirm: true,
 		  preConfirm: function() {
 			    return new Promise(function(resolve) {
+			      alert('demo del checkjvales: ' +checkFacturas[0], grupo);
 			      setTimeout(function() {
 			    	  resolve();
-			    	  controladorGruposTipoFacRemoto.guardarTipoFacGrupo(checkVales,grupo,{
+			    	  controladorGruposTipoFacRemoto.guardarTipoFacGrupo(checkFacturas,grupo,{
 							callback:function(items) {
 								
 								setTimeout(function(){

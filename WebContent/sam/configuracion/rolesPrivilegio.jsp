@@ -58,7 +58,7 @@
       </tr>
       <tr>
         <th width="15%" height="25" align="left" >Rol :</th>
-        <td width="85%" align="left" ><select name="roles" class="comboBox" id="roles" onchange="llenarTablaPrivilegios()" style="width:445px;">
+        <td width="85%" align="left" ><select name="roles" class="comboBox" id="roles"  style="width:445px;">
           <option value="" >[Seleccione]</option>
           <c:forEach items="${roles}" var="item">
         <option value ='<c:out value="${item.ID_ROL}"/>'  >
@@ -69,7 +69,7 @@
       </tr>
       <tr>
         <th height="25" align="left" >Sistema :</th>
-        <td align="left" ><select name="sistemas" class="comboBox" id="sistemas" onchange="llenarTablaPrivilegios()" style="width:222px;">
+        <td align="left" ><select name="sistemas" class="comboBox" id="sistemas" style="width:222px;">
           <option value="" >[Seleccione]</option>
           <c:forEach items="${sistemas}" var="item">
         <option value ='<c:out value="${item.ID_SISTEMA}"/>'  >
@@ -98,7 +98,7 @@
         </table></td>
       </tr>
       <tr  id="filaBoton" style="display:none">
-        <td height="30" colspan="2" align="center" ><input type="button" name="btnGuardar" value="Guardar selecci&oacute;n" class="botones"  onclick="guardarDato()" /></td>
+        <td height="30" colspan="2" align="center" ><input type="button" id="btnGuardar" name="btnGuardar" value="Guardar selecci&oacute;n" class="botones" /></td>
       </tr>      
     </table>
     <BR />

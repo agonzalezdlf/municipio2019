@@ -380,8 +380,7 @@
 		</dwr:remote>
 	</bean>
 	
-	<bean id="controladorGruposTipoFac"
-		class="mx.gob.municipio.centro.view.controller.configuracion.ControladorGruposTipoFac">
+	<bean id="controladorGruposTipoFac" class="mx.gob.municipio.centro.view.controller.configuracion.ControladorGruposTipoFac">
 		<dwr:remote javascript="controladorGruposTipoFacRemoto">
 			<dwr:include method="guardarTipoFacGrupo" />
 			<dwr:include method="getGrupoTipoFac" />

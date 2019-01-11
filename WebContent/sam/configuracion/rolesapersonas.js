@@ -10,7 +10,8 @@
 
 		 $('#btnGuardar').on('click', function(){
 			 guardarDato();
-			});
+			 
+		});
 		 
  });
 
@@ -80,7 +81,8 @@ function guardarDato(){
 	
    var error="";
    var usuario= $('#usuario' ).val();
-	var lista=checkboxSeleccionadosRoles();
+	
+	
 		//ShowDelay('Guardando informaci�n del rol','');
 		/*
 	    controladorRolesAPersonasRemoto.guardarRolUsuario(lista,usuario,{
@@ -96,6 +98,7 @@ function guardarDato(){
 								   swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'warning');    
 								}
 			});*/
+	
 	swal({
 		  title: 'Es seguro?',
 		  text: '¿Confirma que desea guardar la informacion?',
@@ -117,7 +120,6 @@ function guardarDato(){
 				  if (result.dismiss === swal.DismissReason.timer) {
 					  controladorRolesAPersonasRemoto.guardarRolUsuario(lista,usuario,{
 					        callback:function(items) {
-							
 								swal("Good job!", "Rol guardada con éxito!", "success");
 								$('#usuario' ).val('');	
 								quitRow( "detallesListas");

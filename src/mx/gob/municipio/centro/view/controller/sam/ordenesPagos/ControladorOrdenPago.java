@@ -176,20 +176,25 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                Long cve_vale_req = 0L;
 		                Long cve_vale_pedido = 0L;
 		                
+		                /*
 		                List <Map<String, Object>> lstobj = getJdbcTemplate().queryForList("SELECT (SELECT TOP 1 R.CVE_VALE FROM SAM_REQUISIC AS R INNER JOIN SAM_ORD_PAGO AS O ON (O.CVE_REQ = R.CVE_REQ) WHERE O.CVE_OP  = OP.CVE_OP) AS CVE_VALE_REQ, (SELECT TOP 1 R.CVE_VALE FROM SAM_REQUISIC AS R INNER JOIN SAM_PEDIDOS_EX AS P ON (P.CVE_REQ = R.CVE_REQ) INNER JOIN SAM_ORD_PAGO AS O ON (O.CVE_PED = P.CVE_PED) WHERE O.CVE_OP = OP.CVE_OP) AS CVE_VALE_PED FROM SAM_ORD_PAGO AS OP WHERE OP.CVE_OP =?", new Object[]{idOrden});
 		                for(Map<String, Object> row: lstobj)
         	    		{
 		                	if(row.get("CVE_VALE_REQ")!=null)  cve_vale_req = Long.parseLong(row.get("CVE_VALE_REQ").toString());
 		                	if(row.get("CVE_VALE_PED")!=null)  cve_vale_pedido = Long.parseLong(row.get("CVE_VALE_PED").toString());
-        	    		}
+        	    		}*/
         	    		
 		                Long cve_factura = 0L;
+		               
 		                Long cve_contrato = 0L;
 		                Long cve_req = 0L;
 		                Long cve_ped = 0L;
 		                
 		                List<Map<String, Object>> detalles = gatewayDetallesOrdenDePagos.getDetallesOrdenes(idOrden);
+		                
+		                /*
 		                lstobj = getJdbcTemplate().queryForList("SELECT OP.CVE_CONTRATO, (SELECT CVE_CONTRATO FROM SAM_REQUISIC WHERE CVE_REQ = C.CVE_REQ) AS CVE_CONTRATO_REQ, (SELECT R.CVE_CONTRATO FROM SAM_PEDIDOS_EX AS P INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = P.CVE_REQ) WHERE P.CVE_PED = C.CVE_PED) AS CVE_CONTRATO_PED, C.CVE_REQ, C.CVE_PED FROM SAM_OP_COMPROBACIONES AS C INNER JOIN SAM_ORD_PAGO AS OP ON (OP.CVE_OP = C.CVE_OP) WHERE C.CVE_OP = ?", new Object[]{idOrden});
+		                */
 		                if (gatewayMeses.esMesActivo(mes,getSesion().getEjercicio()) && tipo!=5 ){		
 		                	
 					    /*1.- si es de pedidos no se debe de comprometer nada  0 */            
@@ -198,7 +203,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                /*4.- si es negativa  no hacer nada  5 */
 		                	
 		                //validacion extra en el contrato de la orden de pago con el del documento (Pedido o OT,OS) 24/AGO/2011
-		                
+		                /*
         	    		for(Map<String, Object> row: lstobj)
         	    		{
         	    			
@@ -207,7 +212,7 @@ public class ControladorOrdenPago extends ControladorBase  {
         	    			if(row.get("CVE_PED")!=null) cve_ped = Long.parseLong(row.get("CVE_PED").toString()); 
         	    			
         	    			
-        	    		}	
+        	    		}	*/
         	    		
 		                for (Map<String, Object> detalle: detalles ) {
 		                	Long cve_vale = (detalle.get("CVE_VALE")!=null) ? Long.parseLong(detalle.get("CVE_VALE").toString()): 0L;
@@ -227,12 +232,15 @@ public class ControladorOrdenPago extends ControladorBase  {
 				                	cve_factura = Long.parseLong(detalle.get("CVE_FACTURA").toString());
 				             }
 		                	 
-		                	 if(orden.get("TIPO").toString().equals("13")){
+		                	 /*if(orden.get("TIPO").toString().equals("13")){
 				                	//es una factura 
 				                	cve_contrato = Long.parseLong(orden.get("CVE_CONTRATO").toString());
-				             }
+				             }*/
 		                	 
 		                	
+		                	 if(cve_factura!=0)
+			                		resultado = getJdbcTemplate().queryForList("SELECT ISNULL(MONTO,0) AS TOTAL FROM VT_COMPROMISOS WHERE TIPO_DOC IN('FAC') AND CVE_DOC = ? AND PERIODO = ? AND ID_PROYECTO = ? AND CLV_PARTID = ?", new Object[]{cve_factura, mes, proyecto, partida});
+		                	 /*
 		                    if(cve_vale_req!=0) //Busca en OS, OT desde Vales
 		                		resultado = getJdbcTemplate().queryForList("SELECT ISNULL(MONTO,0) AS TOTAL FROM VT_COMPROMISOS WHERE TIPO_DOC IN('REQ', 'O.S', 'O.T') AND CVE_DOC = ? AND PERIODO = ? AND ID_PROYECTO = ? AND CLV_PARTID = ?", new Object[]{cve_req, mes, proyecto, partida});
 		                	else if(cve_vale_pedido!=0) //Busca en Ped desde Vales
@@ -247,7 +255,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                				resultado =  gatewayProyectoPartidas.getPresupuesto(proyecto, detalle.get("N_PROGRAMA").toString(), partida, mes, getSesion().getIdUsuario(), 0,0);
 		                		else
 		                				resultado = gatewayProyectoPartidas.getPresupuestoValeDetalle(proyecto, partida, mes, cve_vale);
-		                	}
+		                	}*/
 		                   
 		                	BigDecimal disponible= new BigDecimal("0.0");
 		                	BigDecimal comprometido= new BigDecimal("0.0");
@@ -323,6 +331,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 		            			if((totalDetalleVale.doubleValue()+disponible.doubleValue())>=importe.doubleValue())
 		            				presupuest= true;
 		            		}
+		            		//Tipo facturas............
 		            		else if(tipo==12){
 		            			if(devengado.doubleValue()>=importe.doubleValue())
 		            				presupuest= true;
@@ -352,67 +361,15 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                	if (tipo!=5) comprometerOrden(detalles,tipo,mes);	
 			                gatewayOrdenDePagos.actualizaEstatusOrden(idOrden ,0);		                
 			                getJdbcTemplate().update("update SAM_ORD_PAGO  set  IMP_NETO = IMPORTE-RETENCION   where CVE_OP= ? ",new Object[]{idOrden});
-			                //AQUI CUANDO ES UN PEDIDO PARCIAL O NO, MODIFICADO 05/05/2011
-			                if (tipo==0){
-			                	Map<String, Object> valor = getJdbcTemplate().queryForMap("SELECT CVE_PED FROM SAM_ORD_PAGO WHERE CVE_OP = ?", new Object[]{idOrden});
-			                	Double temp = (valor.get("CVE_PED")!=null) ? (Double) getJdbcTemplate().queryForObject("SELECT (TOTAL - (SELECT ISNULL(SUM(M.MONTO),0) FROM SAM_MOV_OP AS M INNER JOIN SAM_ORD_PAGO AS O ON(O.CVE_OP = M.CVE_OP) WHERE O.CVE_PED = SAM_PEDIDOS_EX.CVE_PED AND O.STATUS NOT IN (-1,4))) AS DISPONIBLE FROM SAM_PEDIDOS_EX WHERE CVE_PED = ?", new Object[]{orden.get("CVE_PED")}, Double.class): new Double(0);
-			                	if((temp)>0)
-			                		getJdbcTemplate().update("update SAM_PEDIDOS_EX set STATUS=1 where  CVE_PED in (select CVE_PED from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{idOrden});
-			                	else
-			                		getJdbcTemplate().update("update SAM_PEDIDOS_EX set STATUS=5 where  CVE_PED in (select CVE_PED from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{idOrden});
-			                }
-			                //AQUI CUANDO ES UNA OS/OT PARCIAL O NO, MODIFICADO 31/05/2011
-			                if (tipo==2){		     	
-			                	Map<String, Object> valor = getJdbcTemplate().queryForMap("SELECT CVE_REQ FROM SAM_ORD_PAGO WHERE CVE_OP = ?", new Object[]{idOrden});
-			                	Double temp = (valor.get("CVE_REQ")!=null) ? (Double) getJdbcTemplate().queryForObject("SELECT ((SELECT ISNULL(SUM(R.CANTIDAD*R.PRECIO_EST),0) FROM SAM_REQ_MOVTOS R WHERE R.CVE_REQ = SAM_REQUISIC.CVE_REQ) - (SELECT ISNULL(SUM(M.MONTO),0) FROM SAM_MOV_OP AS M INNER JOIN SAM_ORD_PAGO AS O ON(O.CVE_OP = M.CVE_OP) WHERE O.CVE_REQ = SAM_REQUISIC.CVE_REQ AND O.STATUS NOT IN (-1,4))) AS DISPONIBLE FROM SAM_REQUISIC WHERE CVE_REQ = ?", new Object[]{orden.get("CVE_REQ")}, Double.class): new Double(0);
-			                	if(temp>0)
-			                		getJdbcTemplate().update("update SAM_REQUISIC set STATUS=1  WHERE cve_req in (select CVE_REQ from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{idOrden});
-			                	else
-			                		getJdbcTemplate().update("update SAM_REQUISIC set STATUS=5  WHERE cve_req in (select CVE_REQ from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{idOrden});
-			                	
-			                }
+			                              		               
+			                
 			                /*CIERRA DESDE FACTURAS*/
 			                if(tipo==12){
 			                	List<Map<String, Object>> movimientos = gatewayDetallesOrdenDePagos.getDetallesOrdenes(idOrden);
 			                	for(Map<String, Object> det: movimientos)
 			                		getJdbcTemplate().update("UPDATE SAM_FACTURAS SET CVE_OP =? WHERE CVE_FACTURA =?",new Object[]{idOrden, det.get("CVE_FACTURA")});
 			                }
-			                /*CIERRA DESDE CONTRATOS*/
-			                /*if(tipo==12){
-			                	List<Map> movimientos = gatewayDetallesOrdenDePagos.getDetallesOrdenes(idOrden);
-			                	for(Map det: movimientos)
-			                		getJdbcTemplate().update("UPDATE SAM_FACTURAS SET CVE_OP =? WHERE CVE_FACTURA =?",new Object[]{idOrden, det.get("CVE_FACTURA")});
-			                		
-			                }*/
-			                
-			                /*AQUI CUANDO SE CIERRA ATRAVEZ DEL PRESUPUESTO DE UN VALE 09/03/2012
-			                if(tipo==11){
-			                	BigDecimal importeOP = (BigDecimal) orden.get("IMPORTE");
-			                	
-			                	 List <Map> lst_vales = getJdbcTemplate().queryForList("SELECT DISTINCT CVE_VALE, ISNULL(SUM(MONTO),0) AS MONTO FROM SAM_MOV_OP WHERE CVE_OP=? GROUP BY CVE_VALE", new Object[]{idOrden});
-			                	 for(Map row: lst_vales){
-			                		getJdbcTemplate().update("INSERT INTO SAM_COMP_VALES(CVE_VALE, TIPO_MOV, TIPO_DOC, CVE_DOC, PERIODO, IMPORTE) VALUES(?,?,?,?,?,?)",new Object[]{row.get("CVE_VALE"), "LIBERACION", "OP", idOrden, mes, row.get("MONTO")});
-			                	 }
-
-			                	
-			                }*/
-			                /*SI HAY CONTRATO GENERAR EL MOVIMIENTOTO DE COMPROBACION*/
-			                /*if(orden.get("CVE_CONTRATO")!=null&&contrato_conceptos==false){
-			                	getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, TIPO_DOC, CVE_DOC, PERIODO, IMPORTE) VALUES(?,?,?,?,?,?)", new Object[]{orden.get("CVE_CONTRATO"), "LIBERACION", "OP",idOrden, mes, importe});
-			                }*/
-			                
-			                /*if(orden.get("CVE_CONTRATO")==null&&contrato_conceptos==true){
-			                	
-			                	for(Map row: lstobj)
-		        	    		{
-			                		if(row.get("CVE_REQ")!=null&&tipo==2)
-			                			getJdbcTemplate().update("DELETE FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO = ? AND CVE_DOC = ? AND TIPO_MOV =? AND TIPO_DOC IN ('OS', 'OT')", new Object[]{cve_contrato_doc, row.get("CVE_REQ"), "LIBERACION"});
-			                		if(row.get("CVE_PED")!=null&&tipo==0)
-			                			getJdbcTemplate().update("DELETE FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO = ? AND CVE_DOC = ? AND TIPO_MOV =? AND TIPO_DOC = ?", new Object[]{cve_contrato_doc, row.get("CVE_PED"), "LIBERACION", "PED"});
-		        	    		}
-			                	getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, TIPO_DOC, CVE_DOC, PERIODO, IMPORTE) VALUES(?,?,?,?,?,?)", new Object[]{cve_contrato_doc, "LIBERACION", "OP",idOrden, mes, importe});
-			                }*/
-			                
+			                			                
 			                //GUARDAR EN LA BITACORA
 			                String folio=rellenarCeros(idOrden.toString(),6);
 			                
@@ -974,8 +931,8 @@ public class ControladorOrdenPago extends ControladorBase  {
     					texto ="El tipo de gasto de la Orden de Pago no concuerda con los conceptos introducidos en ella no es válido, consulte a su administrador del SAM";
     			}
     		}
-    		
-    		if(!ban.equals("")){
+    		/*Comentado por Abraham Glez por la actualizacion de la tabla sam_orden_pago donde se eliminaron los campos de contrato, pedido, cve_req*/
+    		/*if(!ban.equals("")){
 	    		//validacion extra en el contrato de la orden de pago con el del documento (Pedido o OT,OS)
 	    		List <Map> lstobj = getJdbcTemplate().queryForList("SELECT OP.CVE_CONTRATO, C.CVE_REQ, C.CVE_PED FROM SAM_OP_COMPROBACIONES AS C INNER JOIN SAM_ORD_PAGO AS OP ON (OP.CVE_OP = C.CVE_OP) WHERE C.CVE_OP = ?", new Object[]{cve_op});
 	    		for(Map row: lstobj)
@@ -988,7 +945,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 	    					texto ="Los Pedidos de esta Orden de Pago ya estan relacionadas a un contrato, por favor quite el contrato de esta Orden de Pago ó verifique los conceptos y vuela a intentar esta operación";
 	    		}
 	    		//////////////////////////////////////////////////////////////
-    		}
+    		}*/
     		
     		return  texto;
     	}

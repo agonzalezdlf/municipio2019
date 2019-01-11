@@ -78,7 +78,7 @@
       </tr>
       <tr>
         <th height="25" align="left" >&nbsp;</th>
-        <td align="left" ><input type="button" name="btnGuardar" value="Guardar Selección" class="btn btn-success"/></td>
+        <td align="left" ><input type="button" name="btnGuardar" id="btnGuardar" value="Guardar Selección" class="btn btn-success"/></td>
       </tr>
       <tr id="filaPrivilegio" style="display:none">
         <td height="30" colspan="2" align="center" ><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="listas"  id="detallesListas"  >

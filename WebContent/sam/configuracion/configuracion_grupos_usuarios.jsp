@@ -94,8 +94,8 @@
              	</div>
             </div>
             <div class="row col-md-offset-2">
-            	<input type="button"  class="btn-sm btn-success"  name="btnGrabar" value="Guardar"  onClick="guardar()" style="width:100px"/>
-				<input type="button"  class="btn-info btn-sm"  name="btnlimpiar" value="Nuevo"  onClick="limpiar()" style="width:100px"/>      
+            	<input type="button"  class="btn-sm btn-success" id="btnGrabar" name="btnGrabar" value="Guardar"   style="width:100px"/>
+				<input type="button"  class="btn-info btn-sm" id="btnlimpiar" name="btnlimpiar" value="Nuevo"   style="width:100px"/>      
   			</div>
      </div>
 

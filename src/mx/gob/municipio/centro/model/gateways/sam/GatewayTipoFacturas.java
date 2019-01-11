@@ -22,7 +22,7 @@ public class GatewayTipoFacturas extends BaseGateway{
 	
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getTipoDocumentosUsuario(Integer idUsuario ){
-    	return this.getJdbcTemplate().queryForList("SELECT * FROM SAM_CAT_TIPO_FACTURAS CTF WHERE CTF.STATUS=1 AND CTF.Id_TipoFactura IN ( SELECT  B.ID_TIPO_FAC  FROM SAM_GRUPO_CONFIG_USUARIO a INNER JOIN SAM_GRUPO_TIPO_FAC b ON a.ID_GRUPO_CONFIG = b.ID_GRUPO_CONFIG where a.ID_USUARIO = ? )  ", new Object []{idUsuario});	
+    	return this.getJdbcTemplate().queryForList("SELECT * FROM SAM_CAT_TIPO_FACTURAS CTF WHERE CTF.STATUS=1 AND CTF.ID_TIPO_FAC IN ( SELECT  B.ID_TIPO_FAC  FROM SAM_GRUPO_CONFIG_USUARIO a INNER JOIN SAM_GRUPO_TIPO_FAC b ON a.ID_GRUPO_CONFIG = b.ID_GRUPO_CONFIG where a.ID_USUARIO = ? )  ", new Object []{idUsuario});	
     } 
 	
 }

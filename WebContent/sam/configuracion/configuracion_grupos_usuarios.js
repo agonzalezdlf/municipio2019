@@ -10,6 +10,15 @@ Fecha      : 26/10/2009
 	var todoBien=false;
 	var sel      = 0;
 	$(document).ready(function() { 
+						
+		$("#btnGrabar").on('click', function() {
+			guardar();
+		 });
+		
+		$("#btnlimpiar").on('click', function() {
+			limpiar();
+		 });	
+		
 		//Checkbox para seleccionar toda la lista.... Abraham Gonzalez 12/07/2016
 		$("input[name=todos]").change(function(){
 			$('input[type=claves]').each( function() {			

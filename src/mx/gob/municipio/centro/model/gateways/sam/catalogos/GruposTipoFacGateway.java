@@ -20,9 +20,9 @@ public class GruposTipoFacGateway extends BaseGateway{
 	}
 	
 	public List getGrupoTipoFac(Integer  grupo) {
-		return this.getJdbcTemplate().queryForList(" SELECT  GTR.ID_GRUPO_TIPO_FAC,  CTR.DESCRIPCION , CTR.ID_TIPOFACTURA " +
+		return this.getJdbcTemplate().queryForList(" SELECT  GTR.ID_GRUPO_TIPO_FAC,  CTR.DESCRIPCION , CTR.ID_TIPO_FAC " +
 												   " FROM         SAM_CAT_TIPO_FACTURAS CTR " +
-												   " LEFT OUTER JOIN   SAM_GRUPO_TIPO_FAC  GTR ON GTR.ID_TIPO_FAC=CTR.ID_TIPOFACTURA AND " + 
+												   " LEFT OUTER JOIN   SAM_GRUPO_TIPO_FAC  GTR ON GTR.ID_TIPO_FAC=CTR.ID_TIPO_FAC AND " + 
 												   " GTR.ID_GRUPO_CONFIG =? WHERE CTR.STATUS='True' ", new Object[]{grupo});	  
 		
 	}

@@ -1,4 +1,26 @@
- function llenarTablaPrivilegios() {	 
+ $(document).ready(function() {  
+	
+		 $('#roles').on('change',function(event){//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
+			 llenarTablaPrivilegios();
+		 });
+		 
+		 $('#sistemas').on('change',function(event){//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
+			 llenarTablaPrivilegios();
+		 });
+		 
+		 //onchange="llenarTablaPrivilegios()"
+		 
+		$('#btnGuardar').on('click', function(){
+			 alert('Lista: ' +lista +' '+usuario);
+			 //guardarDato();
+			 
+		});
+		 
+ });
+
+
+
+function llenarTablaPrivilegios() {	 
 	quitRow( "detallesListas" );
 	var sistema= $('#sistemas' ).val();
 	var rol= $('#roles' ).val();

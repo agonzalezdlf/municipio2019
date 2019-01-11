@@ -43,7 +43,7 @@ public class ControladorGruposTipoFac extends ControladorBase {
 		  try {                 
 	            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
 	                @Override
-	    protected void   doInTransactionWithoutResult(TransactionStatus status) {	                	
+	                protected void   doInTransactionWithoutResult(TransactionStatus status) {	                	
 	                	gruposTipoFacGateway.eliminar(grupo);
 	                	for (Integer  tipoOp :tiposOp)
 	                		gruposTipoFacGateway.inserta(tipoOp, grupo);	                			                	

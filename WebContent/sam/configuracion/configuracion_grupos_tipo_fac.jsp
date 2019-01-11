@@ -33,7 +33,7 @@
    	 	<div class="form-group">
           <label for="grupo" class="col-md-2 control-label">Grupo:</label>
           <div class="col-md-5">
-   			<select name="grupo" size="1" class="comboBox form-control" id="grupo" style="width:450px;">
+   			<select name="grupo" size="1" class="form-control" id="grupo" style="width:450px;">
         	  	<option value="">[Seleccione]</option>
 	          		<c:forEach items="${grupos}" var="item" varStatus="status">
             		<option value="<c:out value='${item.ID_GRUPO_CONFIG}'/>" >
