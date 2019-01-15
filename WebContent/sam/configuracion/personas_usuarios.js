@@ -26,7 +26,7 @@ $(document).ready(function() {
 	if(($('#idPersona').val()!=''||$('#idPersona').val()!='0')&&($('#accion').val()=='edit')){
 		console.log('accion: ' +($('#accion').val()=='edit')+'    '+ '    cve_pers: ' + $('#idPersona').val());
 		editar($('#idPersona').val());  
-	  }
+	}
 	
 });
 
@@ -43,7 +43,8 @@ function editar(cve_pers) {
 	//value="<c:out value='${persona.PASSWD}'/>"
 	 controladorUsuariosRemoto.getUsuariosPorEjemplo(cve_pers, {
 	        callback:function(items) { 		
-	        	 $('#nombre').val(items.NOMBRE);	        	
+	        	
+	        	 $('#nombre').val(items.NOMBRE);
 	        	 $('#apaterno').val(items.APE_PAT);
 	        	 $('#amaterno').val(items.APE_MAT);
 	        	 $('#curp').val(items.CURP);
@@ -52,7 +53,7 @@ function editar(cve_pers) {
 	        	 $('#usuario').val(items.LOGIN);
 	        	 $('#pass1').val(items.PASSWD);
 	        	 $('#pass2').val(items.PASSWD);
-	        	 alert('Estatus del usuario es: ' +items.ACTIVO);
+	        	 
 	        	 if (items.ACTIVO=='S')
 	 				$('#estatus').prop('checked',true);
 	        	 //if ($('#estatus').is(':checked'))  estatus='S';	
@@ -87,11 +88,19 @@ function editar(cve_pers) {
 		)	 
  } 
  
+
  
  function guardar(){		
 	 
+	 	var caracteres = "abcdefghijkmnpqrtuvwxyzABCDEFGHJKMNPQRTUVWXYZ2346789*-/#=()";
+	 	var contraseña = "";
+	 	for (i=0; i<8; i++) contraseña +=caracteres.charAt(Math.floor(Math.random()*caracteres.length)); 
+	 	console.log(contraseña)
+	 	pass1= $('#pass1').val(contraseña);
+	 	pass2= $('#pass2').val(contraseña)
+	 	
 	 	var idpers = $('#idPersona').val();
-	 	alert('Esta es la persona que se va a ingresar o actualizar: ' +idpers);	 	
+	 		 	
 	    var error="";
 		var titulo ='Informacion no valida';
 		if ($('#nombre').val()=="")  {swal({title:'Nombre no válido',type:'warning'}); return false;}	
@@ -102,6 +111,7 @@ function editar(cve_pers) {
 		if ($('#usuario').val()=="" && $('#pass1').val()=="" && $('#clave').val()=="")  {swal({title:'El password no es válido', type:'warning'}); return false;}
 		if ($('#usuario').val()!="" && $('#pass1').val()!=$('#pass2').val())  {swal({title:'Los password no coinciden',type:'warning'}); return false;}
 			
+		
 		var estatus='N';
 		// $("#aceptar").is(':checked');
 		if ($('#estatus').is(':checked'))	
@@ -116,21 +126,18 @@ function editar(cve_pers) {
 			  allowOutsideClick: false,
 			  preConfirm: function() {
 			    return new Promise(function(resolve, reject) {
-			    	//swal('Guardando usuario');
-					controladorUsuariosRemoto.guardarUsuario(idpers,$('#nombre').val(),$('#apaterno').val(),$('#amaterno').val(),
+			    	controladorUsuariosRemoto.guardarUsuario(idpers,$('#nombre').val(),$('#apaterno').val(),$('#amaterno').val(),
 							 $('#curp').val(),$('#rfc').val(),$('#profesion').val(),0,
 							 $('#unidad').val(),$('#usuario').val(),$('#pass1').val(),
 							 estatus,0,0,{
 							 callback:function(items) {	
 								  setTimeout(function() {
-									  swal('Guardando usuario'),
-								        resolve();
-								      }, 2000);
-								 //CloseDelay("Información guardada con éxito",function(){limpiar(); });
-								//ShowDelay('Recuperando infornmación','');
-									
-								//_closeDelay();		 
-							 
+									  limpiar();
+									  swal('Guardando usuario'),resolve();
+								  }, 2000);
+								  
+								  document.location = 'lst_usuarios.action?'
+								 		//ShowDelay('Recuperando infornmación','');
 							 },errorHandler:function(errorString, exception) { 
 							   swal('Opss',"Fallo la operación:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');    
 							 }
@@ -139,37 +146,15 @@ function editar(cve_pers) {
 			  },
 			}).then(function (result) {
 				if (result.value) {
+						limpiar();
 			        	swal({title:'Información guardada con éxito!!',showConfirmButton: false,timer:1000,type:"success"});
-			        	limpiar();
+			        	
 			        	window.setTimeout('location.reload()', 100);
 			        }else
 			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio', showConfirmButton: false,timer:1300,type:"info"});
 			  
 			})
 		
-		/*
-		jConfirm('¿Confirma que desea guardar la información del usuarios?', 'Confirmar', function(r){
-			if(r){
-					ShowDelay('Guardando usuario','');
-					controladorUsuariosRemoto.guardarUsuario($('#clave').attr('value'),$('#nombre').attr('value'),$('#apaterno').attr('value'),$('#amaterno').attr('value'),
-							 $('#curp').attr('value'),$('#rfc').attr('value'),$('#profesion').attr('value'),0,
-							 $('#unidad').attr('value'),$('#usuario').attr('value'),$('#pass1').attr('value'),
-							 estatus,{
-							 callback:function(items) {			  			  
-								 CloseDelay("Información guardada con éxito",function(){
-									limpiar(); 
-								});
-								ShowDelay('Recuperando infornmación','');
-								//getPersonas('nombre','clave');	
-								_closeDelay();		 
-							 
-							 }	
-												,errorHandler:function(errorString, exception) { 
-												   jError("Fallo la operación:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");    
-												}
-							});		
-			}
-		});*/
 	}
 
  function limpiar(){	
@@ -179,7 +164,7 @@ function editar(cve_pers) {
 		 $('#amaterno').val('');
 		 $('#curp').val('');
 		 $('#rfc').val('');
-		 $('#profesion').val('');
+		 
 		 $('#area').val('');
 		 $('#unidad').val('');
 		 $('#usuario').val('');
@@ -188,4 +173,14 @@ function editar(cve_pers) {
 		 $('#estatus').attr('checked',false);
 		 $('#idUsuario').val('');
 		 $('#idTrabajador').val('');
+		 $('#profesion').val('',"");
+		 $('#unidad').val('0');
+		 $('#unidad').selectpicker('deselectAll');
+		 $('#unidad').selectpicker('refresh');
+		 $('#profesion').selectpicker('deselectAll');
+		 $('#profesion').selectpicker('refresh');
+		 $('#idPersona').prop('value','0');
+		 $('#cve_pers').prop('value','');
+		 $('#accion').prop('value','');
+		 
 }

@@ -1897,7 +1897,7 @@ function _closeDialog(){
 	$("#dialog").dialog('close');
 }
 */
-/*
+
 //funcion para ejecutar una funcion al pulsar enter
 function keyEnter(fn){
 	if (window.event.keyCode==13) {
@@ -1907,7 +1907,7 @@ function keyEnter(fn){
 	}
 
 }
-*/
+
 
 /*
  //Funcón que crea las notificaciones

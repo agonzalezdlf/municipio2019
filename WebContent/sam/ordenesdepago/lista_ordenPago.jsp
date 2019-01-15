@@ -33,7 +33,6 @@
 
 <script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
-
 <script type="text/javascript" src="../../dwr/interface/controladorOrdenPagoRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
 <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
@@ -47,7 +46,6 @@
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-select.js"></script>
-
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 
 <!--

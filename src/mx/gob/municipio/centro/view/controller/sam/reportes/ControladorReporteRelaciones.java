@@ -73,7 +73,8 @@ public class ControladorReporteRelaciones extends ControladorBase {
 			modelo.put("DEPENDENCIA_DEV", "DEVOLUCIÓN DE ORDENES DE PAGO A " + modelo.get("DEPENDENCIA_DEV").toString());
 		
 		//Demo para mandar el grupo de firmas a la relacion de op 18-10-18
-		Integer idGrupo = this.getJdbcTemplate().queryForInt("SELECT * FROM SAM_GRUPO_CONFIG_USUARIO GCP WHERE EXISTS (SELECT * FROM SAM_PERSONAS WHERE CVE_PERS=GCP.ID_USUARIO)	AND GCP.ID_USUARIO=? AND ASIGNADO=1", new Object[]{modelo.get("CVE_PERS").toString()}); //();
+		Integer idGrupo = getSesion().getIdUsuario(); 
+		//this.getJdbcTemplate().queryForInt("SELECT * FROM SAM_GRUPO_CONFIG_USUARIO GCP WHERE EXISTS (SELECT * FROM SAM_PERSONAS WHERE CVE_PERS=GCP.ID_USUARIO)	AND GCP.ID_USUARIO=? AND ASIGNADO=1", new Object[]{modelo.get("CVE_PERS").toString()}); //();
 				
 		gatewayFirmasDocumentos.getFirmasDocumentos(idGrupo, modelo);
 		List <Map<String, Object>> lst =  new ArrayList();       

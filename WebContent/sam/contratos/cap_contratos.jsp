@@ -193,7 +193,7 @@ a:active {
 			                              <option value="0">[Seleccione]</option>
 			                              <c:forEach items="${beneficiarios}" var="item" varStatus="status">
 			                                    <option value='<c:out value="${item.CLV_BENEFI}"/>'
-			                                    <c:if test='${item.CLV_BENEFI==xBeneficiario}'>selected</c:if>><c:out value='${item.NCOMERCIA}'/>
+			                                    <c:if test='${item.CLV_BENEFI==Contrato.CLV_BENEFI}'>selected</c:if>><c:out value='${item.NCOMERCIA}'/>
 			                              </c:forEach>
 			                            </select>
 								<input type="hidden" id="CVE_BENEFI" value="0" />
@@ -261,7 +261,7 @@ a:active {
 			                    <div class="form-group">
 			                        <div class="control-label col-sm-3 ">*Concepto:</div>
 			                        <div class="form-group col-sm-2">
-			                            <textarea class="form-control" rows=4 placeholder="Concepto" name="txtdescripcion" id="txtdescripcion" style="width:400px" onBlur="upperCase(this)">${Contrato.DESCRIPCION}</textarea>
+			                            <textarea class="form-control" rows=4 placeholder="Concepto" name="txtdescripcion" id="txtdescripcion" style="width:400px" onBlur="upperCase(this)">${Contrato.DESCRCON}</textarea>
 									</div>
 			                    </div>
 			                </div>

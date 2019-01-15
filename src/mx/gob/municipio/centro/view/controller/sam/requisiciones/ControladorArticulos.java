@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+
+import mx.gob.municipio.centro.model.gateways.sam.GatewayBeneficiario;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayProductos;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayProyectoPartidas;
+import mx.gob.municipio.centro.model.gateways.sam.GatewayUnidadMedidas;
 import mx.gob.municipio.centro.view.bases.ControladorBase;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,57 +30,81 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/sam/requisiciones/cat_articulo.action")
 public class ControladorArticulos extends ControladorBase {
 	private static Logger log = Logger.getLogger(ControladorArticulos.class.getName());
-	
+
+	@Autowired
+	private GatewayUnidadMedidas gatewayUnidadMedidas;
+
 	@Autowired
 	private GatewayProyectoPartidas gatewayProyectoPartidas;
-		
+
 	@Autowired
 	GatewayProductos gatewayProductos;
+
+	@Autowired
+	private GatewayBeneficiario gatewayBeneficiario;
 	
-	public ControladorArticulos(){}
+	public ControladorArticulos() {
+	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(method = RequestMethod.GET)  
-	public String  requestGetControlador(  HttpServletRequest request) {
-	    return "sam/requisiciones/cat_articulo.jsp";
+	@RequestMapping(method = RequestMethod.GET)
+	public String requestGetControlador(Map model, HttpServletRequest request) {
+
+		model.put("CLV_UNIMED", gatewayUnidadMedidas.getUnidadMedidasTodas());
+
+		return "sam/requisiciones/cat_articulo.jsp";
+	}
+
+	@ModelAttribute("partidas")
+	public List<Map<String, Object>> getUnidades() {
+		return gatewayProyectoPartidas.getPartidas();
+	}
+
+	@ModelAttribute("beneficiarios")
+	public List <Map> getBeneficiarios(){
+		return gatewayBeneficiario.getListaBeneficiarios();
 	}
 	
-	@ModelAttribute("partidas")
-    public List<Map<String, Object>> getUnidades(){
-    	return gatewayProyectoPartidas.getPartidas();	
-    }
+	@ModelAttribute("unidmedida")
+	public List<Map<String, Object>> getUnidadMedidas() {
+		return gatewayUnidadMedidas.getUnidadMedidasTodas();
+	}
 	
+	public void guardarArticulo(Integer idArticulo, String unidadMedida, String descripcion, String ult_benefi,
+			Double precio, int invetario, int consumible, String estatus) {
+		gatewayProductos.actualizarPrincipal(idArticulo, unidadMedida, descripcion, ult_benefi, precio, invetario,
+				consumible, estatus);
+	}
+
+	public void eliminarArticulo(final List<Integer> productos) {
+		try {
+			this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					for (Integer producto : productos)
+						gatewayProductos.eliminar(producto);
+				}
+			});
+		} catch (DataAccessException e) {
+			log.info("Los registros tienen relaciones con otras tablas ");
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public Map<String, Object> getArticulo(Integer idArticulo) {
+		return gatewayProductos.getArticulo(idArticulo);
+	}
+
+	public List getArticulosTodos(String alfabetico) {
+		return gatewayProductos.getArticulosTodos(alfabetico);
+	}
+
+	public boolean getExistenciaDocumentos(Integer id_articulo) {
+		return this.getJdbcTemplate().queryForInt(
+				"SELECT COUNT(ID_ARTICULO) AS N FROM SAM_REQ_MOVTOS WHERE ID_ARTICULO = ?",
+				new Object[] { id_articulo }) != 0;
+	}
+
 	
-	 public  void guardarArticulo(Integer idArticulo,  String unidadMedida, String descripcion, String ult_benefi, Double precio , int invetario, int consumible, String estatus){
-		 gatewayProductos.actualizarPrincipal(idArticulo, unidadMedida, descripcion,ult_benefi, precio, invetario, consumible, estatus);
-	     }
-	     
-		  public void  eliminarArticulo( final List<Integer> productos ) {
-			  try {                 
-		            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
-		                @Override
-		    protected void   doInTransactionWithoutResult(TransactionStatus status) {	                	
-		                	for (Integer producto :productos )
-		                		gatewayProductos.eliminar(producto);	                			                	
-		                } });
-		                } catch (DataAccessException e) {            
-		                    log.info("Los registros tienen relaciones con otras tablas ");	                    
-		                    throw new RuntimeException(e.getMessage(),e);
-		                }	                	                		  	  
-		  }
-		  
-			public Map<String, Object> getArticulo(Integer idArticulo  ){
-					return gatewayProductos.getArticulo(idArticulo);
-			}
-			
-			
-			public List getArticulosTodos(String alfabetico) {	   
-				return gatewayProductos.getArticulosTodos(alfabetico);
-			} 
-			
-			public boolean getExistenciaDocumentos(Integer id_articulo){				
-				return this.getJdbcTemplate().queryForInt("SELECT COUNT(ID_ARTICULO) AS N FROM SAM_REQ_MOVTOS WHERE ID_ARTICULO = ?", new Object[]{id_articulo})!=0;
-			}
-	     
-	    
+
 }

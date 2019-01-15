@@ -10,7 +10,6 @@ $(document).ready(function() {
 		 //$("#txtfecha").datepicker({showOn: 'button', buttonImage: '../../imagenes/cal.gif', buttonImageOnly: true,dateFormat: 'dd/mm/yy'});
 		 $('#btnBuscar').click(function(event){buscarOpMes();})
 		 $('#cmdfecha').click(function(event){cambiarFecha();})
-		 
 		 $('#cmdejercer').click(function(event){ejercerOP();});
 		 
 		 //$("#txtfechanueva").datepicker({showOn: 'button', buttonImage: '../../imagenes/cal.gif', buttonImageOnly: true,dateFormat: 'dd/mm/yy'});
@@ -26,11 +25,13 @@ $(document).ready(function() {
 		 $('#cmdimprimirgeneral').click(function(event){imprimirGeneral();})
 		 $('#txtnumop').keypress(function(event){if (event.keyCode == '13'){$('#cmdagregar').click();}});
 		 $('#ui-datepicker-div').hide();
+		 
 		 if($('#txtfecha').val()=='')
 		 {
-			 var fecha = new Date();
+			var fecha = new Date();
 		 	$('#txtfecha').val(fecha.getDate()+'/'+(fecha.getMonth()+1)+'/'+fecha.getFullYear()); 
 		 }
+		 
 		 $('#cbotiporelacion').val(0);
 		 //
 		 
@@ -44,13 +45,11 @@ $(document).ready(function() {
 			    useCurrent: false //Important! See issue #1075
 			});
 		 
-		 
-		 
 		 $('#fecha_pejercer').datetimepicker({
 				format: 'DD/MM/YYYY',
 			    useCurrent: false //Important! See issue #1075
 			});
-		 
+		 txtfecha_ejercido
 		
 });
 
@@ -103,8 +102,8 @@ function cambiarFechaRelacion(){
 
 function imprimirRelacion(){
 	var id_relacion = $('#cborelacion').val();
-	$('#id_relacion').attr('value',id_relacion);
-	
+	//$('#id_relacion').val(id_relacion);
+	alert('Esta es la opcion de impresion: ' +id_relacion + '|' +$('#id_relacion').val(id_relacion) );
 	$('#frmreporte').attr('action',"../reportes/rpt_relacion_envio.action");
 
 	$('#frmreporte').attr('target',"impresion");
@@ -505,8 +504,8 @@ function cargarRelacionValesDevolucion(id){
 	$('#div_unidades').show();
 	$('#divdetalle').html('<h3 style="color:#FFF">Detalles de Vales</h3>');
 	$('#divopvale').html('<span style="color:#FFF; font-size:11px">Vale</span>');
-	$('#cmdagregar').attr('value', "Agregar Vale");
-	$('#cmdeliminar').attr('value', "Eliminar Vale");
+	$('#cmdagregar').val("Agregar Vale");
+	$('#cmdeliminar').val("Eliminar Vale");
 	
 	
 	$('#div_unidades').hide();
@@ -662,8 +661,8 @@ function cargarRelacion(){
 function cargarRelacionVales(id){
 	$('#divdetalle').html('<h3 style="color:#FFF">Detalles de Vales</h3>');
 	$('#divopvale').html('<span style="color:#FFF; font-size:11px">Vales</span>');
-	$('#cmdagregar').attr('value', "Agregar Vale");
-	$('#cmdeliminar').attr('value', "Eliminar Vale");
+	$('#cmdagregar').val("Agregar Vale");
+	$('#cmdeliminar').val("Eliminar Vale");
 	if(id==0){
 		inicializar();
 		dwr.util.removeAllOptions('cborelacion');
@@ -713,8 +712,8 @@ function cargarRelacionDevolucion(id){
 	$('#div_unidades').show();
 	$('#divdetalle').html('<h3 style="color:#FFF">Detalles de Ordenes de Pago</h3>');
 	$('#divopvale').html('<span style="color:#FFF; font-size:11px">Orden de Pago</span>');
-	$('#cmdagregar').attr('value', "Agregar OP's");
-	$('#cmdeliminar').attr('value', "Eliminar OP's");
+	$('#cmdagregar').val("Agregar OP's");
+	$('#cmdeliminar').val("Eliminar OP's");
 	if(id==0){
 		inicializar();
 		dwr.util.removeAllOptions('cborelacion');
@@ -764,8 +763,8 @@ function cargarRelacionDevolucion(id){
 function cargarRelacionEnvio(id){
 	$('#divdetalle').html('<h3 style="color:#FFF">Detalles de Ordenes de Pago</h3>');
 	$('#divopvale').html('<span style="color:#FFF; font-size:11px">Orden de Pago</span>');
-	$('#cmdagregar').attr('value', "Agregar OP's");
-	$('#cmdeliminar').attr('value', "Eliminar OP's");
+	$('#cmdagregar').val("Agregar OP's");
+	$('#cmdeliminar').val("Eliminar OP's");
 
 	if(id==0){
 		inicializar();
@@ -843,14 +842,28 @@ function mostrarDetallesOP(cve_op){
 function ejercerOP()
 {
 	var now = new Date();
-
 	var checkClaves = [];
-	var bfecha = $('#chkfecha').attr('checked');
-	var fecha_ejerce = $('#txtfecha').attr('value');
+	
+	$('#txtfecha_ejercido').datetimepicker({
+		format: 'DD/MM/YYYY',
+	    useCurrent: false //Important! See issue #1075
+	});
+	
+	var bfecha = $('#chkfecha').is(":checked");
+	var fecha_ejerce = $('#txtfecha_ejercido').val();
+	
+	alert('Valor de bfecha: '+fecha_ejerce);
+
+	if (bfecha==true)
+		alert('Selecciono fecha a ejercer' + fecha_ejerce);
+	else
+		alert('fecha del dia a ejercer'+ now);	
 	//if(fecha_ejerce=="") fecha_ejerce = now.getDay()+"-"+(now.getMonth()+1)+"-"+now.getYear();
 	
 	//recuperar las claves a ejercer
-     $('input[id=chkOP]:checked').each(function() { checkClaves.push($(this).val());});	
+    $('input[id=chkOP]:checked').each(function() { checkClaves.push($(this).val());});	
+          
+     
 	 if (checkClaves.length>0){
 		 swal({
 			    title: "Es seguro?",

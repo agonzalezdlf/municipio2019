@@ -69,6 +69,7 @@ $(document).ready(function() {
 	 //$('#tabuladores').tabs('enable',0);
 	 //$('#tabuladores').tabs('option', 'disabled', [1]);
 	 //if($('#txtnumreq').attr('value')!='') cargarOS($('#CVE_REQ').attr('value'));
+	 
 	 if($('#CVE_CONTRATO').val()!='0') {
 		 getConceptos();
 		 mostrarDetallesArchivos();
@@ -81,6 +82,8 @@ $(document).ready(function() {
 	 
 	
 });
+
+
 function mostrarcerrar(){
 	cmdcerrar.style.display = '';
 }

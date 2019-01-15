@@ -965,3 +965,12 @@ function formatNumber(num,prefix){
 		   		splitRight += "0";
 	   return prefix + splitLeft + splitRight;
 	}
+//funcion para ejecutar una funcion al pulsar enter
+function keyEnter(fn){
+	if (window.event.keyCode==13) {
+	 	fn();
+	}else{
+	 	return false;
+	}
+
+}

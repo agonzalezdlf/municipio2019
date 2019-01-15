@@ -13,6 +13,7 @@ import mx.gob.municipio.centro.model.bases.BaseGateway;
 public class GatewayUnidadMedidas extends BaseGateway {
 	public  GatewayUnidadMedidas(){}
 	
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getUnidadMedidasTodas(){		
 		  return this.getJdbcTemplate().queryForList("select CLV_UNIMED, UNIDMEDIDA from CAT_UNIMED");		
 		}

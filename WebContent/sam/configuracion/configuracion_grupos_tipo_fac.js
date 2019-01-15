@@ -91,7 +91,7 @@ function guardarFacturasGrupos(){
 		  showLoaderOnConfirm: true,
 		  preConfirm: function() {
 			    return new Promise(function(resolve) {
-			      alert('demo del checkjvales: ' +checkFacturas[0], grupo);
+			      //alert('demo del checkjvales: ' +checkFacturas[0], grupo);
 			      setTimeout(function() {
 			    	  resolve();
 			    	  controladorGruposTipoFacRemoto.guardarTipoFacGrupo(checkFacturas,grupo,{

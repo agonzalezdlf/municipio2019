@@ -36,8 +36,8 @@ public class ControladorRolesAPersonas extends ControladorBase  {
 	  }
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.GET)    
-	public String  requestGetControlador( Map modelo ) {
-	    modelo.put("unidades",gatewayUnidadAdm.getUnidadAdmTodos());
+	public String  requestGetControlador( Map model ) {
+	    model.put("unidades",gatewayUnidadAdm.getUnidadAdmTodos());
 	  return "sam/configuracion/rolesapersonas.jsp";
 	}
 	

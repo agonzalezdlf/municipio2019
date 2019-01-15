@@ -81,7 +81,7 @@ function guardarDato(){
 	
    var error="";
    var usuario= $('#usuario' ).val();
-	
+   var lista=checkboxSeleccionadosRoles();	
 	
 		//ShowDelay('Guardando informaci�n del rol','');
 		/*

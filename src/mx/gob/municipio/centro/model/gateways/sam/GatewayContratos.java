@@ -77,7 +77,7 @@ public class GatewayContratos extends BaseGateway {
 														" C.CVE_PERS," +
 														" C.OFICIO_AUT, " +
 														" C.TIEMPO_ENTREGA, " +
-														" C.DESCRIPCION, " + 
+														" C.DESCRIPCION DESCRCON, " + 
 														" C.ID_TIPO, " +
 														"CONVERT(varchar(10), C.FECHA_INICIO, 103) AS FECHA_INICIO, " +
 														 "CONVERT(varchar(10), C.FECHA_TERMINO, 103) AS FECHA_TERMINO, " +

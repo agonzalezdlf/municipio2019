@@ -707,6 +707,10 @@ public List <Map<String, Object>> getMovimientosOP(Long cve_op){
 
 public void ejercerOrdenPagoFinal(Long cve_op, Date fecha_ejerce, int ejercicio, int cve_pers) throws ParseException{
 		
+		//Validar si que la fecha de ejercido sea menor o igual a la fecha de cierre de la orden de pago
+		//Agregado el 09 de abril de 2014 por Israel de la Cruz
+		SimpleDateFormat formateador = new SimpleDateFormat("yyyy-MM-dd");
+			
 		if(fecha_ejerce==null) fecha_ejerce = new Date();
 		
 		
@@ -729,9 +733,8 @@ public void ejercerOrdenPagoFinal(Long cve_op, Date fecha_ejerce, int ejercicio,
 		Map<String, Object> OrdenPago = new HashMap();
 		OrdenPago = this.getJdbcTemplate().queryForMap("SELECT *FROM SAM_ORD_PAGO where CVE_OP = ? AND STATUS=0", new Object []{cve_op});
 		
-		//Validar si que la fecha de ejercido sea menor o igual a la fecha de cierre de la orden de pago
-		//Agregado el 09 de abril de 2014 por Israel de la Cruz
-		SimpleDateFormat formateador = new SimpleDateFormat("yyyy-MM-dd");
+		
+		
 		Date fechaCierreOP = formateador.parse(OrdenPago.get("FECHA").toString());
 		Date fechaEjercer = formateador.parse(fecha_ejerce.toString());
 		

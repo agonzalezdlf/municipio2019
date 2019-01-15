@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orden de pago" pageWidth="792" pageHeight="612" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="2.5937424601000023"/>
-	<property name="ireport.x" value="1275"/>
+	<property name="ireport.zoom" value="1.7715610000000013"/>
+	<property name="ireport.x" value="417"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="OP_VOBO_REPRESENTANTE" class="java.lang.String"/>
 	<parameter name="OP_VOBO_CARGO" class="java.lang.String"/>
@@ -532,7 +532,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[704]]></text>
+				<text><![CDATA[904]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -822,7 +822,7 @@
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<text><![CDATA[El titular del ramo]]></text>
+				<text><![CDATA[Autorizó]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="565" y="77" width="92" height="21"/>

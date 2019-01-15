@@ -12,7 +12,7 @@
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="../../include/css/bootstrap2.css"></script>
-<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css"/>
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 <link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
@@ -49,6 +49,7 @@
                 <li class="active"><a href="#fragment-general" data-toggle="tab">Información general</a></li>
                 <li><a href="#fragment-representante" data-toggle="tab">Datos Laborales</a></li>
                 <li><a href="#fragment-fiscal" data-toggle="tab">Cuenta de usuario</a></li>
+                <li><a href="#fragment-lstUsuarios">Lista de usuarios</a></li>
             </ul>
 	 	 </div>
 	 	 
@@ -203,12 +204,14 @@
 		                   
 	 	     			</form>
 		 	    	</div>
-		 	    	
+		 	    	<div class="tab-pane" id="fragment-lstUsuarios">
+		 	    		
+		 	    	</div>
 	 	    	</div>
 	 	    	<div class="row">
 	 	    		<div class="control-label col-sm-3 "></div>
 					<div class="col-sm-9 form-group">
-						<input  name="cmdcerrar" type="button" class="btn btn-primary" id="cmdcerrar"   value="Nuevo" style="width:150px;" />
+						<input  name="btnlimpiar" type="button" class="btn btn-primary" id="btnlimpiar"   value="Nuevo" style="width:150px;" />
 				      	<input  name="btnguardar" type="button" class="btn btn-success" id="btnguardar"   value="Guardar" style="width:150px" />
 					</div>
 				</div>
