@@ -12,7 +12,7 @@
 
 
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
-<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css">
+<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/js/sweetalert2/6.6.2/sweetalert2.min.css" type="text/css">
 <link type="text/css" href="../../include/js/jquery-ui/jquery-ui-1.12.1.min.css" rel="stylesheet" />
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
@@ -442,7 +442,7 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
   </tr>
 </table>
 </p>
-<p><input  name="cmdimprimir" type="button" class="botones" id="cmdimprimir" value="Imp. Relación" style="width:96x" disabled> <input  name="cmdimprimir" type="button" class="botones" id="cmdimprimirgeneral" value="Imp. General" style="width:96x" disabled> <input  name="cmdnueva" type="button" class="botones" id="cmdnueva" value="Nueva relación" style="width:96px" disabled></p>
+<p><input  name="cmdimprimir" type="button" class="btn btn-imprimir btn-sm" id="cmdimprimir" value="Imp. Relación" style="width:96x" disabled> <input  name="cmdimprimir" type="button" class="btn btn-imprimir btn-sm" id="cmdimprimirgeneral" value="Imp. General" style="width:96x" disabled> <input  name="cmdnueva" type="button" class="btn btn-primary btn-sm" id="cmdnueva" value="Nueva relación" style="width:96px" disabled></p>
   <div style="clear:both;"></div>
 </div>
 <a class="trigger" href="#">Relaciónes</a>

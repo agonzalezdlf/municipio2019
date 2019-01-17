@@ -80,7 +80,7 @@ public class GatewayVales  extends BaseGateway {
     	gatewayBitacora.guardarBitacora(gatewayBitacora.VALE_ACTUALIZA, ejercicio, idUsuario, clave, folio, "VAL", (Date) vale.get("FECHA"), "", "", null, Double.parseDouble(vale.get("IMPORTE").toString()));
 	}	
 	
-	public Map<String, String> getVale(Long  clave ){
+	public Map<String, Object> getVale(Long  clave ){
 		try {
 		return this.getJdbcTemplate().queryForMap("SELECT     A.NUM_VALE, A.CVE_VALE, ISNULL(D.CVE_CONTRATO, 0) AS CVE_CONTRATO, ISNULL(D.NUM_CONTRATO, '') AS NUM_CONTRATO, A.EJERCICIO, A.ID_DEPENDENCIA, A.CVE_PERS, A.CLV_BENEFI, A.ID_RECURSO, convert(varchar(10),A.FECHA,103)FECHA, A.FECHA AS FECHA2,"+ 
                       " A.TIPO, A.MES, (SELECT SUM(IMPORTE) FROM SAM_MOV_VALES WHERE SAM_MOV_VALES.CVE_VALE = A.CVE_VALE) AS IMPORTE, A.JUSTIF, A.DOCTO_COMP, convert(varchar(10),A.FECHA_INI,103) FECHA_INI, convert(varchar(10),A.FECHA_FIN,103) FECHA_FIN , convert(varchar(10),A.FECHA_MAX,103)  FECHA_MAX, A.STATUS, A.POLIZA_CH, B.NCOMERCIA,  "+

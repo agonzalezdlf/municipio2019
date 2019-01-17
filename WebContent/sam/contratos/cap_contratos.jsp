@@ -14,12 +14,13 @@
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
     <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
-    <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
+    
     <script type="text/javascript" src="../../dwr/interface/ControladorContratosRemoto.js"> </script>
 	<script type="text/javascript" src="../../dwr/interface/controladorProyectoPartida.js"> </script>
     <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>   
     <script type="text/javascript" src="../../dwr/engine.js"> </script>
     <script type="text/javascript" src="cap_contratos.js?x=<%=System.currentTimeMillis()%>"></script>
+    <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
     <script type="text/javascript" src="../../include/js/fileinput.min.js"></script>
     <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 	<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>

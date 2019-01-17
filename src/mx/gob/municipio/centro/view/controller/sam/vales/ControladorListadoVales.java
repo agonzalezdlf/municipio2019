@@ -139,8 +139,8 @@ public class ControladorListadoVales extends ControladorBase {
 	                		@SuppressWarnings("rawtypes")
 							Map<String, String> result = new HashMap<String,String>();
 	                		@SuppressWarnings("rawtypes")
-							Map<String, String> vale = gatewayVales.getVale(idVale);	                		
-	                		result.put("DATO", vale.get("NUM_VALE"));
+							Map<String, Object> vale = gatewayVales.getVale(idVale);	                		
+	                		result.put("DATO", (String) vale.get("NUM_VALE"));
 	                		int periodo = Integer.parseInt(vale.get("MES").toString());
 	                		@SuppressWarnings("rawtypes")
 							List <Map<String, Object>> mov = gatewayVales.getDetallesVales(idVale);

@@ -68,6 +68,8 @@ function limpiar(){
 	  var grupo=$('#grupo').val();
 	  var unidad=$('#unidad').val();
      $('input[name=claves]:checked').each(function() {checkProyectos.push($(this).val());	 });
+     
+     alert('Estos son los proyectos seleccionados: '+checkProyectos);
 	 //ShowDelay('Guardando proyectos del grupo','');
 	 swal({title:'Guardando proyectos del grupo',timer:300,showConfirmButton: false});
 	 swal.showLoading();	

@@ -87,6 +87,7 @@ function __limpiarPresupuestoSaldo(ctrl_presupuesto, ctrl_disponible){
 
 /*Listado para el presupuesto del vale 05/03/2012*/
 function __listadoPresupuestoVale(idproyecto, proyecto, partida, mes, tipoGasto, idDependencia, idVale){
+	
 	swal({
 	    title: 'Informacion Presupuestal del Vale',
 	    width: 800,
@@ -98,6 +99,7 @@ function __listadoPresupuestoVale(idproyecto, proyecto, partida, mes, tipoGasto,
 
 /*Listado para el presupuesto del contrato 19/05/2013*/
 function __listadoPresupuestoContrato(idproyecto, proyecto, partida, mes, tipoGasto, idDependencia, cve_contrato){
+	
 	swal({
 	    title: 'Informacion Presupuestal del Contrato',
 	    width: 800,
@@ -108,6 +110,7 @@ function __listadoPresupuestoContrato(idproyecto, proyecto, partida, mes, tipoGa
 }
 
 function __listadoPresupuesto(idproyecto, proyecto, partida, mes, tipoGasto, idDependencia ){
+	alert('Selecciono la unidad: ' +idDependencia + '|' + idproyecto + '|' + proyecto + '|' + partida + '|' + mes );
 	//swal({
 	   // title: 'Informacion Presupuestal',
 	    //width: 800,

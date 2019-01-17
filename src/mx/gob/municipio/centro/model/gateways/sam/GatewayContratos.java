@@ -520,12 +520,12 @@ public class GatewayContratos extends BaseGateway {
                 		Map<String, Object> contrato = getJdbcTemplate().queryForMap("SELECT  "+
 																			"(SELECT COUNT(*) FROM SAM_REQUISIC AS R WHERE R.CVE_CONTRATO = C.CVE_CONTRATO AND STATUS IN (1,2,5)) AS TOTAL_REQ, "+ 
 																			"(SELECT COUNT(*) FROM SAM_PEDIDOS_EX AS P INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = P.CVE_REQ) WHERE R.CVE_CONTRATO = C.CVE_CONTRATO AND P.STATUS IN (1,2,5)) AS TOTAL_PED, "+ 
-																			"(SELECT COUNT(*) FROM SAM_ORD_PAGO AS O WHERE O.CVE_CONTRATO = C.CVE_CONTRATO AND STATUS IN (0,1,6)) AS TOTAL_OP, "+ 
+																			//"(SELECT COUNT(*) FROM SAM_ORD_PAGO AS O WHERE O.CVE_CONTRATO = C.CVE_CONTRATO AND STATUS IN (0,1,6)) AS TOTAL_OP, "+ 
 																			"(SELECT COUNT(*) FROM SAM_FACTURAS AS F WHERE F.CVE_CONTRATO = C.CVE_CONTRATO AND F.STATUS IN (1,3)) AS TOTAL_FACTURA," + 
 																			"(SELECT COUNT(*) FROM SAM_VALES_EX AS V WHERE V.CVE_CONTRATO = C.CVE_CONTRATO AND STATUS IN (1,3,4)) AS TOTAL_VAL "+ 
 																		"FROM SAM_CONTRATOS AS C  WHERE C.CVE_CONTRATO = ?", new Object[]{cve_contrato}); 
 						
-                		if(contrato.get("TOTAL_REQ").toString().equals("0")&&contrato.get("TOTAL_PED").toString().equals("0")&&contrato.get("TOTAL_OP").toString().equals("0")&&contrato.get("TOTAL_FACTURA").toString().equals("0")&&contrato.get("TOTAL_VAL").toString().equals("0")){
+                		if(contrato.get("TOTAL_REQ").toString().equals("0")&&contrato.get("TOTAL_PED").toString().equals("0")&&contrato.get("TOTAL_FACTURA").toString().equals("0")&&contrato.get("TOTAL_VAL").toString().equals("0")){
 							
 							getJdbcTemplate().update("UPDATE SAM_CONTRATOS SET STATUS = ?, FECHA_CANCELADO=? WHERE CVE_CONTRATO = ?", new Object[]{2, new Date(), cve_contrato});
 							

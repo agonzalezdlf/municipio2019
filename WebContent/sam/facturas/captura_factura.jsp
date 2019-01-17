@@ -135,8 +135,8 @@ a:active {
 			                            <div class="input-group">
 											<input type="text" class="form-control" placeholder="Documento" name="txtdocumento" id="txtdocumento" onBlur="upperCase(this)" value="${factura.NUM_REQ}${factura.NUM_PED}${factura.NUM_VALE}${factura.NUM_CONTRATO}" >
 											<div class="input-group-btn">
-											    <button class="btn btn-info" type="button"><i class="glyphicon glyphicon-search" id="img_movimiento" ></i></button>
-											    <button class="btn btn-danger" type="button"><i class="glyphicon glyphicon-remove" id="img_detele" ></i></button>
+											    <button class="btn btn-info" type="button" id="img_movimiento"><i class="glyphicon glyphicon-search"  ></i></button>
+											    <button class="btn btn-danger" type="button" id="img_detele"><i class="glyphicon glyphicon-remove"  ></i></button>
 											</div>
 										</div>
 			                        </div>
@@ -316,7 +316,7 @@ a:active {
 												<div class="input-group">
 													<input type="text" class="form-control" placeholder="Partida" name="txtpartida" id="txtpartida" value="" >
 													<div class="input-group-btn">
-											    		<button class="btn btn-info" type="button"><i class="glyphicon glyphicon-search" id="img_presupuesto" onclick="muestraPresupuesto()"  ></i></button>
+											    		<button class="btn btn-info" type="button" id="img_presupuesto" onclick="muestraPresupuesto()"><i class="glyphicon glyphicon-search"  ></i></button>
 											    	</div>
 												</div>
 											</div>

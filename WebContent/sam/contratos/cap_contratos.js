@@ -248,15 +248,20 @@ function muestraPresupuesto(){
 	var id_proyecto = $('#ID_PROYECTO').val();
 	var proyecto = $('#txtproyecto').val();
 	var partida = $('#txtpartida').val();
-	var idUnidad = $('#cbUnidad2').selectpicker('val');
-			
-	if($('#cbomes').val()==0) {swal('','Seleccione un periodo presupuestal válido','warning'); return false;}
+	var idUnidad = $('#cbUnidad2').val();
+	var mes = $('#cbomes').val();
+	var tgasto = $('#tipoGasto').val();
+	
+		
+	
+	
+	if(mes==0) {swal('','Seleccione un periodo presupuestal válido','warning'); return false;}
 	if($('#txtproyecto').val()==''||$('#txtpartida').val()=='')
 		$('#ID_PROYECTO').val('0');
 		
 	if(idUnidad==null||idUnidad=="") idUnidad = 0;
 	
-	__listadoPresupuesto(id_proyecto,proyecto,partida, $('#cbomes').val(), $('#tipoGasto').val(), idUnidad);
+	__listadoPresupuesto(id_proyecto,proyecto,partida,mes, tgasto , idUnidad);
 }
 
 /*------------------------------------ Revisar el cierre del contratos --------------------------------------------------*/
@@ -685,12 +690,12 @@ function eliminarConcepto()
 
 function nuevoConcepto()
 {
-	$('#txtproyecto').attr('value', '');
-	$('#ID_PROYECTO').attr('value', '');
-	$('#txtpartida').attr('value', '');
-	$('#txtpresupuesto').attr('value', '');
-	$('#txtdisponible').attr('value', '');
-	$('#txtimporte').attr('value', '');
+	$('#txtproyecto').val('');
+	$('#ID_PROYECTO').val('');
+	$('#txtpartida').val('');
+	$('#txtpresupuesto').val('');
+	$('#txtdisponible').val('');
+	$('#txtimporte').val('');
 }
 
 

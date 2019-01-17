@@ -131,11 +131,14 @@ $(document).ready(function(){
 
 
 
-
+//Retorna los datos del contrato desde el sam/consulta/muestra_contratos.jsp
 function getcontratoDocumento(num_contrato, cve_contrato, idRecurso, clv_benefi, proyecto, clv_partid, importe, ncomercia){
 	$('#CVE_CONTRATO').val(cve_contrato);
 	$('#txtnumcontrato').val(num_contrato);
 	$('#CLV_BENEFI').selectpicker('val', clv_benefi);
+	swal.close();
+		
+	
 }
 
 function agregarEdidatConcepto(){
@@ -423,6 +426,7 @@ function limpiar(){
 		 $('#fechaFinal').val('');
 		 $('#fechaMaxima').val('');
 		 $('#documentacion').val('');
+		 $('#txtnumcontrato').val('');
 		 $('#tipoGasto').selectpicker('val','');
 		 quitRow("listasArchivo");
 		 quitRow("listaDetalles");

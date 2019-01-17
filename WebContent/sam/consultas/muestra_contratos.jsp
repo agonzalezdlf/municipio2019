@@ -38,7 +38,6 @@ function cargar(num_contrato, cve_contrato, idRecurso, clv_benefi, proyecto, clv
 	window.parent.getcontratoDocumento(num_contrato, cve_contrato, idRecurso, clv_benefi, proyecto, clv_partid, importe, ncomercia);
 }
 
-
 </script>
 
 </head>

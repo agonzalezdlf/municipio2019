@@ -103,7 +103,7 @@ function cambiarFechaRelacion(){
 function imprimirRelacion(){
 	var id_relacion = $('#cborelacion').val();
 	//$('#id_relacion').val(id_relacion);
-	alert('Esta es la opcion de impresion: ' +id_relacion + '|' +$('#id_relacion').val(id_relacion) );
+	console.log('Esta es la opcion de impresion: ' +id_relacion + '|' +$('#id_relacion').val(id_relacion) );
 	$('#frmreporte').attr('action',"../reportes/rpt_relacion_envio.action");
 
 	$('#frmreporte').attr('target',"impresion");
@@ -398,11 +398,11 @@ function guardarCambiosOP(){
 	controladorListadoOrdenPagoEjercidoRemoto.guardarOpDetalle(id, texto, devolucion, idDependencia, {
 						callback:function(items) { 	
 							if(items==""){ 
-								CloseDelay(titulo+' guardada con �xito', 2000, cargarRelacion());
-								$('#hddetalle').attr('value',0);
-								$('#txtnumop').attr('value', '');
-								$('#txtarea').attr('value', '');
-								$('#cmdmodificarop').attr('value', 'Modificar');
+								CloseDelay(titulo+' guardada con éxito', 2000, cargarRelacion());
+								$('#hddetalle').val(0);
+								$('#txtnumop').val('');
+								$('#txtarea').val('');
+								$('#cmdmodificarop').val('Modificar');
 								$('#cmdmodificarop').attr('disabled', true);
 								$('#chkdevuelto').attr('checked', false);
 							}
@@ -420,7 +420,7 @@ function agregarOpRelacion(){
 	var titulo = "";
 	var checks = [];
 	var id_relacion = $('#cborelacion').val();
-	var texto = $('#txtarea').attr('value');
+	var texto = $('#txtarea').val();
 	if($('#hddetalle').attr('value')!=0&&$('#cbotiporelacion').val()>1) {guardarCambiosOP(); return false;}
 	$('input[id=chkOP]:checked').each(function() {checks.push($(this).val()); });
 
@@ -430,8 +430,8 @@ function agregarOpRelacion(){
 	else 
 		titulo = "Orden de pago";
 		
-	if($('#cbotiporelacion').val()=="3"&&$('#txtnumop').attr('value')!=''){
-		var val = $('#txtnumop').attr('value');
+	if($('#cbotiporelacion').val()=="3"&&$('#txtnumop').val()!=''){
+		var val = $('#txtnumop').val();
 		checks = [];
 		checks.push(val);
 	}
@@ -444,9 +444,9 @@ function agregarOpRelacion(){
 						callback:function(items) { 	
 							if(items=="") {
 								if($('#cbotiporelacion').val()==3||$('#cbotiporelacion').val()==4)
-									CloseDelay('Vale agregado con �xito', 2000, cargarRelacion());
+									CloseDelay('Vale agregado con éxito', 2000, cargarRelacion());
 								else
-									CloseDelay(titulo+' agregados con �xito', 2000, cargarRelacion());
+									CloseDelay(titulo+' agregados con éxito', 2000, cargarRelacion());
 								//$("input[id=chkOP]:checked").attr('checked', false);
 							}
 							else 
@@ -591,7 +591,7 @@ function limpiar(){
 }
 
 function cargarRelacion(){
-	alert('Entro a la nueva clase cargarRelacion: ');
+	//alert('Entro a la nueva clase cargarRelacion: ');
 	var id_relacion = $('#cborelacion').val();
 	var cont =0;
 	
@@ -852,7 +852,7 @@ function ejercerOP()
 	var bfecha = $('#chkfecha').is(":checked");
 	var fecha_ejerce = $('#txtfecha_ejercido').val();
 	
-	alert('Valor de bfecha: '+fecha_ejerce);
+	//alert('Valor de bfecha: '+fecha_ejerce);
 
 	if (bfecha==true)
 		alert('Selecciono fecha a ejercer' + fecha_ejerce);

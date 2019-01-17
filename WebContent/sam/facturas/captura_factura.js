@@ -84,11 +84,18 @@ $(document).ready(function(){
 	 }); 
 		 
 	 //Muestra el documento a devengar segun sea su tipo; desde toolSam.js 
-	   $('#img_movimiento').on('click',function(){
+	   /*$('#img_movimiento').on('click',function(event){
+		   
+		   muestraTiposDocumento();//Funcion llamada atravez toolsam
+		   //return false;
+		   event.preventDefault();
+	   });*/
+	 
+	 $('#img_movimiento').click(function(){
 		   muestraTiposDocumento();//Funcion llamada atravez toolsam
 		   return false;
-	   });
-	 
+		   //event.preventDefault();
+	 });
 		   
 	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
 	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});

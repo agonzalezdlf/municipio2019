@@ -78,6 +78,7 @@ function muestraContratos(){
 			  '<iframe width="800" height="400" name="CONTRATO" id="CONTRATO" frameborder="0" src="../../sam/consultas/muestra_contratos.action?idDependencia='+idDependencia+'&tipo_gto='+tipo_gto+'&num_contrato='+num_contrato+'"></iframe>',
 		  width: 800,
 		  padding: 10,
+		  confirmButtonText: 'Cerrar',
 		  animation: false
 	});
 	
@@ -85,10 +86,8 @@ function muestraContratos(){
 //Funcion que llega desde la vinculacion de una factura al documento a enlazar...........
 function muestraTiposDocumento(){
 	
-	alert('muestraTiposDocumento ==> Dependencia: ' +$('#cbUnidad').val());
 	var idDependencia= $('#cbUnidad').val();
 	
-	alert('Tipo documento: '+ $('#cbotipodocumento').selectpicker('val'));
 	//var idDependencia = $('#cbodependencia').val();
 	if($('#cbotipodocumento').val()==4)//O.S. y O.T.
 	{

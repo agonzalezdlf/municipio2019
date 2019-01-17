@@ -61,7 +61,7 @@ public class ControladorVales extends ControladorBase {
 		modelo.put("meses",gatewayMeses.getTodosMesesEjercicioActivos(getSesion().getEjercicio()));
 		
 		if (clave!= null ) {			
-			 Map<String, String> vale = gatewayVales.getVale(clave);
+			 Map<String, Object> vale = gatewayVales.getVale(clave);
 			 if (vale!=null){				 
 			   modelo.put("vale",vale);
 			   modelo.put("idUnidad",vale.get("ID_DEPENDENCIA"));

@@ -3115,6 +3115,7 @@ fieldset[disabled] .btn-default.focus {
   color: #fff;
   background-color: #333;
 }
+
 .btn-cerrar {
   color: #fff; /*Para establecer el color del texto del botón. */
   background-color: #663300; /*Para establecer el color de fondo del botón. */

@@ -20,7 +20,10 @@ function limpiar(){
 }
 
 function asignarGrupoProyecto(){
+	//var idgrupo = $('#grupo').val();//cbogrupos
 	var idgrupo = $('#grupo').val();
+	
+	var idGrupoPartida = $('#grupo').val();
 	var html = "";
 	
 	controladorGruposPartidasRemoto.getGruposProyectos(idgrupo,{
@@ -30,24 +33,27 @@ function asignarGrupoProyecto(){
 			 swal({
 				  title: '¿Confirma que desea gardar?',
 				  type: 'info',
-				  html:"<select name='cbogrupos' id='cbogrupos' class='form-control' style='width:450px'>"+texto+"</select>",
+				  html:"<select name='cbogrupos' id='cbogrupos' class='form-control' style='width:450px'>"+texto+"</select>" +
+				  		"<input type='hidden' id='grupo' name='grupo' value=''>",
 				  showCancelButton: true,
 				  width : 500,
 				  showLoaderOnConfirm: true,
 				  allowOutsideClick: false,
 				  preConfirm: function() {
+					  var idGrupoProyecto = $('#cbogrupos').val();
 					  swal({title:'Guardando listado de partidas del grupo',showConfirmButton: false});
 					  return new Promise(function(resolve, reject) {
 						  swal.showLoading()	
 						  setTimeout(function() {
-							  guardarGrupoProyecto();
-							resolve();
-				        	swal.close() 
+							  guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida);
+							  resolve();
+				        	  swal.close() 
 						  }, 2000);
 				    });
 				 },
 				 }).then((result) => {
 					 if (result.value  ) {
+						
 						 swal({text:'Información guardada con éxito!',type: 'success',timer:800,showConfirmButton: false});
 						 
 					  } else if (result.dismiss === swal.DismissReason.cancel) {
@@ -62,11 +68,8 @@ function asignarGrupoProyecto(){
 	
 }
 
-
-function guardarGrupoProyecto(){
+function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 	
-	var idGrupoProyecto = $('#cbogrupos').val();
-	var idGrupoPartida = $('#grupo').val();
 	if(idGrupoProyecto==0) {swal('Oops','El Grupo de Proyecto que desea asignar no es válido','error'); return false;}
 	//ShowDelay('Guardando Grupo de Proyectos','');
 	swal({text:'Guardando Grupo de Proyectos!',type: 'sucess',timer:800,showConfirmButton: false});
@@ -80,7 +83,7 @@ function guardarGrupoProyecto(){
 			errorHandler:function(errorString, exception) { 
 				swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');    
 			}
-    }); 	
+    });
 }
 	
 

@@ -95,6 +95,42 @@ function cancelarContrato(){
 	 var checkClaves = [];
      $('input[name=chkcontratos]:checked').each(function() { checkClaves.push($(this).val());});	
 	 if (checkClaves.length>0){
+		 
+		 swal({
+			  title: 'Cancelación',
+			  text: 'Confirma que desea cancelar?',
+			  type: 'info',
+			  showCancelButton: true,
+			  showLoaderOnConfirm: true,
+			  allowOutsideClick: false,
+			  preConfirm: function() {
+			    return new Promise(function(resolve, reject) {
+			    	ShowDelay('Cancelando contrato','');
+					 controladorListadoContratosRemoto.cancelarContrato(checkClaves, {
+						callback:function(items) { 	
+							  CloseDelay('Contrato cancelado con exito', 2000, function(){
+									getContratos();
+								});
+						   
+					 } 					   				
+					 ,
+					 errorHandler:function(errorString, exception) { 
+						swal('',errorString, 'error');          
+					 }
+				    });
+			      setTimeout(function() {
+			        resolve();
+			      }, 2000);
+			    });
+			  },
+			}).then(function (result) {
+				if (result.value) {
+			        	swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+			        }else
+			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
+			  
+			})
+		 /*
 		jConfirm('¿Confirma que desea cancelar el Contrato?','Confirmar', function(r){
 			if(r){
 				ShowDelay('Cancelando contrato','');
@@ -111,7 +147,7 @@ function cancelarContrato(){
 					 }
 				    });
 			}
-	   },async=false );	 
+	   },async=false );	 */
 	   
 	   } 
 	else 

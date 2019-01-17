@@ -11,8 +11,7 @@
 		 //onchange="llenarTablaPrivilegios()"
 		 
 		$('#btnGuardar').on('click', function(){
-			 alert('Lista: ' +lista +' '+usuario);
-			 //guardarDato();
+			 guardarDato();
 			 
 		});
 		 
@@ -86,7 +85,7 @@ function guardarDato(){
 	    controladorRolesPrivilegiosRemoto.guardarPrivilegios(lista,rol,{
 			 callback:function(items) {
 				 setTimeout(function() {
-			            swal({title: "Felicidades!",text: "Privilegios guardados con éxito", type: "success",confirmButtonText: "Ok"}, 
+			            swal({title: "Felicidades!",text: "Privilegios guardados con éxito",timer:700, type: "success", showConfirmButton: false}, 
 			            		function() { quitRow( "detallesListas" );
 			 				   $('#filaBoton').hide();
 							   $('#filaPrivilegio').hide();

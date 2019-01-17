@@ -159,7 +159,7 @@
 											<label class="control-label col-sm-1" for="txtnumcontrato">Contrato:</label>
 											<div class="col-sm-2">
 												<div class="input-group">
-													<input type="text" class="form-control" placeholder="Número de contrato" name="txtnumcontrato" id="txtnumcontrato" >
+													<input type="text" class="form-control" placeholder="Número de contrato" name="txtnumcontrato" id="txtnumcontrato" value="${vale.NUM_CONTRATO}">
 														<div class="input-group-btn">
 														<!-- <img src="../../imagenes/search_16.png" alt="Mostrar presupuesto" name="img_contrato"  id="img_contrato" style="cursor:pointer" align="absmiddle"/> <img src="../../imagenes/cross.png" id="img_quitar_contrato" width="16" height="16" alt="Quitar contrato" title="Quitar contrato" align="absmiddle" style="cursor:pointer" /> -->
 															<button class="btn btn-info" id="muestra_contratos" name="muestra_contratos"><i class="glyphicon glyphicon-search"></i></button>

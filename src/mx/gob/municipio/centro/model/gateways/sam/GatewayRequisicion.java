@@ -1195,10 +1195,10 @@ public double getPreCompromisoMensual (Long idRequisicion,int mes ){
 	            	for(Long id: cve_req){
 	            		/*Graba en bitacora el cambio*/
 		            	Map<String, Object> req = getJdbcTemplate().queryForMap("SELECT NUM_REQ, CONVERT(varchar(10),FECHA,103) AS FECHA, ID_PROYECTO, CLV_PARTID, (SELECT ISNULL(SUM(CANTIDAD*PRECIO_EST),0) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_REQUISIC.CVE_REQ) AS TOTAL FROM SAM_REQUISIC WHERE CVE_REQ = ?", new Object[]{id});
-		            	Map<String, Object> persona = getJdbcTemplate().queryForMap("SELECT TOP 1 (SELECT '('+US1.LOGIN+') '+NOMBRE+' '+APE_PAT+' '+APE_MAT FROM PERSONAS INNER JOIN USUARIOS_EX AS US1 ON (US1.CVE_PERS = PERSONAS.CVE_PERS) WHERE US1.CVE_PERS = ?) AS PERSONA1, (SELECT '('+US1.LOGIN+') '+NOMBRE+' '+APE_PAT+' '+APE_MAT FROM PERSONAS INNER JOIN USUARIOS_EX AS US1 ON (US1.CVE_PERS = PERSONAS.CVE_PERS) WHERE US1.CVE_PERS = ?) AS PERSONA2 FROM USUARIOS_EX", new Object[]{cve_pers_fuente, cve_pers_dest});
+		            	Map<String, Object> persona = getJdbcTemplate().queryForMap("SELECT TOP 1 (SELECT '('+US1.LOGIN+') '+NOMBRE+' '+APE_PAT+' '+APE_MAT FROM SAM_PERSONAS INNER JOIN SAM_USUARIOS_EX AS US1 ON (US1.CVE_PERS = SAM_PERSONAS.CVE_PERS) WHERE US1.CVE_PERS = ?) AS PERSONA1, (SELECT '('+US1.LOGIN+') '+NOMBRE+' '+APE_PAT+' '+APE_MAT FROM SAM_PERSONAS INNER JOIN SAM_USUARIOS_EX AS US1 ON (US1.CVE_PERS = SAM_PERSONAS.CVE_PERS) WHERE US1.CVE_PERS = ?) AS PERSONA2 FROM SAM_USUARIOS_EX", new Object[]{cve_pers_fuente, cve_pers_dest});
 		            	gatewayBitacora.guardarBitacora(gatewayBitacora.CAMBIOS_REQUISICION, ejercicio, cve_pers_fuente, id, req.get("NUM_REQ").toString(), "REQ", formatoFecha(req.get("FECHA").toString()), req.get("ID_PROYECTO").toString(), req.get("CLV_PARTID").toString(), "Cambio de usuario en el documento de: "+persona.get("PERSONA1").toString()+" a: "+persona.get("PERSONA2").toString(), Double.parseDouble(req.get("TOTAL").toString()));
 		            	/*Realiza el cambio*/
-		            	getJdbcTemplate().update("UPDATE SAM_REQUISIC SET CVE_PERS = ?, ID_DEPENDENCIA =(SELECT ID_DEPENDENCIA FROM TRABAJADOR WHERE TRABAJADOR.CVE_PERS = ?) WHERE CVE_REQ = ?", new Object[]{cve_pers_dest, cve_pers_dest, id});
+		            	getJdbcTemplate().update("UPDATE SAM_REQUISIC SET CVE_PERS = ?, ID_DEPENDENCIA =(SELECT ID_DEPENDENCIA FROM SAM_TRABAJADOR WHERE SAM_TRABAJADOR.CVE_PERS = ?) WHERE CVE_REQ = ?", new Object[]{cve_pers_dest, cve_pers_dest, id});
 	            	}
 	            } 
 	         });
