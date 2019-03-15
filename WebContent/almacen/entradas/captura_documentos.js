@@ -30,9 +30,9 @@ $(document).ready(function(){
 		$('#tabuladores').tabs('option', 'disabled', [1]);
 	}
 	
-	 getBeneficiarios('txtbeneficiario','ID_PROVEEDOR');
+	 //getBeneficiarios('txtbeneficiario','ID_PROVEEDOR');
 	 //getUnidad_Medidas('txtunidadmedida','CVE_UNIDAD_MEDIDA');
-	 getProyectosEval('txtproyecto', 'ID_PROYECTO');
+	 //getProyectosEval('txtproyecto', 'ID_PROYECTO');
 	 CargarDetalles($('#ID_ENTRADA').attr('value'));
 	 validarMovimiento();
 	 if($('#cbotipoentrada').val()=='1'){

@@ -148,7 +148,7 @@ var dm_focus=1;
 var dm_actKey=113;
 
 var itemStyles = [
-    ["itemBackColor=transparent,transparent","fontStyle=normal 12px Tahoma","fontColor=#333333,#9E2F35","itemBackImage=otro,menu_bg2.jpg",],
+    ["itemBackColor=transparent,transparent","fontStyle=normal 12px Tahoma","fontColor=#333333,#9E2F35","itemBackImage=otro2.jpg,menu_bg2.jpg",],
 ];
 var menuStyles = [
     ["menuBackColor=transparent","menuBorderWidth=0","itemSpacing=1","itemPadding=3px",],

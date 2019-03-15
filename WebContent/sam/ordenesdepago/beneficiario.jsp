@@ -93,7 +93,21 @@
 		                        </div>
 		                      </div>
 		                    </div>
-		                    <!-- Fecha alta -->
+		                    
+		                    <div class="row">
+							    <div class="form-group">
+							      <div class="control-label col-sm-3 ">*Estatus:</div>
+							      <label class="switch" style="margin-left: 15px;">
+										<input type="checkbox" name="estatus" id="estatus">
+										<span class="slider round"></span>
+								   </label>
+							    </div>
+						    </div>
+              		 	</form>
+              		</div>
+	 	     		<div class="tab-pane" id="fragment-representante">
+	 	     			<form class="form-horizontal">
+	 	     				<!-- Fecha alta -->
 		                    <div class="row">
 		                      <div class="form-group">
 		                        <div class="control-label col-sm-3">Fecha alta:</div>
@@ -120,12 +134,7 @@
 			                          </div>
 		                        </div>
 		                      </div>
-		                    </div>
-              		 	</form>
-              		</div>
-	 	     		<div class="tab-pane" id="fragment-representante">
-	 	     			<form class="form-horizontal">
-	 	     					                                   
+		                    </div>	                                   
 	 	     				<!-- Correo electronico  -->
 	 	     				<div>
 			                    <div class="row">
@@ -280,7 +289,7 @@
 <table width="100%%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td height="35" align="center"><input  name="cmdcerrar" type="button" class="botones" id="cmdcerrar"   value="Cerrar" style="width:150px" />
-      <input  name="cmdguardar" type="button" class="botones" id="cmdguardar"   value="Guardar" style="width:150px" /></td>
+      <input  name="cmdguardar" type="button" class="btn btn-success btn-sm" id="cmdguardar"   value="Guardar" style="width:150px" /></td>
   </tr>
 </table>
 </form>

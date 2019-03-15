@@ -148,7 +148,7 @@ function muestraTiposDocumento(){
 
 	}
 	
-	if($('#cbotipodocumento').val()==6)//CONTRATO
+	if($('#cbotipodocumento').val()==6 || $('#cbotipodocumento').val()==2)//CONTRATO
 	{
 		if(idDependencia==0||idDependencia=="") {swal('Es necesario seleccionar la Unidad Administrativa para listar los contratos'); return false;}
 		
@@ -710,7 +710,7 @@ function cambiarUsuarioDocumento(cve_doc, modulo, cve_pers){
 	}
 	
 }
-
+//Cambia el usuario de Vales
 function _cambiarUsuarioVales(chkVal, cve_doc){
 	var cve_pers_dest = $('#cbousuarios').val();
 	if(cve_pers_dest==0){jAlert('Es necesario seleccionar un usuario para realizar esta operaciÃ³n', 'Advertencia'); return false;}
@@ -735,6 +735,7 @@ function _cambiarUsuarioVales(chkVal, cve_doc){
 		});
 }
 
+//Cambia el usuario de Pedidos
 function _cambiarUsuarioPedidos(chkPed, cve_doc){
 	var cve_pers_dest = $('#cbousuarios').val();
 	if(cve_pers_dest==0){jAlert('Es necesario seleccionar un usuario para realizar esta operació³n', 'Advertencia'); return false;}
@@ -761,6 +762,7 @@ function _cambiarUsuarioPedidos(chkPed, cve_doc){
 	
 }
 
+//Cambia el usuario de Requisiciones
 function _cambiarUsuarioRequisicion(chkReq, cve_doc){
 	var cve_pers_dest = $('#cbousuarios').val();
 	var inputOptions = $('#cbousuarios').val();
@@ -817,6 +819,7 @@ function _cambiarUsuarioRequisicion(chkReq, cve_doc){
 	/*Termina*/
 }
 
+//Cambia el usuario de Orden de Pago
 function _cambiarUsuarioOrdenPago(chkOp, cve_doc){
 	var cve_pers_dest = $('#cbousuarios').val();
 	if(cve_pers_dest==0){swal('','Es necesario seleccionar un usuario para realizar esta operación', 'Advertencia'); return false;}
@@ -904,6 +907,8 @@ function _cambiarUsuarioOrdenPago(chkOp, cve_doc){
 /************************************** Funcion para el cambio de fecha y periodo ******************************************************************/
 /**************************************Submenu de opciones módulo Requisiciones ********************************************************************/
 function cambiarFechaPeriodo(cve_doc, modulo){
+	
+	alert('Entro a cambiar la fecha del periodo toolSam 1.0');
 	var smodulo = "";
 	if(modulo=='req') smodulo = "Requisiciones";
 	if(modulo=='ped') smodulo = "Pedidos";
@@ -914,101 +919,101 @@ function cambiarFechaPeriodo(cve_doc, modulo){
 		
 		controladorListadoRequisicionesRemoto.getFechaPeriodoRequisicion(cve_doc, {
 				callback:function(items) {
-							swal({
-								  title: 'Cambio de fecha de OS / OT',
-								  input: 'text',
-								  inputPlaceholder: 'Capture la fecha en formato DD/MM/YYYY',
-								  html:'<div class="form-group">Fecha actual: ' + items.FECHA +'</div></br>'+
-								  '<div class="form-group">'+
-						          '<label for="grupo" class="col-md-2 control-label">Periodo:</label>'+
-							          '<div class="col-md-5">'+
-							            '<select name ="cboperiodo" id="cboperiodo" class="form-control" style="width:200px">'+
-							                   '<option value="1" '+((items.PERIODO==1) ? 'Selected':'')+'>( 01 ) Enero</option>'+
-							                   '<option value="2" '+((items.PERIODO==2) ? 'Selected':'')+'>( 02 ) Febrero</option>'+
-							                   '<option value="3" '+((items.PERIODO==3) ? 'Selected':'')+'>( 03 ) Marzo</option>'+
-							                   '<option value="4" '+((items.PERIODO==4) ? 'Selected':'')+'>( 04 ) Abril</option>'+
-							                   '<option value="5" '+((items.PERIODO==5) ? 'Selected':'')+'>( 05 ) Mayo</option>'+
-							                   '<option value="6" '+((items.PERIODO==6) ? 'Selected':'')+'>( 06 ) Junio</option>'+
-							                   '<option value="7" '+((items.PERIODO==7) ? 'Selected':'')+'>( 07 ) Julio</option>'+
-							                   '<option value="8" '+((items.PERIODO==8) ? 'Selected':'')+'>( 08 ) Agosto</option>'+
-							                   '<option value="9" '+((items.PERIODO==9) ? 'Selected':'')+'>( 09 ) Septiembre</option>'+
-							                   '<option value="10" '+((items.PERIODO==10) ? 'Selected':'')+'>( 10 ) Octubre</option>'+
-							                   '<option value="11" '+((items.PERIODO==11) ? 'Selected':'')+'>( 11 ) Noviembre</option>'+
-							                   '<option value="12" '+((items.PERIODO==12) ? 'Selected':'')+'>( 12 ) Diciembre</option>'+
-							                   '</select">'+
-							          '</div>'+
-						          '</div> ',// +
-			                      //'<input id="swal-input2" class="swal2-input swal2-inputerror" Placeholder="Cambio de fecha dd/mm/aaaa">',
-								  showCancelButton: true,
-								  inputValidator: function(value) {
-								    return new Promise(function(resolve, reject) {
-								      if (value) {
-								        resolve();
-								      } else {
-								        reject('Introduzca una fecha valida!');
-								      }
-								    });
-								  }
-								}).then(function(text) {
-								   var periodo = $('#cboperiodo').val();
-								   var fecha= text;
-								   //+date.format("DD/MM/YYYY")
-								   if (text) {
-									  swal({
-					                     
-					                      text: "¿Confirma que desea cambiar la fecha del documento?",
-					                      type: 'warning',
-					                      width: 220,
-					                      showCancelButton: true,
-					                      confirmButtonText: 'Sí, confirmar!',
-					                      cancelButtonText: 'No, cancelar!',
-					                      confirmButtonClass: 'btn btn-success',
-					                      cancelButtonClass: 'btn btn-danger',
-					                     
-					                    }).then(function (r) {
-					                      swal('Cambio!','Tu documento fue actualizado con éxito!','success')
-					                      /*clase para guardar*/
-					                       if(r){
-						                          _closeDelay();
-						                          ShowDelay('Cambiando fecha de ingreso...','');
-						                          controladorListadoRequisicionesRemoto.cambiarFechaPeriodo(cve_doc, fecha, periodo, {
-						                            callback:function(items) {  
-						                              if(items)
-						                                CloseDelay('Fecha y periodo cambiados con éxito', 3000, setTimeout('getListaReq()',1000));
-						                              else 
-						                                swal(items, 'Error');
-						                            }                     
-						                           ,
-						                           errorHandler:function(errorString, exception) { 
-						                            swal(errorString, 'Error');          
-						                           }
-						                          }); 
-					                        }/*guardar cirre*/
-					                      
-					                    }, function (dismiss) {
-											
-											  if (dismiss === 'cancel') {
-											    swal({										    		
-											    	  type: 'info',
-													  text: 'El proceso no fue ejecutado',
-													  width: 200,
-												     })
-											  }
-											})
-											
-								  		
-								  }//Cierra el if
-				                   
-								  
-								})//cierra result
-						
-					},
-					 errorHandler:function(errorString, exception) { 
-						swal(errorString, 'Error');          
-					 }
-		});
+					swal({
+					    title: 'Cambio de fecha en OS u OT',
+					    inputPlaceholder: 'dd/mm/aaaa',
+					    html:'<div class="row">Fecha actual: ' + items.FECHA +'</div></br>'+ 
+					    '<label for="fecha_relacion" class="control-label">Fecha:</label>' +
+					    '<div class="row">' +
+					   	'<div class="col-sm-6">'+
+			    			'<div class="input-group date" id="fecha_relacion"> ' +
+			    				'<input type="text" id="date_new" name="date_new" class="swal2-input" style="width:150px" />	 ' +
+			    				'<span class="input-group-addon"> ' +
+			    					'<span class="glyphicon-calendar glyphicon"></span> ' +
+			    				'</span> ' +
+			    			'</div>' +
+			    		'</div>' +
+			    		'</div>' +
+			    		'<div class="row>'+
+					    '<div class="form-group">' +
+					    '<label for="grupo" class="control-label">Periodo:</label>' +
+					    '<div class="form-group">' +
+					    		'<select name ="cboperiodo" id="cboperiodo" class="form-control" style="width:200px">' +
+					    			'<option value="1" '+((items.PERIODO==1) ? 'Selected':'')+'>( 01 ) Enero</option>' +
+					    			'<option value="2" '+((items.PERIODO==2) ? 'Selected':'')+'>( 02 ) Febrero</option>' +
+					    			'<option value="3" '+((items.PERIODO==3) ? 'Selected':'')+'>( 03 ) Marzo</option>' +
+					    			'<option value="4" '+((items.PERIODO==4) ? 'Selected':'')+'>( 04 ) Abril</option>' +
+					    			'<option value="5" '+((items.PERIODO==5) ? 'Selected':'')+'>( 05 ) Mayo</option>' +
+					    			'<option value="6" '+((items.PERIODO==6) ? 'Selected':'')+'>( 06 ) Junio</option>' +
+					    			'<option value="7" '+((items.PERIODO==7) ? 'Selected':'')+'>( 07 ) Julio</option>' +
+					    			'<option value="8" '+((items.PERIODO==8) ? 'Selected':'')+'>( 08 ) Agosto</option>' +
+					    			'<option value="9" '+((items.PERIODO==9) ? 'Selected':'')+'>( 09 ) Septiembre</option>' +
+					    			'<option value="10" '+((items.PERIODO==10) ? 'Selected':'')+'>( 10 ) Octubre</option>' +
+					    			'<option value="11" '+((items.PERIODO==11) ? 'Selected':'')+'>( 11 ) Noviembre</option>' +
+					    			'<option value="12" '+((items.PERIODO==12) ? 'Selected':'')+'>( 12 ) Diciembre</option>' +
+					    		'</select">' +
+					    	'</div>' +
+					    	'</div>' +
+					    '</div>',
+					   	customClass: 'swal2-overflow',
+					   	onOpen: function() {
+					    	$('#fecha_new').datetimepicker({
+					    		format: 'DD/MM/YYYY',
+					    		defaultDate: new Date(),
+					    		widgetPositioning: {
+					    	        vertical: 'auto',
+					    	        horizontal: 'auto'
+					    	    }
+					     	});
+					     	
+					    },
+					  }).then(function(result) {
+						  var periodo = $('#cboperiodo').val();
+						  var fecha= $('#date_new').val();
+						  var fecha2= $('#fecha_new').val();
+						  if (result.value) {
+							
+							  alert('Entro a esa clase 0' + '|' +cve_doc,'|' +periodo+'|' + fecha+'%'+fecha2);
+						  
+						  } 
+						});
+					  
+		 },
+		 	errorHandler:function(errorString, exception) { 
+		 		swal({text:errorString,type:'error'});          
+		 }
+		});//Termina modulo de requisiciones
 	}
 	
+}
+
+function _cambiarFechaPeriodoRequisicion2(cve_doc){
+	var periodo = $('#cboperiodo').val();
+	var fecha= $('#fecha_d').val();
+	
+	swal({
+		  text: 'Confirme que desee cambiar la fecha',
+		  type: 'info',
+		  showCancelButton: true,
+		  showLoaderOnConfirm: true,
+		  preConfirm: function() {
+		    return new Promise(function(resolve, reject) {
+		    	controladorListadoRequisicionesRemoto.cambiarFechaPeriodo(cve_doc, fecha, periodo, {
+					callback:function(items) { 	
+						if(items)
+							//CloseDelay('Fecha y periodo cambiados con éxito', 3000, setTimeout('getListaReq()',1000));
+							swal({title:'Fecha y periodo cambiados con éxito!!',showConfirmButton: false,timer:1000,type:"success"});
+						else 
+							swal(items, 'error');
+					} 					   				
+				 , errorHandler:function(errorString, exception) {swal(items, 'error');}
+		    	});	
+		      setTimeout(function() {resolve();'getListaReq()';}, 2000);
+		    });
+		  },
+		}).then(function() {
+		  swal('Fecha y periodo cambiados con éxito!');
+		})
 }
 
 function _cambiarFechaPeriodoVal(cve_doc){
@@ -1077,8 +1082,10 @@ function _cambiarFechaPeriodoPedido(cve_doc){
 }
 
 
+
 /***********************************funcion que sirve para mostrar el submenu de opciones********************************************************/
 function subOpAdm(modulo, cve_doc, cve_pers){
+	
 	var titulo = "";
 	if(modulo=='req') titulo = 'Requisiciones';
 	if(modulo=='ped') titulo = 'Pedidos'
@@ -1483,7 +1490,7 @@ function guardarMovimientoAjusteContrato(cve_doc, modulo, num_doc)
 		}
 	});
 }
-
+/*
 function reduccionAmpliacion(cve_doc, modulo, num_doc)
 {
 	var proyectos = [];
@@ -1555,49 +1562,7 @@ function reduccionAmpliacion(cve_doc, modulo, num_doc)
 		
 	}
 }
-
-function editarConceptoMovCon(cve_doc, modulo, num_doc, idDetalle, idProyecto, clv_partid, periodo, tipo_mov, importe)
-{
-	$('#divMovCaptura').show();
-	$('#divMovListado').hide();
-	$('#popup_message_window').css('height','300px');
-	$('#ID_DETALLE').attr('value', idDetalle);
-	$('#cboMovimiento').val(tipo_mov);
-	$('#cboPeriodo').val(periodo);
-	$('#cboProyecto').val(idProyecto);
-	$('#cboPartidas').val(clv_partid);
-	$('#txtimporteMovCon').attr('value', importe);
-	$('#cboProyecto').attr('disabled', true);
-	$('#cboPartidas').attr('disabled', true);
-}
-
-function eliminarConcepto(cve_doc, modulo, num_doc, idConcepto)
-{
-	var arrCon = [];
-	arrCon.push(idConcepto);
-			ControladorContratosRemoto.eliminarConceptosMovPeredo(cve_doc, arrCon, {
-				callback:function(items) {
-					reduccionAmpliacion(cve_doc, modulo, num_doc);	
-			} 					   				
-			,
-			errorHandler:function(errorString, exception) { 
-				swal(errorString, 'Error');          
-			}
-	});
-}
-
-function guardarMovimientoContrato(cve_doc, modulo, num_doc)
-{
-	ControladorContratosRemoto.guardarConceptoMovPeredo($('#ID_DETALLE').attr('value'), $('#CVE_CONTRATO').attr('value'), $('#cboProyecto').attr('value'),$('#cboPartidas').attr('value'), $('#cboPeriodo').attr('value'), $('#txtimporteMovCon').attr('value'),{
-	  callback:function(items) {
-				reduccionAmpliacion(cve_doc, modulo, num_doc);
-		} 					   				
-		,
-		errorHandler:function(errorString, exception) { 
-			swal(errorString, 'Error');     
-		}
-	});
-}
+*/
 
 
 

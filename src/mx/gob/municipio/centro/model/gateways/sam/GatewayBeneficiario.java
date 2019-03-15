@@ -117,17 +117,17 @@ public class GatewayBeneficiario<lst_Beneficiarios> extends BaseGateway {
                       " FROM        CAT_BENEFI AS A LEFT OUTER JOIN  CAT_BNCSUC  B ON A.CLV_BNCSUC = B.CLV_BNCSUC WHERE  A.NCOMERCIA like  ? AND A.STATUS=1", new Object []{razonSocial+"%"});
 	}
 	
-	public  Long   actualizarPrincipal(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,String clabeb, Date fecha_alta, Date fecha_baja){
+	public  Long   actualizarPrincipal(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,Integer status,String clabeb, Date fecha_alta, Date fecha_baja){
 		 if (clave == 0) 		  
-			  clave = inserta(razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,clabeb,fecha_alta,fecha_baja);	  	  
+			  clave = inserta(razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,status,clabeb,fecha_alta,fecha_baja);	  	  
 		  else
-			  actualizar(clave,razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,clabeb,fecha_alta,fecha_baja);
+			  actualizar(clave,razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,status,clabeb,fecha_alta,fecha_baja);
 		 return clave;
 	}
 	
 	
 	//AGREGAR UN NUEVO BENEFICIARIO--------------------------------------------------------------
-	public Long inserta( String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,String clabeb, Date fecha_alta,Date fecha_baja){
+	public Long inserta( String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,Integer status, String clabeb, Date fecha_alta,Date fecha_baja){
 		try
 		{
 			Long cveBeneficiario =getNumeroBeneficiarioNuevo(tipo)+1;
@@ -143,7 +143,7 @@ public class GatewayBeneficiario<lst_Beneficiarios> extends BaseGateway {
 			this.getJdbcTemplate().update("insert into cat_benefi (ID_BENEFICIARIO,  NCOMERCIA, BENEFICIAR, BENEFICIA2, RFC, CURP,TELEFONOS, TIPOBENEFI, DOMIFISCAL,COLONIA, CIUDAD, ESTADO, "+
 					" CODIGOPOST, CLV_BNCSUC, NUM_CTA, TIPO_CTA, VIGENCIA, STATUS, CLABE, FECHA_ALTA, FECHA_BAJA) " +
 					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-					, new Object[]{folio, razonSocial, responsable, responsable2, rfc, curp, telefono, tipo, calle, colonia, ciudad, estado, cp, idBanco, noCuenta, tipoCuenta, vigencia,1 , clabeb,fecha_alta,fecha_baja});
+					, new Object[]{folio, razonSocial, responsable, responsable2, rfc, curp, telefono, tipo, calle, colonia, ciudad, estado, cp, idBanco, noCuenta, tipoCuenta, vigencia,status, clabeb,fecha_alta,fecha_baja});
 			return cveBeneficiario;
 		}
 		catch(Exception e){
@@ -168,10 +168,10 @@ public class GatewayBeneficiario<lst_Beneficiarios> extends BaseGateway {
 		return this.getJdbcTemplate().queryForLong(SQL);
 	}
 	
-	public void actualizar(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,String clabeb,Date fecha_alta,Date fecha_baja ){	
+	public void actualizar(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,Integer status, String clabeb,Date fecha_alta,Date fecha_baja ){	
 		this.getJdbcTemplate().update("UPDATE dbo.CAT_BENEFI SET NCOMERCIA = ?, BENEFICIAR = ?, BENEFICIA2 = ?, RFC =?, CURP =?, TELEFONOS = ?, TIPOBENEFI = ?, DOMIFISCAL = ?, COLONIA =?, CIUDAD = ?, ESTADO = ?, CODIGOPOST = ?, " +
-						  " CLV_BNCSUC = ?, NUM_CTA = ?, TIPO_CTA = ?, CLAVE_PADRE = ?, STATUS = ?, CLABE = ?,FECHA_ALTA = ?,FECHA_BAJA = ? WHERE ID_BENEFICIARIO=?" 
-				, new Object[]{razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,clabeb,fecha_alta,fecha_baja,clave});
+						  " CLV_BNCSUC = ?, NUM_CTA = ?, TIPO_CTA = ?, CLAVE_PADRE = ?, vigencia = ?, STATUS= ?, CLABE = ?,FECHA_ALTA = ?,FECHA_BAJA = ? WHERE ID_BENEFICIARIO=?" 
+				, new Object[]{razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,status,clabeb,fecha_alta,fecha_baja,clave});
 	}	
 	
 	public void eliminar(Long idBeneficiario ) {

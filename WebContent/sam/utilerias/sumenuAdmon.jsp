@@ -3,37 +3,34 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Bitacora de Movimientos</title>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/css/bootstrap-select.css" type="text/css"/>
-<link rel="stylesheet" href="../../include/css/bootstrap2.css?x=<%=System.currentTimeMillis()%>" type="text/css"/>
+<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css"/>
-<!-- 
-<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css"/>
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
- -->
-
-<link rel="stylesheet" href="../../include/css/sweetalert2.css" type="text/css"/>
-
-<script type="text/javascript" src="../../include/js/jquery-1.8.3.min.js"></script>
-<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
-
-
-<script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
-
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
+<script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>  
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 <script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
 <script type="text/javascript" src="../../dwr/interface/controladorListadoRequisicionesRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
-<script type="text/javascript" src="../../dwr/util.js"></script>
-<script language="javascript">
+<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
+<link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
+<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
+
+<script>
 
 $(document).ready(function() {
+	 
 		/*solo si es pedido*/
 		/*if( window.parent.modulo=='Pedidos'){
 			$('#f3x').show();
@@ -45,9 +42,9 @@ $(document).ready(function() {
 function adminFunction(cve_doc, modulo, fn, cve_pers) {
 	switch(fn)
 	{
-		case 'cargarArchivosOrdenPago': window.parent.mostrarCargarArchivosOrdenPago(cve_doc, $('#HD_NUM_DOC').attr('value')); 
+		case 'cargarArchivosOrdenPago': window.parent.mostrarCargarArchivosOrdenPago(cve_doc, $('#HD_NUM_DOC').val()); 
 			break;
-		case 'reemplazarArchivosFacturas': window.parent.mostrarReemplazarArchivosFactura(cve_doc, $('#HD_NUM_DOC').attr('value')); 
+		case 'reemplazarArchivosFacturas': window.parent.mostrarReemplazarArchivosFactura(cve_doc, $('#HD_NUM_DOC').val()); 
 			break;
 		case 'abrirDocumento': window.parent.abrirDocumento(); 
 			break;
@@ -74,6 +71,7 @@ function adminFunction(cve_doc, modulo, fn, cve_pers) {
 
 /******************************************************* Cambio de Fechas ********************************************************************/
 function cambiarFecha2(cve_doc, modulo){
+	var fecha_nueva="";
 	var smodulo = "";
 	if(modulo=='req') smodulo = "Requisiciones";
 	if(modulo=='ped') smodulo = "Pedidos";
@@ -83,85 +81,92 @@ function cambiarFecha2(cve_doc, modulo){
 	if(modulo=='req'){
 		controladorListadoRequisicionesRemoto.getFechaIngreso(cve_doc, {
 						callback:function(items) { 	
-							swal({
-								  title: ''+items.NUM_REQ,
-								  text: 'Fecha actual '+items.FECHA,
-								  input: 'text',
-								  width: 300,
-								  inputPlaceholder: 'Cambio de fecha dd/mm/aaaa',
-								  showCancelButton: true,
-								  inputValidator: function (value) {
-								    return new Promise(function (resolve, reject) {
-								      if (value) {
-								        resolve()
-								        
-								      } else {
-								      		reject('Debe escribir un motivo de cancelación')
-								      	
-									  }
-								    })
-								  }
-								}).then(function (text) {
-									var periodo = $('#cboperiodo').val();
-									//var fecha = $('#txtfechaactual').attr('value');
-									fecha=text;
-									 /*Inicia*/
-									 swal({
-										  //title: 'Estas seguro?',
-										  text: "¿Confirma que desea cambiar la fecha del documento?",
-										  type: 'warning',
-										  width: 220,
-										  showCancelButton: true,
-										  //confirmButtonColor: '#3085d6',
-										  //cancelButtonColor: '#d33',
-										  confirmButtonText: 'Sí, confirmar!',
-										  cancelButtonText: 'No, cancelar!',
-										  confirmButtonClass: 'btn btn-success',
-										  cancelButtonClass: 'btn btn-danger',
-										  //buttonsStyling: false
-										}).then(function (r) {
-										  swal('Cambio!','Tu documento fue actualizado con éxito!','success')
-										  /*clase para guardar*/
-											  if(r){
-													_closeDelay();
-													ShowDelay('Cambiando fecha de ingreso...','');
-													controladorListadoRequisicionesRemoto.cambiarFechaIngreso(cve_doc, fecha, {
-																callback:function(items) { 	
-																		CloseDelay('Fecha de ingreso cambiados con éxito');
-																} 					   				
-															 ,
-															 errorHandler:function(errorString, exception) { 
-																swal(errorString, 'Error');          
-															 }
-												});	
-												}
-										  /*guardar cirre*/
-										}, function (dismiss) {
-										  // dismiss can be 'cancel', 'overlay',
-										  // 'close', and 'timer'
-										  if (dismiss === 'cancel') {
-										    swal({										    		
-										    	  type: 'info',
-												  text: 'El proceso no fue ejecutado',
-												  width: 200,
-											     })
-										  }
-										})
-									 /*Hasta aqui*/
-								})
 							
-					 } 					   				
+							swal({
+								title: ''+items.NUM_REQ,
+								allowOutsideClick:false,
+								html:'<div class="row">Fecha actual: ' + items.FECHA +'</div></br>'+ 
+							    '<label for="fecha_relacion" class="control-label">Fecha:</label>' +
+							    '<div class="row">' +
+							   	'<div class="col-sm-6">'+ 
+					    			'<div class="input-group date" id="fechas" style="width:150px" value=""> ' +
+					    				'<input type="text" id="fecha_new" name="fecha_new" class="form-control"  />	 ' +
+					    				'<span class="input-group-addon"> ' +
+					    					'<span class="glyphicon-calendar glyphicon"></span> ' +
+					    				'</span> ' +
+					    			'</div>' +
+					    		'</div>' +
+					    		'</div>', 
+					    		customClass: 'swal2-overflow',
+					    		showCancelButton: true,
+							    onOpen: function() {
+							   		
+							    	$('#fechas').datetimepicker({
+							    		format: 'DD/MM/YYYY',
+							    		defaultDate: new Date(),
+							    		widgetPositioning: {
+							    	        vertical: 'auto',
+							    	        horizontal: 'auto'
+							    	    }
+							     	});
+							    	fecha_nueva = $('#fecha_new').val();
+							    	
+							    },
+							    inputValidator: function (value) {
+							    	return new Promise(function (resolve, reject) {
+								      	if (value) {
+								      		resolve()
+								        } else {
+								      		reject('Debe escribir una fecha!!!!')
+								      	}
+								    })//cierra new promisse
+								  }//cierra inputvalidator
+							  }).then(function(result) {
+								  var fecha_nueva2 = $('#fecha_new').val();
+				                	
+				                    if (result.value) {
+				                    	controladorListadoRequisicionesRemoto.cambiarFechaIngreso(cve_doc, fecha_nueva2, {
+											callback:function(items) { 	
+												swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+											} 					   				
+										 ,
+										 errorHandler:function(errorString, exception) { 
+											swal(errorString, 'Error');          
+										 }
+										});	
+				                    	
+				  					}else
+				  			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"}); 
+				              })
+							
+								
+					 }//Termina el callback 				   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
 						swal(errorString, 'Error');          
 					 }
-		});
-	}
+		});//Termina getFechaIngreso
+	}//Termina modulo
 }
 
 </script>
 
 <style type="text/css">
+.bootstrap-datetimepicker-widget table td span {
+      width: 400px;
+}
+
+.swal2-overflow {
+  overflow-x: visible;
+  overflow-y: visible;
+  
+  
+}
+.swal2-overflow .swal2-content{
+  	width:150px;
+  	margin-left: auto;
+    margin-right: auto;
+}
 <!--
 body {
 	margin-left: 0px;
@@ -186,10 +191,9 @@ a:active {
 </head>
 
 <body>
-<div style="height:20px; text-align:center;"><strong>Opciones disponibles para el documento: 
-    <c:out value='${NUM_DOC}'/></strong><input type="hidden" id="HD_NUM_DOC" value="${NUM_DOC}" />
-</div>
-<table class="listas" border="0" align="center" cellpadding="1" cellspacing="2" width="380" >
+<div align="center" style="height:20px"><strong>Opciones disponibles para el documento: 
+    <c:out value='${NUM_DOC}'/></strong><input type="hidden" id="HD_NUM_DOC" value="${NUM_DOC}" /></div>
+<table class="listas" border="0" align="center" cellpadding="1" cellspacing="2" width="333" >
 		<c:if test="${modulo!='con'}">
             <tr id='f1' onMouseOver="color_over('f1')" onMouseOut="color_out('f1')" onclick="adminFunction(<c:out value='${cve_doc}'/>, '<c:out value='${modulo}'/>', 'cambiarGrupoFirmas')">
             <td width="27" height="27" align="center" style="cursor:pointer"><c:out value='${item.NUM_DOC}'/>
@@ -225,7 +229,7 @@ a:active {
         	<c:if test="${modulo=='req'}">
                 <tr id='f3' onMouseOver="color_over('f3')" onMouseOut="color_out('f3')" onclick="adminFunction(<c:out value='${cve_doc}'/>, '<c:out value='${modulo}'/>', 'cambiarFechaReqOtOs')">
                   <td height="27" align="center" style="cursor:pointer"><img src="../../imagenes/calendar_edit.png" width="16" height="16" /></td>
-                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha de Requisición</td>
+                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha de Requisición de Mat./OS/OT</td>
                 </tr>
             </c:if>
          </sec:authorize>
@@ -233,7 +237,7 @@ a:active {
          	<c:if test="${modulo!='con'}">
                 <tr id='f33' onMouseOver="color_over('f33')" onMouseOut="color_out('f33')" onclick="adminFunction(<c:out value='${cve_doc}'/>, '<c:out value='${modulo}'/>', 'cambiarFechaPeriodo')">
                   <td height="27" align="center" style="cursor:pointer"><img src="../../imagenes/calendar_edit.png" width="16" height="16" /></td>
-                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha y periodo de OS / OT</td>
+                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha OS/OT y periodo</td>
                 </tr>
             </c:if>
          </sec:authorize>

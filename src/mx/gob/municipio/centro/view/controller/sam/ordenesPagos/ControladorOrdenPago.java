@@ -159,11 +159,13 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                @Override
 		    protected void   doInTransactionWithoutResult(TransactionStatus status) {
 		                
-	                	//Verfificar si tiene los privilegios en solo lectura Ordenes de Pago
-	            		/*if(getPrivilegioEn(getSesion().getIdUsuario(), 114)){
-	            			throw new RuntimeException("No cuenta por los privilegios suficientes para realizar esta operación, solo lectura");
-	            		}*/
-		            		
+		                /*boolean cerrarOP = getPrivilegioEn(getSesion().getIdUsuario(), 114);
+							114 => OP SOLO LECTURA
+						//Validacion de privilegios para cerrar os u ot
+						if(!cerrarOP){
+							throw new RuntimeException("No cuenta por los privilegios suficientes para realizar esta operación, solo lectura");
+						}	*/
+	                		            		
 		               	mensaje="exito"; 	
 		               	               	
 		               	BigDecimal importe = new BigDecimal("0.0");
@@ -175,15 +177,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 		                
 		                Long cve_vale_req = 0L;
 		                Long cve_vale_pedido = 0L;
-		                
-		                /*
-		                List <Map<String, Object>> lstobj = getJdbcTemplate().queryForList("SELECT (SELECT TOP 1 R.CVE_VALE FROM SAM_REQUISIC AS R INNER JOIN SAM_ORD_PAGO AS O ON (O.CVE_REQ = R.CVE_REQ) WHERE O.CVE_OP  = OP.CVE_OP) AS CVE_VALE_REQ, (SELECT TOP 1 R.CVE_VALE FROM SAM_REQUISIC AS R INNER JOIN SAM_PEDIDOS_EX AS P ON (P.CVE_REQ = R.CVE_REQ) INNER JOIN SAM_ORD_PAGO AS O ON (O.CVE_PED = P.CVE_PED) WHERE O.CVE_OP = OP.CVE_OP) AS CVE_VALE_PED FROM SAM_ORD_PAGO AS OP WHERE OP.CVE_OP =?", new Object[]{idOrden});
-		                for(Map<String, Object> row: lstobj)
-        	    		{
-		                	if(row.get("CVE_VALE_REQ")!=null)  cve_vale_req = Long.parseLong(row.get("CVE_VALE_REQ").toString());
-		                	if(row.get("CVE_VALE_PED")!=null)  cve_vale_pedido = Long.parseLong(row.get("CVE_VALE_PED").toString());
-        	    		}*/
-        	    		
+		                		                   	    		
 		                Long cve_factura = 0L;
 		               
 		                Long cve_contrato = 0L;
@@ -832,40 +826,17 @@ public class ControladorOrdenPago extends ControladorBase  {
 				            }
 				            
 				            /*VERIFICAR SI LA OP APARTA EN OTRO PERIODO AL ACTUAL Y ADEMAS TIENE CONTRATO*/
-				            if(getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_ORD_PAGO WHERE CVE_OP =? AND CVE_CONTRATO IS NOT NULL AND PERIODO<>?", new Object[]{cveOrden, gatewayMeses.getMesActivo(ejercicio)})>0){
+				            if(getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_ORD_PAGO WHERE CVE_OP =? AND PERIODO<>?", new Object[]{cveOrden, gatewayMeses.getMesActivo(ejercicio)})>0){
 		            			throw new RuntimeException("Imposible cancelar la Orden de Pago, ya hay un contrato asignado con un periodo diferente al mes actual, consulte a su administrador del sistema");
 		            		}
+				            
+				            /*VERIFICAR SI LA OP FUE RECIBIDA EN PROGRAMACION*/
+				            if(getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_ORD_PAGO WHERE CVE_OP = ? AND FECHA_RECEP_P IS NOT NULL", new Object[]{cveOrden})>0){
+		            			throw new RuntimeException("Imposible cancelar la Orden de Pago, ya fue recibida en la Dirección de Programación, consulte a su administrador del sistema");
+		            		}
 				            	
-				            /*PARA LOS CONTRATOS 25/08/2011*/
-				            /*if (tipo==0){ //Pedidos
-				                getJdbcTemplate().update("update SAM_PEDIDOS_EX set STATUS=1 where  CVE_PED in (select CVE_PED from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{cveOrden});
-				                /*List <Map> lst_doc = getJdbcTemplate().queryForList("SELECT R.PERIODO, P.TOTAL, (SELECT R.CVE_CONTRATO FROM SAM_PEDIDOS_EX AS P INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = P.CVE_REQ) WHERE P.CVE_PED = C.CVE_PED) AS CVE_CONTRATO_PED, C.CVE_PED FROM SAM_OP_COMPROBACIONES AS C INNER JOIN SAM_ORD_PAGO AS OP ON (OP.CVE_OP = C.CVE_OP) INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = C.CVE_REQ) INNER JOIN SAM_PEDIDOS_EX AS P ON (P.CVE_PED = C.CVE_PED) WHERE C.CVE_OP = ?", new Object[]{cveOrden});
-				                for(Map row: lst_doc)
-					    		{
-				                	if(row.get("CVE_CONTRATO_PED")!=null)
-				                		getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, TIPO_DOC, CVE_DOC, PERIODO, IMPORTE) VALUES(?,?,?,?,?,?) ", new Object[]{row.get("CVE_CONTRATO_PED"), "LIBERACION", "PED", row.get("CVE_PED"), row.get("PERIODO"), row.get("TOTAL")});
-					    		}*/
-				                
-				    		/*}
-				    		if (tipo==2){//Requisiciones    
-				    			String tipo_doc = "";
-				            	getJdbcTemplate().update("update SAM_REQUISIC set STATUS=2  WHERE cve_req in (select CVE_REQ from SAM_OP_COMPROBACIONES where CVE_OP= ? ) ",new Object[]{cveOrden});
-				            	/*List <Map> lst_doc = getJdbcTemplate().queryForList("SELECT R.PERIODO, R.TIPO, (SELECT ISNULL(SUM(CANTIDAD*PRECIO_EST),0) AS N FROM SAM_REQ_MOVTOS AS M WHERE M.CVE_REQ = C.CVE_REQ) AS TOTAL, R.CVE_CONTRATO AS CVE_CONTRATO_REQ, C.CVE_REQ FROM SAM_OP_COMPROBACIONES AS C INNER JOIN SAM_ORD_PAGO AS OP ON (OP.CVE_OP = C.CVE_OP) INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = C.CVE_REQ) WHERE C.CVE_OP = ?", new Object[]{cveOrden});
-				                for(Map row: lst_doc)
-					    		{
-				                	if(row.get("TIPO").equals("2")) tipo_doc = "OS";
-				                	if(row.get("TIPO").equals("3")) tipo_doc = "OT";
-				                	if(row.get("TIPO").equals("4")) tipo_doc = "OT";
-				                	if(row.get("TIPO").equals("5")) tipo_doc = "OS";
-				                	if(row.get("TIPO").equals("6")) tipo_doc = "OS";
-				                	if(row.get("TIPO").equals("8")) tipo_doc = "OS";
-				                	
-				                	if(row.get("CVE_CONTRATO_REQ")!=null)
-				                		getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, TIPO_DOC, CVE_DOC, PERIODO, IMPORTE) VALUES(?,?,?,?,?,?) ", new Object[]{row.get("CVE_CONTRATO_REA"), "LIBERACION", tipo_doc, row.get("CVE_REQ"), row.get("PERIODO"), row.get("TOTAL")});
-					    		}
-				    		}*/
-				    	
-						getJdbcTemplate().update("update r set r.STATUS=? from SAM_REQUISIC r , SAM_OP_COMPROBACIONES a  WHERE r.cve_req=a.CVE_REQ and a.CVE_OP=? ", new Object []{gatewayRequisicion.REQ_STATUS_PENDIENTE,cveOrden });
+				          				    	
+						
 						getJdbcTemplate().update("update r set r.STATUS=? from SAM_PEDIDOS_EX r , SAM_OP_COMPROBACIONES a  WHERE r.CVE_PED=a.CVE_PED and a.CVE_OP=? ", new Object []{gatewayPedidos.PED_STATUS_PENDIENTE,cveOrden});		
 						getJdbcTemplate().update("delete from SAM_OP_COMPROBACIONES where CVE_OP=? ", new Object []{cveOrden});
 						

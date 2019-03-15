@@ -50,6 +50,37 @@ function aperturarEntradas(){
 	var checkClaves = [];
      $('input[name=chkentradas]:checked').each(function() { checkClaves.push($(this).val());});	
 	 if (checkClaves.length>0){
+		 swal({
+			 	title: 'Confirma que desea aperturar la(s) entrada(s) seleccionada(s)?',
+		  		allowOutsideClick: false,
+		  		allowEscapeKey: false, 
+		  		showConfirmButton: true,
+		  		showCancelButton: true,
+		  		onOpen: () => {
+		    		swal.showLoading();
+		        setTimeout(() => { swal.hideLoading()},5000);
+		    	}
+			}).then((result) => {
+		  	if (!result.dismiss) {
+			  		controladorListadoEntradasDocumentosRemoto.aperturarEntrada(checkClaves, {
+						callback:function(items) { 		
+						 	//CloseDelay('Entrada(s) aperturada(s) con éxito');
+						 	iniciarBusqueda();
+					 } 					   				
+					 ,
+					 errorHandler:function(errorString, exception) { 
+						swal('',errorString, 'error');          
+					 }
+				    });
+		    		swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+		     		console.log('Usuario confirmo la petición...');       	
+		  	}else if (result.dismiss === 'cancel') {
+		    		console.log('Respuesta es: ' +!result.dismiss);
+		    		swal({title:'Proceso abortado con exito!!',showConfirmButton: false,timer:1000,type:"info"});
+		    		console.log('Usuario cancelo la petición...');
+		    }
+			})
+		 /*
 		jConfirm('¿Confirma que desea aperturar la(s) entrada(s) seleccionada(s)?','Confirmar', function(r){
 			if(r){
 					//ShowDelay('Aperturando Entrada(s)','');
@@ -64,7 +95,7 @@ function aperturarEntradas(){
 					 }
 				    });
 			}
-	   },async=false );
+	   },async=false );*/
 	 
 	 } 
 	else 
@@ -76,22 +107,41 @@ function cancelarEntradas(){ //Por boton Cancelar, en el listado de entradas..
 	var checkClaves = [];
      $('input[name=chkentradas]:checked').each(function() { checkClaves.push($(this).val());});	
 	 if (checkClaves.length>0){
-		jConfirm('¿Confirma que desea cancelar la(s) entrada(s) seleccionada(s)?','Confirmar', function(r){
-			if(r){
-					ShowDelay('Cancelando Entrada(s)','');
-					controladorListadoEntradasDocumentosRemoto.cancelarEntrada(checkClaves, {
-						callback:function(items) { 		
-						 	CloseDelay('Entrada(s) cancelada(s) con éxito');
-						 	iniciarBusqueda();
-					 } 					   				
-					 ,
-					 errorHandler:function(errorString, exception) { 
-						jError(errorString, 'Error');          
-					 }
-				    });
-			}
-	   },async=false );
-	 
+		 swal({
+			  title: 'Submit email to run ajax request',
+			  type: 'question',
+			  showCancelButton: true,
+			  confirmButtonText: 'Submit',
+			  showLoaderOnConfirm: true,
+			  preConfirm: function(result) {
+			    return new Promise(function(resolve, reject) {
+			      setTimeout(function() {
+			      	resolve();
+			        
+			      }, 2000);
+			    });
+			  },
+			  allowOutsideClick: false
+			}).then(function(result) {
+				if (result.value) {
+						swal({
+							type: 'success',
+							title: 'Success',
+							html: 'Submitted email: ' + result,
+							text: result.value,
+							showConfirmButton: false,
+							timer:1000,
+							})
+							setTimeout(function() {
+									$.bootstrapGrowl("Proceso concluido con exito!!!", {
+									type: 'info',
+									stackup_spacing: 30
+									});
+							}, 1000);
+				}else 
+					swal({title:'Cancelled',text: 'Your imaginary file is safe :)',type: 'error',showConfirmButton: false,timer:1500})
+			  
+			})
 	 } 
 	else 
 	    jAlert('Es necesario seleccionar por lo menos una Entrada del listado', 'Advertencia');
@@ -99,6 +149,7 @@ function cancelarEntradas(){ //Por boton Cancelar, en el listado de entradas..
 
 
 function iniciarBusqueda(){
+	
 	//if($('#cboprestadorservicio').selectpicker('val')=='');
 	pedido=$('#txtpedido').val();
 	id_proveedor=$('#cboproveedor').selectpicker('val');

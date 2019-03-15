@@ -51,16 +51,29 @@ $(document).ready(function() {
 	 
 	 
 	/*funciones*/
-	 if($('#CVE_REQ').val()==0) tipoRequisiciones();
+	 if($('#CVE_REQ').val()!=0){
+		 
+		 $("#detalle").removeClass("disabled");
+		 mostrarRequisicion($('#CVE_REQ').val());
+		 
+	 } 
+		 
+	tipoRequisiciones();
 	 
-	 mostrarRequisicion($('#CVE_REQ').val());
+	 
 	 getMesRequisicion($('#cbomeses').val());
 	 $('#fila_contrato').hide();
 	 $('#fila_disponibleVale').hide();
 	 $('#txtfecha').datetimepicker({
 			format: 'DD/MM/YYYY'
-		});
-		  
+	});
+		
+	 $(".nav li.disabled a").click(function() {
+	     return false;
+	   });
+
+	 
+	 $('.nav-tabs a[href="#tab-requisicion"]').tab('show');//Carga mostrando el primer tabs
 		  
 });
 /*
@@ -105,6 +118,9 @@ function tipoRequisiciones(){
 		case '1': /*Para bienes*/
 				$('#div_os_presupuesto').show();
 				$('#div_os').hide();
+				$('#div_os_prestador').hide();
+				$('#div_os_vehiculo').hide();
+				
 		break;
 		case '2': /*Para servicios*/
 				$('#div_os').show();
@@ -278,18 +294,10 @@ function funciones(){
 /*-------------------------------- funcion para mostrar la requisicion ------------------------------------------------*/
 /*Muestra la Requisicion en edicion llamada desde el listado de requisiciones....*/
 function mostrarRequisicion(cve_req){
-	//alert('Entro a esta clase mostrarRequisicion');
+	
 	if(cve_req!=0){
-		//swal('Cargando Requisicion');
+		
 		sweetAlert('Cargando Requisicion!', '', 'success', 3000, false);
-		/*swal({
-			  position: 'top-end',
-			  type: 'success',
-			  title: 'Cargando Requisicion',
-			  showConfirmButton: false,
-			  timer: 3500
-			})*/
-		//ShowDelay('Cargando Requisicion');
 		controladorRequisicion.getLightRequisicion(cve_req, {
 		  			callback:function(items) { 
 					jQuery.each(items,function(i){
@@ -461,25 +469,7 @@ function validate(){
 	if ($('#txtpartida').val()==''){swal('','Es necesario escribir la <b>Partida</b>','info'); return false;}
 	if ($('#cbomeses').val()==0){swal('','El <b>Presupuesto</b> no es valido','info'); return false;}
 	
-	
-	
-	
-	/*
-	if($('#cbotipo').val()=='1'||$('#cbotipo').val()=='2'||$('#cbotipo').val()=='3'||$('#cbotipo').val()=='4'||$('#cbotipo').val()=='5'){
-					
-		var str = $('#txtdisponible').val();
-		//alert('str es ' +str);
-		str.replace(/[^a-zA-Z 0-9.]+/g,' ');
-				
-		
-			if($("#txtdisponible").data('disponible')<str){
-		
-			console.log(str); // la consola devolverá: texto
-				swal('','<strong>Proyecto o partida no cuenta con suficiencia presupuestal</strong>! ' +str ,'info'); 
-			return false;
-		}
-			
-	}*/
+
 }
 
 /*funcion principal de guardar la Requisición*/
@@ -511,9 +501,10 @@ function guardarRequisicionPrincipal(){
 										if($('#CVE_REQ').val()==0) 
 										$('#CVE_REQ').val(items);
 										$('#cmdcerrar').prop('disable',true);
+										$("#detalle").removeClass("disabled");
 										swal({
-											  title: 'Requisición guardada con éxito',
-											  onOpen: function () {setTimeout(function () {swal.close()}, 1000)}
+											  title: 'Requisición guardada con éxito',showConfirmButton: false, type:'information',
+											  onOpen: function () {setTimeout(function () {swal.close()}, 1500)}
 											})
 		
 						  			}, 2000);
@@ -552,13 +543,8 @@ function guardarConceptoRequisicion(){
 	}
 	if($('#ID_ARTICULO').val()==''||$('#ID_ARTICULO').val()=='0') {swal('','Es necesario seleccionar un producto válido</br>','info'); return false;}
 	if($('#txtprecioestimado').val()=='') {swal('','Es necesario especificar un precio de producto valido</br>', 'info'); return false;}
-	//if($('txtprecioestimado').val()=='') {jError('Es necesario especificar un precio de producto valido','Error de validacion'); return false;}
-
 	if($('#cbounimed').selectpicker('val')=='') {swal('','Es necesario especificar la unidad de medida del producto valido</br>','info'); return false;}
-
-
 	if($('#txtcantidad').val()=='') {swal('','Es necesario especificar la cantidad de productos</br>', 'info'); return false;}
-//	if($('#txtdescripcion').val()=='') error += 'Es necesario una descripcion valida</br>';
 	if($('#txtproyecto').val()=='') {swal('','Es necesario establecer un Programa valido</br>','info'); return false;}
 	if($('#txtpartida').val()=='') {swal('','Es necesario establecer una partida valida</br>','info');}
 	if($('#cbotipo').val()=='2'||$('#cbotipo').val()=='3'||$('#cbotipo').val()=='4'&&$('#cbotipo').val()=='5') {
@@ -566,51 +552,35 @@ function guardarConceptoRequisicion(){
 	}
 	
 	swal({
-		  title: 'Es seguro?',
-		  text: '¿Confirma que desea guardar el lote?',
-		  type: 'warning',
-		  showCancelButton: true,
-		  confirmButtonText: 'Sí, gaurdar!',
-		  cancelButtonText: 'No, abortar!',
-		  cancelButtonColor: '#d33',
-		  showLoaderOnConfirm: true,
-		  preConfirm: function(email) {
-			    return new Promise(function(resolve, reject) {
-			      setTimeout(function() {
-			          resolve();
-			          controladorRequisicion.guardarConcepto($('#CVE_REQ').val(), $('#cbotipo').val(), $('#ID_REQ_MOVTO').val(), $('#REQ_CONS').val(),  $('#ID_ARTICULO').val(), $('#cbounimed').selectpicker('val'),  $('#txtproducto').val(), $('#txtprecioestimado').val(), $('#txtcantidad').val(), $('#txtdescripcion').val(), {
-			    			callback:function(items) { 
-			  					if(items) {
-			  							nuevoConcepto();
-			  							mostrarTablaConceptos($('#CVE_REQ').val());
-			  							swal({
-											  title: 'Lote guardado con éxito',
-											  onOpen: function () {setTimeout(function () {
-												  swal.close(),
-												  $('#txtproducto').focus()
-												  }, 700)}
-											})
-			  					} else swal('','No se ha podido guardar el lote', 'error');
-			  				}
-			  				,
-			  				errorHandler:function(errorString, exception) { 
-			  					swal('Fallo la operacion:<br>Error::'+errorString+'-message::'+exception.message+'-JavaClass::'+exception.javaClassName+'.<br><strong>Consulte a su administrador</strong>');   
-			  					return false;
-			  				}
-			  			});  
-			        }, 2000);//cierra el  setTimeout de la nueva promesa
-			    });
-			  },
-			  allowOutsideClick: false
-			
-		})/*.then((result) => {
-			if (result.value  ) {
-			}
-			else if (result.dismiss === swal.DismissReason.cancel) {
-			  		swal('Cancelado','','error')
-			}
-		});*/
-	
+	   	  title: 'Guardando Lote',
+	   	  onOpen: function () {
+	   	    swal.showLoading()
+	   	    // AJAX request simulated with setTimeout
+	   	    setTimeout(function () {
+	   	    	controladorRequisicion.guardarConcepto($('#CVE_REQ').val(), $('#cbotipo').val(), $('#ID_REQ_MOVTO').val(), $('#REQ_CONS').val(),  $('#ID_ARTICULO').val(), $('#cbounimed').selectpicker('val'),  $('#txtproducto').val(), $('#txtprecioestimado').val(), $('#txtcantidad').val(), $('#txtdescripcion').val(), {
+	    			callback:function(items) { 
+	  					if(items) {
+	  							nuevoConcepto();
+	  							mostrarTablaConceptos($('#CVE_REQ').val());
+	  							swal({
+									  title: 'Lote guardado con éxito',showConfirmButton: false,
+									  onOpen: function () {setTimeout(function () {
+										  swal.close(),
+										  $('#txtproducto').focus()
+										  }, 700)}
+									})
+	  					} else swal('','No se ha podido guardar el lote', 'error');
+	  				}
+	  				,
+	  				errorHandler:function(errorString, exception) { 
+	  					swal('Fallo la operacion:<br>Error::'+errorString+'-message::'+exception.message+'-JavaClass::'+exception.javaClassName+'.<br><strong>Consulte a su administrador</strong>');   
+	  					return false;
+	  				}
+	  			});  
+	   	      swal.close()
+	   	    }, 2000)
+	   	  }
+	   	})
 }
 
 /*funcion para eliminar un movimiento de a requisicion*/
@@ -811,10 +781,11 @@ function cerrarRequisicion(){
 		
 		if (clave_bene=='') {
 		    	swal({
-		        	  title: 'Error!',
-		        	  text: 'El Beneficiario seleccionado no es válido',
+		        	  title: 'Falta asignar Beneficiario',
 		        	  type: 'error',
-		        	  confirmButtonText: 'Cool'
+		        	  timer: 2000,
+		        	  confirmButtonText: 'Cerrar',
+		        	  showConfirmButton: false
 		        	})
 		    
 		    return false;}
@@ -842,7 +813,7 @@ function cerrarRequisicion(){
 		})
 	}
 	
-//Cierra las requisiciones
+//Proceso de cierre del modulo de requisiciones REQ, OS u OT
 function cerrarRequiFinal(){
 	swal({
 		  title: 'Cerrando Requisicion',

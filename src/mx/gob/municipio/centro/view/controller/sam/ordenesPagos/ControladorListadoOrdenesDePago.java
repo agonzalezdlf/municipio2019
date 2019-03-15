@@ -128,6 +128,11 @@ public class ControladorListadoOrdenesDePago extends ControladorBase {
     	return gatewayPlanArbit.getTipodeGasto();
     }
 		
+	/*
+	 public String getListUsuarios(int cve_pers){
+ 		return this.gatewayOrdenDePagos.getListUsuarios(cve_pers);
+ 	} 
+	 */
 	@ModelAttribute("beneficiarios")
 	public List<Map<String, Object>>getBeneficiarios(){
 		return (List<Map<String, Object>>) gatewayBeneficiario.getListaBeneficiarios();

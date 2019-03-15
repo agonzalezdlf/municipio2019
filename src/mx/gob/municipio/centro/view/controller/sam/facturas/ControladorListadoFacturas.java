@@ -84,11 +84,12 @@ public class ControladorListadoFacturas extends ControladorBase {
 		modelo.put("numreq", numreq);
 		modelo.put("estatus", estatus);
 		modelo.put("idUnidad", idUnidad);
+		modelo.put("CVE_BENEFI",cve_benefi );
 		modelo.put("beneficiario", beneficiario);
 		modelo.put("fechaInicial",(request.getParameter("txtfechaInicial")==null ? "": request.getParameter("txtfechaInicial")));
 		modelo.put("fechaFinal",(request.getParameter("txtfechaFinal")==null ? "": request.getParameter("txtfechaFinal")));
 		modelo.put("tipo_gto", (request.getParameter("cbotipogasto")==null ? "": request.getParameter("cbotipogasto")));
-		modelo.put("tipo_gto", (request.getParameter("cbostatus")==null ? "": request.getParameter("cbostatus")));
+		//modelo.put("tipo_gto", (request.getParameter("cbostatus")==null ? "": request.getParameter("cbostatus")));
 		modelo.put("clv_benefi",gatewayBeneficiario.getBeneficiariosTodos(0));
 		modelo.put("nombreUnidad",this.getSesion().getUnidad());
 		modelo.put("cbostatus",cbostatus);

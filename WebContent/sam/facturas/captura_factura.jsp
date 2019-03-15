@@ -20,9 +20,12 @@
 <script type="text/javascript" src="../../dwr/interface/controladorProyectoPartida.js?x=<%=System.currentTimeMillis()%>"> </script>
 <script type="text/javascript" src="captura_factura.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
+
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
+
 <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script> 
+
 <script type="text/javascript" src="../../include/js/fileinput.min.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
@@ -70,9 +73,15 @@ a:active {
                 <div class="panel-heading">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#tab1primary" data-toggle="tab">Encabezado</a></li>
-                            <li><a href="#tab2primary" data-toggle="tab">Movimientos</a></li>
-                            <li><a href="#tab3primary" data-toggle="tab">Retenciones</a></li>
-                            <li><a href="#tab4primary" data-toggle="tab">Vales</a></li>
+                            <li id="TMovimientos" class="nav-item" >
+                            	<a href="#tab2primary" data-toggle="tab">Movimientos</a>
+                            </li>
+                            <li id="TRetenciones" class="nav-item">
+                            	<a href="#tab3primary" class="nav-link" rol="tab" data-toggle="tab">Retenciones</a>
+                            </li>
+                            <li id="TVales" class="nav-item">
+                            	<a href="#tab4primary" class="nav-link" rol="tab" data-toggle="tab">Vales</a>
+                            </li>
                         </ul>
                 </div>
                 <div class="panel-body">
@@ -168,8 +177,9 @@ a:active {
 		                   <div class="row">
 		                   <div class="form-group">
 		                    	<div class="control-label col-sm-3 ">Prestador del servicio:</div>
-		                    		<div id="div_beneficiario" align="left">${factura.NCOMERCIA}</div>
-		                        	<div class="form-group col-sm-3" id="div_benaficiarioFijo">
+		                    		<div id="div_benaficiarioFijo" align="left">${factura.NCOMERCIA}</div>
+		                    		
+		                        	<div class="form-group col-sm-3" id="div_benaficiario">
 		                        		<select class="selectpicker form-control input-sm" data-live-search="true" style="width:100%" id="cboSearch" name="cboSearch" title="Seleccione un Beneficiario...">
 									   		<c:forEach items="${beneficiarios}" var="item" varStatus="status">
 								      		<option value='<c:out value="${item.CLV_BENEFI}"/>'
@@ -179,6 +189,7 @@ a:active {
 										</select>
 										<input type="hidden" id="CVE_BENEFI" value="<c:out value='${factura.CLV_BENEFI}'/>"/>
 									</div>	  
+									
 							</div>
 		                  	</div>
 		                  	
@@ -448,7 +459,7 @@ a:active {
 				                	<div class="form-group">
 				                    	<div class="control-label col-sm-3 ">*Retencion:</div>
 				                      	<div class="col-sm-2">
-											<select name="retencion" class="form-control sm" id="retencion" style="width:500px">
+											<select name="retencion" class="selectpicker form-control input-sm m-b" data-live-search="true" title="Seleccione retención..." id="retencion" style="width:500px">
 									          <c:forEach items="${tipoRetenciones}" var="item" varStatus="status">
 									            <option value="<c:out value='${item.CLV_RETENC}'/>">
 									              <c:out value="${item.RETENCION}"/>

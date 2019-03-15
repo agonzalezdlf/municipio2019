@@ -154,6 +154,7 @@ public class ControladorFacturas extends ControladorBase {
 	public void guardarComprobacionVale(Long idMovVale, Long cve_factura, Long cve_vale, int idProyecto, String clv_partid, Double importe)
 	{
 		gatewayFacturas.guardarComprobacionVale(idMovVale, cve_factura, cve_vale, idProyecto, clv_partid, importe);
+		//return gatewayComprobacionesVales.actualizarConceptoPrincipalVale(idVale, vale, importe,importeValeAnte, idOrden,idproyecto,partida,"OP",getfechaActual(),null, getSesion().getEjercicio(), getSesion().getIdUsuario());
 	}
 	
 	public List getListaVales (Long cve_factura) {

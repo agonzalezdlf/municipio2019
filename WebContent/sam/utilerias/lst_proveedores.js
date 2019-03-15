@@ -77,7 +77,7 @@ function nuevoEditarBeneficiario(idBeneficiario){
 		  title: '',
 		  text: '',
 		  html:
-			  '<iframe width="800" height="470" name="BENEFI" id="BENEFI" frameborder="0" src="../../sam/ordenesdepago/beneficiario.action?id='+idBeneficiario+'"></iframe>',
+			  '<iframe width="800" height="500" name="BENEFI" id="BENEFI" frameborder="0" src="../../sam/ordenesdepago/beneficiario.action?id='+idBeneficiario+'"></iframe>',
 		  width: 800,
 		  padding: 10,
 		  animation: false,

@@ -96,7 +96,6 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 	if (grupo!="" && capitulo !="" ) {
 		
 		  swal({
-			  	
 			  text: 'Cargando listado de partidas..... ' ,
 			  showConfirmButton: false,
 			  onOpen: function () {

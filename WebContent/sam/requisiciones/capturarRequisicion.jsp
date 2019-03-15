@@ -22,18 +22,6 @@
 <script type="text/javascript" src="../../dwr/util.js"> </script>  
 <script type="text/javascript" src="../../dwr/interface/controladorRequisicion.js"> </script>
 <script type="text/javascript" src="../../dwr/interface/controladorProyectoPartida.js"> </script>
-
-
-
-<!--   
-<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
-<script type="text/javascript" src="../../include/js/jquery.bestupper.min.js"></script>
-<script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>   
-<script type="text/javascript" src="../../include/js/jquery.maxlength.js"></script>
-
-<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
--->
 <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/js/otros/productos.js?x=<%=System.currentTimeMillis()%>"></script>
 
@@ -70,9 +58,13 @@ var availableTags = JsonBenefi;
 <div class="col-sm-12">
 	<div class="panel with-nav-tabs panel-primary">
 		<div class="panel-heading">
-	 		<ul class="nav nav-tabs responsive">
-	 			<li class="active"><a href="#tab-requisicion" class="nav-link" data-toggle="tab">Información general</a></li>
-                <li><a href="#tab-conceptos" data-toggle="tab" class="nav-item disabled" id="lotes">Lotes</a></li>
+	 		<ul class="nav nav-tabs responsive id="requisiciones">
+	 			<li class="active" id="maestro">
+	 				<a href="#tab-requisicion" class="nav-link" rol="tab" data-toggle="tab">Información general</a>
+	 			</li>
+                 <li id="detalle" class="nav-item disabled">
+                	<a href="#tab-conceptos" class="nav-link" rol="tab" data-toggle="tab"  id="lotes">Lotes</a>
+                </li>
          	</ul>
 		</div><!--close panel con navtabas-->
 		<div class="panel-body">

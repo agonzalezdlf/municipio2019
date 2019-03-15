@@ -75,7 +75,7 @@ public class GatewayMovimientosRequisicion extends BaseGateway {
 		/*Metodo para guardar un concepto existente*/
 		private void actualizarTotalesConceptosOT(Long cve_req, int tipo_req){
 			/*Verificar el tipo de la requisicion y actualizar total de conceptos en OT/OS*/
-			if(tipo_req==2||tipo_req==3) this.getJdbcTemplate().update("UPDATE SAM_ORDEN_TRAB SET COSTO_TOTAL = (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_ORDEN_TRAB.CVE_REQ ) FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object [] {cve_req});
+			 if(tipo_req!=1 || tipo_req!=7) this.getJdbcTemplate().update("UPDATE SAM_ORDEN_TRAB SET COSTO_TOTAL = (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_ORDEN_TRAB.CVE_REQ ) FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object [] {cve_req});
 		}
 		
 		/*Metodo para obtener todos los conceptos de una requisicion*/

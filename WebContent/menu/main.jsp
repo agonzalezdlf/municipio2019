@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="../include/css/estilosam.css" type="text/css">
 <link href="../include/css/estilos.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="../include/js/componentes/jquery.alerts.css" type="text/css">
-<script type="text/javascript" src="../include/js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="../include/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../include/js/bootstrap-notify-master/bootstrap-notify.js"></script>
 <script type="text/javascript" src="../include/js/toolSam.js"></script>
 <script type="text/javascript" src="../include/js/componentes/jquery.alerts.js"></script>
 <script language="javascript">
@@ -61,7 +62,7 @@ setTimeout("blinvis_img()", blimgcursor_cuant*1000)
 TERMINA CODIGO DE FESTEJO*/
 
 -->
-
+$.notify("Fecha de cierre es el 26 de enero del 2019");
 </script>
 <style type="text/css"> 
     

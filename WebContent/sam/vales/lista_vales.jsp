@@ -22,7 +22,7 @@
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
-<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="lista_vales.js?x=<%=System.currentTimeMillis()%>"> </script>
 <script type="text/javascript" src="../../dwr/interface/controladorListadoValesRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>

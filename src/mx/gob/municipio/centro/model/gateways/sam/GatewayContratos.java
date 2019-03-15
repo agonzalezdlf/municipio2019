@@ -25,6 +25,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import mx.gob.municipio.centro.model.bases.BaseGateway;
 import mx.gob.municipio.centro.model.gateways.sam.catalogos.GatewayMeses;
 import mx.gob.municipio.centro.view.controller.sam.contratos.StoreProcedureContratos;
+import mx.gob.municipio.centro.view.controller.sam.contratos.StoreProcedureContratosModif;
 import mx.gob.municipio.centro.view.controller.sam.ordenesPagos.ControladorOrdenPago;
 
 public class GatewayContratos extends BaseGateway {
@@ -101,7 +102,9 @@ public class GatewayContratos extends BaseGateway {
 	}
 	
 	public List<Map<String, Object>> getTiposContratos(){
-		return this.getJdbcTemplate().queryForList("SELECT TC.ID_TIPO, TC.DESCRIPCION FROM SAM_CAT_TIPO_CONTRATOS TC ORDER BY DESCRIPCION ASC");
+		
+		return this.getJdbcTemplate().queryForList("SELECT TC.ID_TIPO, TC.DESCRIPCION FROM SAM_CAT_TIPO_CONTRATOS TC WHERE TC.STATUS=1 ORDER BY DESCRIPCION ASC");
+		
 	}
 	
 	public Long guardarContrato(Long cve_contrato, int idDependencia, String num_contrato, String fecha_ini, String fecha_fin, String oficio, String tiempo_entrega, int tipo, String concepto, Double anticipo, int idRecurso, String clv_benefi, Long cve_doc, int ejercicio, int cve_pers, int idGrupo){
@@ -392,7 +395,7 @@ public class GatewayContratos extends BaseGateway {
 	  return resultado; 
 	}  
 	
-	public List <Map> getListaContratos(Map modelo){
+	public List <Map<String, Object>> getListaContratos(Map modelo){
 		String sql = "SELECT A.*, "+ 
 				 
 			"(CASE E.DESCRIPCION "+
@@ -434,10 +437,19 @@ public class GatewayContratos extends BaseGateway {
 			sql += " AND CONVERT(datetime,CONVERT(varchar(10), FECHA_INICIO ,103),103) BETWEEN '"+modelo.get("fechaInicial").toString()+"' and '"+modelo.get("fechaFinal").toString()+"' ";
 		if(modelo.get("tipo_gto")!=null&&!modelo.get("tipo_gto").toString().equals("0"))
 			sql += " AND C.ID = '"+modelo.get("tipo_gto").toString()+"'";
-		if(modelo.get("CLV_BENEFI")!="")
-			sql += " AND B.CLV_BENEFI = '"+modelo.get("CLV_BENEFI").toString()+"'";
-		if(modelo.get("txtproyecto")!="")
-			sql += " AND EXISTS (SELECT ID_PROYECTO,CLV_PARTID FROM SAM_COMP_MOV WHERE SAM_COMP_MOV.DOCUMENTO=A.CVE_CONTRATO AND ID_PROYECTO IN ("+modelo.get("txtproyecto")+")AND A.STATUS IN ("+modelo.get("status")+"))";	
+		
+		if(modelo.get("CVE_BENEFI")!=null)
+			if(!modelo.get("CVE_BENEFI").toString().equals(""))
+			sql += " AND B.CLV_BENEFI = '"+modelo.get("CVE_BENEFI").toString()+"'";
+		
+		if(modelo.get("txtcontrato")!=null)
+			if(!modelo.get("txtcontrato").toString().equals(""))
+				sql += " AND A.NUM_CONTRATO = '"+modelo.get("txtcontrato").toString()+"'";
+		
+		if(modelo.get("txtproyecto")!=null)
+			if(!modelo.get("txtproyecto").toString().equals(""))
+				sql += " AND EXISTS (SELECT ID_PROYECTO,CLV_PARTID FROM SAM_COMP_CONTRATO WHERE SAM_COMP_CONTRATO.CVE_CONTRATO=A.CVE_CONTRATO AND ID_PROYECTO IN ("+modelo.get("txtproyecto")+"))";	
+		
 		return this.getJdbcTemplate().queryForList(sql);
 	}
 	
@@ -710,29 +722,49 @@ public class GatewayContratos extends BaseGateway {
         }  
 	}
 	
-	public void guardarConceptoContratoPeredo(Long idDetalle, Long cve_contrato, int idProyecto, String clv_partid, Double importe)
+	public void guardarConceptoContratoPeredo(Long idDetalle, Long cve_contrato, int idProyecto, String clv_partid, final int mes, Double importe)
 	{
 		try
 		{
 			Date fecha = new Date();
-			
-			if(idDetalle==0)
-				this.getJdbcTemplate().update("INSERT INTO SAM_COMP_MOV(DOCUMENTO, TIPO_DOC, ID_PROYECTO, CLV_PARTID, IMPORTE, FECHA_MOV) VALUES(?,?,?,?,?,?)", new Object[]{cve_contrato, 7, idProyecto, clv_partid, importe, fecha});
-			else
-			{
+			if(idDetalle==0){
+				
+				Integer encom_mov=0;
+				encom_mov= getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM DIARIO WHERE DOCUMENTO =? and CLV_DIARIO=4430 AND CTA1 = '82400' AND CARGO <> 0 AND MES=MONTH(?) AND DIA = DAY(?)",new Object[]{cve_contrato,fecha,fecha});
+					
+				if (encom_mov<1){
+				
+					this.getJdbcTemplate().update("INSERT INTO SAM_COMP_MOV(DOCUMENTO, TIPO_DOC, ID_PROYECTO, CLV_PARTID, IMPORTE, FECHA_MOV) VALUES(?,?,?,?,?,?)", new Object[]{cve_contrato, 7, idProyecto, clv_partid, importe, fecha});
+					StoreProcedureContratosModif sp = new StoreProcedureContratosModif(getJdbcTemplate().getDataSource());
+					Map<String, Object> result = sp.execute(cve_contrato, 2, fecha, importe);
+					guardarConcepto(idDetalle, cve_contrato, idProyecto, clv_partid, mes, importe);
+						
+				}else
+					
+					throw new RuntimeException("Error en la modificacion al contrato: " + cve_contrato + " solo se permite capturar un movimiento al día");
+										
+			}else{
+				
 				Map concepto = getConceptoContrato(idDetalle);
 				this.getJdbcTemplate().update("UPDATE SAM_COMP_MOV SET IMPORTE = ? WHERE DOCUMENTO = ? AND TIPO_DOC = ? AND ID_PROYECTO = ? AND CLV_PARTID = ? AND IMPORTE = ?", new Object[]{importe, cve_contrato, 7, idProyecto, clv_partid, concepto.get("IMPORTE")});
+			
 			}
 		}
 		catch (Exception e) {                                
-	        throw new RuntimeException("La operacion ha fallado, no se han podido guardar el concepto de lado de Peredo en SAM_COMP_MOV: "+e.getMessage());
+	        throw new RuntimeException("La operacion ha fallado, no se puede insertar el registro en la contabilidad: "+e.getMessage());
 	    } 
 	}
 	
+	
+	
 	public void guardarConcepto(Long idDetalle, Long cve_contrato, int idProyecto, String clv_partid, int mes, Double importe){
 		try{
-			if(idDetalle==0)
+			if(idDetalle==0){
+				Integer encop_mov=0;
+				encop_mov= getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO=? AND PERIODO_ANT=? ",new Object[]{cve_contrato,mes});
 				this.getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, ID_PROYECTO, CLV_PARTID, PERIODO, IMPORTE, PERIODO_ANT, IMPORTE_ANT) VALUES(?,?,?,?,?,?,?,?)", new Object[]{cve_contrato, "COMPROMISO", idProyecto, clv_partid, mes, importe, mes, importe});
+			}
+			
 			else
 				this.getJdbcTemplate().update("UPDATE SAM_COMP_CONTRATO SET ID_PROYECTO=?, CLV_PARTID=?, PERIODO=?, IMPORTE=?, PERIODO_ANT=?, IMPORTE_ANT=? WHERE ID_DETALLE_COMPROMISO=?", new Object[]{idProyecto, clv_partid, mes, importe, mes, importe, idDetalle});
 		}
@@ -916,4 +948,5 @@ public class GatewayContratos extends BaseGateway {
 						" HAVING (ISNULL((SAM_MOV_VALES.IMPORTE),0.00)-ISNULL(SUM(COMP_VALES.IMPORTE),0.00))>0 " + 
 						" ORDER BY SAM_VALES_EX.CVE_VALE", new Object[]{cve_unidad});  
 	}
+
 }

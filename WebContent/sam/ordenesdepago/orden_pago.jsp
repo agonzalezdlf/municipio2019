@@ -24,7 +24,8 @@
 
 <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js"></script>
 <script type="text/javascript" src="orden_pago.js?x=<%=System.currentTimeMillis()%>"></script>
-<script type="text/javascript" src="../../include/js/toolSam.js"></script> 
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
+<!--  <script type="text/javascript" src="../../include/js/toolSam.js"></script> --> 
 <script type="text/javascript" src="../../include/js/fileinput.min.js"></script>
 
 
@@ -285,7 +286,7 @@ a:active {
               <div class="row">
                     <div class="form-group">
                     	<div class="control-label col-sm-3" for="reembolso">Reembolso al Fondo Fijo:&nbsp;</div>
-                    	<label class="switch" >
+                    	<label class="switch" style="left: 14px;" >
 							<input type="checkbox" name="reembolso" id="reembolso" value="S">
 							<span class="slider round"></span>
 						</label>

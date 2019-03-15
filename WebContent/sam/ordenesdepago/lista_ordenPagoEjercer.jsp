@@ -7,24 +7,23 @@
 <html>
 <head>
 <title>Listado de Ordenes de Pago por Ejercer</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+</head>
 
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
-<link rel="stylesheet" href="../../include/js/sweetalert2/6.6.2/sweetalert2.min.css" type="text/css">
+
+<link rel="stylesheet" href="../../include/css/animate.min-3.2.0.css" type="text/css"/>
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
+<link rel="stylesheet" href="../../include/css/Font Awesome 4.7.0.css" type="text/css"/>
+
+<link rel="stylesheet" href="../../include/css/boostrap-select/1.13/bootstrap-select.css" type="text/css">
+
 <link type="text/css" href="../../include/js/jquery-ui/jquery-ui-1.12.1.min.css" rel="stylesheet" />
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
-
-	
-<!--  
-<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
-<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-<script type="text/javascript" src="../../include/js/jquery-1.5.min.js"></script>
-
--->
+<script type="text/javascript" src="../../include/css/boostrap-select/1.13/bootstrap-select.js"></script>
 
 <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
@@ -33,17 +32,32 @@
 <script type='text/javascript' src="../../dwr/engine.js"></script>
 <script type="text/javascript" src="../../dwr/util.js"> </script>
 <script type="text/javascript" src="lista_ordenPagoEjercer.js?x=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript" src="../../include/js/bootstrap-notify-3.1.7.js?x=<%=System.currentTimeMillis()%>"></script>
 
-<script type="text/javascript" src="../../include/js/sweetalert2/6.6.2/sweetalert2.min.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
+
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
 
 
 <style type="text/css">
-
+/*
 .bootstrap-datetimepicker-widget table td span {
       width: 400px;
+}*/
+
+.swal2-overflow {
+  overflow-x: visible;
+  overflow-y: visible;
+  
+  
+}
+.swal2-overflow .swal2-content{
+  	width:150px;
+  	margin-left: auto;
+    margin-right: auto;
 }
 /*
 .bootstrap-datetimepicker-widget dropdwown usetwentyfour bottom {
@@ -69,18 +83,7 @@
         display: table;
     }
 */
-.swal2-overflow {
-  overflow-x: visible;
-  overflow-y: visible;
-  
-  
-}
-.swal2-overflow .swal2-content{
-  	width:150px;
-  	margin-left: auto;
-    margin-right: auto;
-   
-  }
+
  
   
 a:link {
@@ -267,10 +270,13 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
 
 <div id="listaOrdenesPorEjercer" class="well">
 
-	<div class="form-group">
-		<div class="col-sm-2 col-md-offset-1 control-label">Mes:</div>
-		<div class="col-md-3">	
-		    <select name="cbomes" id="cbomes" class="form-control">
+	  <!-- Tipo de Gasto-->
+      <div class="row">
+        <div class="form-group">
+          <div class="control-label col-sm-4">Mes:</div>
+          <div class="col-sm-2 form-group">
+              <select name="cbomes" id="cbomes" class="selectpicker form-control input-sm" title="Seleccione el mes...">
+              	  <option value="0">[Seleccione]</option>	
 		          <option value="1" <c:if test='${mes==1}'>selected</c:if>>Enero</option>
 		          <option value="2" <c:if test='${mes==2}'>selected</c:if>>Febrero</option>
 		          <option value="3" <c:if test='${mes==3}'>selected</c:if>>Marzo</option>
@@ -283,47 +289,33 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
 		          <option value="10" <c:if test='${mes==10}'>selected</c:if>>Octubre</option>
 		          <option value="11" <c:if test='${mes==11}'>selected</c:if>>Noviembre</option>
 		          <option value="12" <c:if test='${mes==12}'>selected</c:if>>Diciembre</option>
-		        </select>
-       </div>
-       <div class="col-md-3 form-group">
-       <div class="col-md-10">
-		      <div>
-          		<input  name="btnBuscar" type="button" class="btn btn-buscar" id="btnBuscar" value="Buscar" style="width:100px">
-          	  </div>
-        </div>   
-		</div>
-	</div>
+			  </select>
+          </div>
+          <div class="col-sm-2 form-group">
+          	<!-- <input  name="btnBuscar" type="button" class="btn btn-buscar" id="btnBuscar" value="Buscar" style="width:100px"> -->
+          </div>
+        </div>
+      </div>
+	   <div class="row">
+        <div class="form-group">
+          <div class="control-label col-sm-4">Estatus OP:</div>
+          <div class="col-sm-2 form-group">
+              <select name="cbstatusOP" id="cbstatusOP" class="form-control sm" title="Filtrar segun estatus de ..." style="margin-top:5px;">
+               	<option value="0">[Seleccione]</option>	
+			  	<option value="1" <c:if test='${statusOP==1}'>selected</c:if>>Ordenes de Pago por Ejercer</option>
+	          	<option value="2" <c:if test='${statusOP==2}'>selected</c:if>>Ordenes de Pago Ejercidas</option>
+	          	<option value="3" <c:if test='${statusOP==3}'>selected</c:if>>Ordenes de Pago por Ejercer y Ejercidas</option>
+			  </select>
+          </div>
+          <div class="col-sm-2 form-group">
+          	
+          </div>
+        </div>
+      </div>	
+	
+	<!--  -->
+		
 	<div class="form-group"></div>
-	<div class="row"><!-- Unidad -->
-         <div class="col-md-2 col-md-offset-2 row">
-          		<input type="checkbox" name="chk_ejercer" id="chk_ejercer" <c:if test="${fn:contains(por_ejercer,'true')}" >checked</c:if>>&nbsp;Ordenes de Pago por Ejercer
-         </div>
-		 <div class="col-md-2 row">
-		 	<input type="checkbox" name="chk_ejercercidas" id="chk_ejercercidas"<c:if test="${fn:contains(ejercidas,'true')}" >checked</c:if>>&nbsp;Ordenes de Pago Ejercidas
-		 </div>
-	</div> <!-- Unidad -->
-	<div class="form-group"></div>
-	<div class="row">
-	      <div class="form-group col-sm-2 col-md-offset-2">
-	           <input type="checkbox" name="chkfecha" id="chkfecha"  <c:if test="${fn:contains(fecha_ejercer,'true')}" >checked</c:if>>&nbsp;Ejercer con otra fecha
-		  </div>
-	      <div class="form-group">
-	      		<div class="control-label col-sm-1">Fecha para ejercer:</div>
-	      		<div class="form-group col-sm-2">
-		      		<div class="input-group date" id="fecha_pejercer"> 
-						<input type="text" id="txtfecha_ejercido" name="txtfecha_ejercido" class="form-control" />	 
-		    			<span class="input-group-addon"> 
-		                	<span class="glyphicon-calendar glyphicon"></span> 
-		        		</span> 
-					</div>
-				</div>
-			</div>
-			
-     </div>
-    
-	<br/>
-	<br/>
-
 </div>
 
 <br />
@@ -365,7 +357,7 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
   
  </c:forEach>
   <tr>
-    <td colspan="8" align="left"><input type="button" value="Ejercer OP" id="cmdejercer" class="btn btn-success" style="width:130px"/>
+    <td colspan="8" align="left">
     <!--  
 	    <sec:authorize ifAllGranted="ROLE_Sam_PRIVILEGIOS_CAMBIAR_FECHA_ORDEN_DE_PAGO">
 	      <input type="button" value="Cambiar fecha" id="cmdfecha" class="botones" style="width:130px"/>
@@ -376,11 +368,17 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
   </tr>
 </tbody>  
 </table><div title="123"></div>
+<div class="form-group">
+		<input type="button" value="Ejercer OP" id="cmdejercer" class="btn btn-success" style="width:130px; margin-left: 20px;"/>
+</div>
+<div class="alert alert-info">
+		<strong>Total de registros encontrados: <c:out value='${cont}'/></strong>
+</div>
 </form>
 <div class="panel">
 	<h3 style="color:#FFF">Tipo de relación de Ordenes de Pago</h3>
     <div class="styled-select">
-        <select name="cbotiporelacion" class="comboBox" id="cbotiporelacion" style="width:350px">
+        <select name="cbotiporelacion" class="form-control input-sm" id="cbotiporelacion" style="width:350px">
                 <option value="0">[Seleccione tipo de relación]</option>
                 <option value="1">Relación de [Envío] a Dirección de Finanzas</option>
                 <option value="2">Relación de [Devolución] de Ordenes de Pago a </option>
@@ -391,7 +389,7 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
     <div id="div_unidades">
     	<h3 style="color:#FFF">Unidad Administrativa</h3>
         <div class="styled-select">
-            <select name="cbodependencia2"  id="cbodependencia2" style="width:350px" class="comboBox">
+            <select name="cbodependencia2"  id="cbodependencia2" style="width:350px" class="form-control input-sm">
                 <option value="0" selected>[Seleccione la Unidad Administrativa]</option>
                 <c:forEach items="${unidadesAdmiva}" var="item" varStatus="status"> 
                   <option value='<c:out value="${item.ID}"/>'><c:out value='${item.DEPENDENCIA}'/></option>
@@ -401,7 +399,7 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
     </div>
 	<h3 style="color:#FFF">Lista de relaciones</h3>
     <div class="styled-select">
-        <select name="cborelacion" class="comboBox" id="cborelacion" style="width:350px" disabled>
+        <select name="cborelacion" class="form-control input-sm" id="cborelacion" style="width:350px" disabled>
                 <option value="0">[Seleccione un listado]</option>
           </select>
      </div>
@@ -434,16 +432,192 @@ background:#222222 url(../../imagenes/minus.png) 85% 55% no-repeat;
   <div id="divdetalle"><h3 style="color:#FFF">Detalles de Ordenes de Pago</h3></div>
   <p><table width="310" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td width="170"><select name="lstdetalles" id="lstdetalles" size="10" multiple="multiple" style="width:243px; font-size:11px" onChange="validarList()" disabled></select> <input type="checkbox" id="chkdevuelto" value="" disabled/><span style="color:#FFF; font-size:11px;">Devuelto</span></td>
-    <td width="116" align="center" valign="top"><div id="divopvale"><span style="color:#FFF; font-size:11px">Orden de Pago</span></div><input type="text" id="txtnumop" name="txtnumop" style="width:100px" disabled><span style="color:#FFF; font-size:11px">Observaci&oacute;n</span><br><textarea rows="5" id="txtarea" style="width:100px"></textarea></td>
+    <td width="170"><select name="lstdetalles" class="form-control input-sm" id="lstdetalles" size="10" multiple="multiple" style="width:243px; font-size:11px" onChange="validarList()" disabled></select> <input type="checkbox" id="chkdevuelto" value="" disabled/><span style="color:#FFF; font-size:11px;">Devuelto</span></td>
+    <td width="116" align="center" valign="top"><div id="divopvale"><span style="color:#FFF; font-size:11px">Orden de Pago</span></div><input type="text" id="txtnumop" name="txtnumop" style="width:100px" disabled><span style="color:#FFF; font-size:11px">Observaci&oacute;n</span><br><textarea rows="5" class="form-control" id="txtarea" style="width:100px"></textarea></td>
   </tr>
   <tr>
-  	<td width="170" colspan="2"><input type="hidden" value="0" id="hddetalle"> <input  name="cmdagregar" type="button" class="botones" id="cmdagregar" value="Agregar OP's" style="width:96px" disabled>  <input  name="cmdeliminar" type="button" class="botones" id="cmdeliminar" value="Eliminar OP's" style="width:96px" disabled> <input  name="cmdmodificarop" type="button" class="botones" id="cmdmodificarop" value="Modificar OP" style="width:100px" onClick="cargaDetalles()" disabled></td>
+  	<td width="170" colspan="2"><input type="hidden" value="0" id="hddetalle"> <input  name="cmdagregar" type="button" class="btn btn-primary btn-sm" id="cmdagregar" value="Agregar OP's" style="width:96px" disabled>  <input  name="cmdeliminar" type="button" class="btn btn-danger btn-sm" id="cmdeliminar" value="Eliminar OP's" style="width:96px" disabled> <input  name="cmdmodificarop" type="button" class="btn btn-primary btn-sm" id="cmdmodificarop" value="Modificar OP" style="width:100px" onClick="cargaDetalles()" disabled></td>
   </tr>
 </table>
 </p>
 <p><input  name="cmdimprimir" type="button" class="btn btn-imprimir btn-sm" id="cmdimprimir" value="Imp. Relación" style="width:96x" disabled> <input  name="cmdimprimir" type="button" class="btn btn-imprimir btn-sm" id="cmdimprimirgeneral" value="Imp. General" style="width:96x" disabled> <input  name="cmdnueva" type="button" class="btn btn-primary btn-sm" id="cmdnueva" value="Nueva relación" style="width:96px" disabled></p>
   <div style="clear:both;"></div>
+</div>
+<div>
+	<h1>${hello}</h1>
+    <table id="person-list" class="table table-striped table-hover" style="width: 35%">
+        <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        </tr>
+        <c:forEach items="${users}" var="user">
+            <tr>
+                <td> ${user.id}</td>
+                <td class="display${user.id}" id="displayName${user.id}"> ${user.name}</td>
+                <td class="display${user.id}" id="displayAge${user.id}"> ${user.age}</td>
+                <td style="display: none;" class="edit${user.id}"> 
+                  <input type="text" name="editName${user.id}" id="editName${user.id}" value="${user.name}" />
+                </td>
+                <td style="display: none;" class="edit${user.id}"> 
+                  <input type="text" name="editAge${user.id}" id="editAge${user.id}" value="${user.age}" />
+                </td>
+                <td>
+                  <input type="button" class="delete-person" data-item-id="${user.id}" id="delete-person${user.id}" value="Delete" /> 
+                </td>
+                <td> 
+                  <input type="button" class="update-person" data-item-id="${user.id}" id="update-person${user.id}" value="Update" /> 
+                </td>
+                <td style="display: none;" class="edit${user.id}">
+                  <input type="button"  class="update-person" data-item-id="${user.id}" id="edit-person${user.id}" value="Confirm" /> 
+                </td>
+                <td id="updatecheck${user.id}" style="display: none"><span class="label label-success" >OK</span></td>
+            </tr>
+        </c:forEach>
+        <tr>
+            <td>NEW</td>
+            <td><input type="text" name="name" id="name" placeholder="Enter Name" /></td>
+            <td><input type="text" name="age" id="age" placeholder="Enter Age" /></td>
+            <td>
+                <input type="button" id="add-person" value="Add" />
+            </td>
+        </tr>
+    </table>
+    <span class="otherchecks label label-success" style="display: none;">SUCCESS</span>
+
+<script>
+    $(document).ready(function() {
+        
+        $("#add-person").click(function(){
+            
+            var name= $("#name").val();
+            var age = $("#age").val();
+           
+            var data = JSON.stringify({"name":name,"age":age});
+           
+            $.ajax({
+            type : "POST",
+            url : "${pageContext.request.contextPath}/lista_ordenPagoEjercer",
+            contentType: "application/json",
+            data : data,
+            success: function(data){
+            
+            if(data===""){
+                return;
+            }else{           
+                var html = [];
+                html.push(
+                  '<tr>',
+                  '<td>'+data.id+'</td>',
+                  '<td class="display'+data.id+'" id="displayName'+data.id+'">'+data.name+'</td>',
+                  '<td class="display'+data.id+'" id="displayAge'+data.id+'">'+ data.age+'</td>',
+                  '<td style="display: none;" class="edit'+data.id+'"> <input type="text" name="editName'+data.id+'" id="editName'+data.id+'" value="'+data.name+'" /></td>',
+                  '<td style="display: none;" class="edit'+data.id+'"> <input type="text" name="editAge'+data.id+'" id="editAge'+data.id+'" value="'+data.age+'" /></td>',
+                  '<td><input type="button" class="delete-person" data-item-id="'+data.id+'" id="delete-person'+data.id+'" value="Delete" /></td>',
+                  '<td> <input type="button" class="update-person" data-item-id="'+data.id+'" id="update-person'+data.id+'" value="Update" /> </td>',
+                  '<td style="display: none;" class="edit'+data.id+'"> <input type="button"  class="update-person" data-item-id="'+data.id+'" id="edit-person'+data.id+'" value="Confirm" /> </td>',
+                  '<td id="updatecheck'+data.id+'" style="display: none;background-color: greenyellow; color:white;">OK</td>',
+                  '</tr>'
+                );
+                var a = html.join("");
+                $('#person-list tr:last').before(a);
+
+                   $("#name").val("");
+                   $("#age").val("");
+
+                   $(".otherchecks").show();
+                   setTimeout(function() { $(".otherchecks").hide(); }, 2000);
+                 }
+               }
+            });
+        });
+        
+        $("#person-list").on('click','.update-person',function(){
+          
+            var value = $(event.target).val();
+            var id = $(event.target).data('itemId');
+            var tdclassshow = ".edit"+id;
+            var tdclasshide = ".display"+id;
+            var editnameid = "#editName"+id;
+            var editageid = "#editAge"+id;
+
+            var confirmbuttonshow = ".edit"+id;
+
+            if(value==="Update"){
+                $(tdclassshow).show();
+                $(tdclasshide).hide();
+                $(confirmbuttonshow).show();
+            }else if(value==="Confirm"){
+                var name = $(editnameid).val();
+                var age = $(editageid).val();
+                var data = JSON.stringify({"id":id ,"name":name,"age":age});
+
+                $.ajax({
+                   type : "PUT",
+                   url : "${pageContext.request.contextPath}/updatePerson",
+                   contentType: "application/json",
+                   data : data,
+                   success: function(data){
+
+                     $(tdclassshow).hide();
+                     $(tdclasshide).show();
+                     $(confirmbuttonshow).hide();
+                     
+                     var dispName = "#displayName"+id;
+                     var dispAge = "#displayAge"+id;
+                     $(dispName).text(name);
+                     $(dispAge).text(age);
+                     
+                     $('#updatecheck'+id).show();
+                     setTimeout(function() { $('#updatecheck'+id).hide(); }, 2000);
+
+                   }
+                 });
+                 
+            }
+          
+        });
+
+        $("#person-list").on('click','.delete-person',function(event){
+            var id = $(event.target).data('itemId');
+            var data = JSON.stringify({"id":id});
+            var rowId= "#"+event.target.id;
+            $.ajax({
+            type : "DELETE",
+            url : "${pageContext.request.contextPath}/deletePerson",
+            contentType: "application/json",
+            data : data,
+            success: function(data){
+               $(rowId).closest('tr').remove();
+               $(".otherchecks").show();
+               setTimeout(function() { $(".otherchecks").hide(); }, 2000);
+            }
+            });
+        });
+        
+        $("#testmap").click(function(){
+           
+           var data = JSON.stringify({question:"1",answer:"2"});
+          
+            $.ajax({
+            type : "POST",
+            url : "${pageContext.request.contextPath}/testmap",
+            headers: { 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json' 
+            },
+//            contentType: "application/json",
+            data : data,
+            success: function(data){
+               
+            }
+            });
+        });
+        
+        
+    });
+    
+</script>
 </div>
 <a class="trigger" href="#">Relaciónes</a>
 <form method="POST" id="frmreporte" name="frmreporte">

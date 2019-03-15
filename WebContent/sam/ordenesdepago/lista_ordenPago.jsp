@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>Listado de Pedidos</title>
@@ -16,31 +16,17 @@
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/css/bootstrap-select.css" type="text/css">
-<!-- <script type="text/javascript" src="../../include/js/jquery-ui-1.12.1.js"></script> 
-	<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-	<script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
-	<script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
-	<link rel="stylesheet" href="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.css" type="text/css" />
-	
-<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
-
-<link rel="stylesheet" href="../../include/js/autocomplete/jquery.autocomplete.css" type="text/css" />
--->
-	
-<script type="text/javascript" src="../../include/js/jquery-1.9.1.min.js?x=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="lista_ordenPago.js?x=<%=System.currentTimeMillis()%>"> </script>
 
 <script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
+
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/interface/controladorOrdenPagoRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
-<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
 
-
-
-
-
+<!-- <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script> -->
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
@@ -48,22 +34,8 @@
 <script type="text/javascript" src="../../include/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 
-<!--
-//Demo se actualizo...
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
-<script src="../../include/css/jquery.tiptip.js"></script>
-<link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
-<script type="text/javascript" src="../../include/js/jquery.tabs/jquery-1.1.3.1.pack.js"></script>
-<script type="text/javascript" src="../../include/js/jquery.tabs/jquery.history_remote.pack.js"></script>
-<script type="text/javascript" src="../../include/js/jquery.tabs/jquery.tabs.pack.js"></script>-->
 <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs.css" type="text/css" media="print, projection, screen">
-<!-- Additional IE/Win specific style sheet (Conditional Comments) -->
-<!--[if lte IE 7]>
-<link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs-ie.css" type="text/css" media="projection, screen">
-<![endif]-->
+
 <style type="text/css">
 a:link {
 	text-decoration: none;

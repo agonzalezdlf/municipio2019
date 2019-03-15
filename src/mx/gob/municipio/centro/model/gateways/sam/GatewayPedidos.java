@@ -69,17 +69,17 @@ public class GatewayPedidos extends BaseGateway {
 	
 	//--------------------------------------   GUARDAR DE PEDIDOS  -----------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------------------------------------------------------------------------	
-	public Map guardarEditarPedidos(Long cve_ped, Long cve_req, Date fecha, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_req_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento,Double ieps, int ejercicio, int id_grupo){
+	public Map guardarEditarPedidos(Long cve_ped, Long cve_req, Date fecha, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_req_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento,int ejercicio, int id_grupo, Double ieps){
 		Map row = new HashMap();
 		if(cve_ped==null){
-			/*Guarda datos del nuevo pedido*/
-			cve_ped = this.guardarPedido(cve_ped, cve_req, fecha, contrato, cve_concurso, fecha_entrega, cve_beneficiario, cve_pers, condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento,ieps, ejercicio, id_grupo);
+			/*Inserta datos del nuevo pedido*/
+			cve_ped = this.guardarPedido(cve_ped, cve_req, fecha, contrato, cve_concurso, fecha_entrega, cve_beneficiario, cve_pers, condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento, ejercicio, id_grupo,ieps);
 			row.put("EVENT",true);
 		}
 		else{
 			/*Actualiza un pedido existente*/
 			
-			row.put("EVENT", this.editarPedido(cve_ped, fecha, contrato, cve_concurso, fecha_entrega, cve_beneficiario, cve_pers, condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento,ieps, ejercicio, id_grupo));
+			row.put("EVENT", this.editarPedido(cve_ped, fecha, contrato, cve_concurso, fecha_entrega, cve_beneficiario, cve_pers, condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento, ejercicio, id_grupo, ieps));
 		}
 		row.put("CVE_PED", cve_ped);
 		row.put("NUM_PED", this.rellenarCeros(cve_ped.toString(), 6));
@@ -88,7 +88,7 @@ public class GatewayPedidos extends BaseGateway {
 	
 	/*Metodo usado para guardar un pedido existente*/
 	@SuppressWarnings("static-access")
-	public boolean editarPedido(Long cve_ped, Date fecha_ped, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_ped_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento,Double ieps, int ejercicio, int id_grupo){
+	public boolean editarPedido(Long cve_ped, Date fecha_ped, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_ped_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento, int ejercicio, int id_grupo, Double ieps){
 		int i=0;
 		double subtotal = 0L;
 		double total = 0L;
@@ -113,8 +113,8 @@ public class GatewayPedidos extends BaseGateway {
 		//cve_ped = getNumeroPedido(ejercicio)+1;
 		String num_ped = this.rellenarCeros(cve_ped.toString(), 6);
 		/*Actualiza el pedido*/
-		String SQL = "UPDATE SAM_PEDIDOS_EX SET CLV_BENEFI = ?, CONTRATO=?, ENTREGA=?, CONDICION_PAGO=?, NOTAS=?, CVE_CONCURSO=?, SUBTOTAL=?, IVA=?, TIPO_IVA=?, DESCUENTO=?, TOTAL=?, FECHA_PED=?, FECHA_ENTREGA = ?, STATUS=?, COMPROMETE=?, EJERCE=? WHERE CVE_PED = ?";
-		this.getJdbcTemplate().update(SQL, new Object[]{cve_beneficiario, contrato, lugar_entrega, condicion_pago, notas, cve_concurso, subtotal, iva, tipo_iva, descuento, total, fecha_ped, fecha_entrega, this.PED_STATUS_NUEVO, total, 0 , cve_ped});
+		String SQL = "UPDATE SAM_PEDIDOS_EX SET CLV_BENEFI = ?, CONTRATO=?, ENTREGA=?, CONDICION_PAGO=?, NOTAS=?, CVE_CONCURSO=?, SUBTOTAL=?, IVA=?, TIPO_IVA=?, DESCUENTO=?, TOTAL=?, FECHA_PED=?, FECHA_ENTREGA = ?, STATUS=?, COMPROMETE=?, EJERCE=?, IEPS=? WHERE CVE_PED = ?";
+		this.getJdbcTemplate().update(SQL, new Object[]{cve_beneficiario, contrato, lugar_entrega, condicion_pago, notas, cve_concurso, subtotal, iva, tipo_iva, descuento, total, fecha_ped, fecha_entrega, this.PED_STATUS_NUEVO, total, 0 ,ieps, cve_ped});
 		/*Guardar el movimiento en bitacora*/
 		@SuppressWarnings("rawtypes")
 		Map ped = this.getJdbcTemplate().queryForMap("SELECT NUM_PED, FECHA_PED, TOTAL FROM SAM_PEDIDOS_EX WHERE CVE_PED = ?", new Object[]{cve_ped});
@@ -125,7 +125,7 @@ public class GatewayPedidos extends BaseGateway {
 	}
 	
 	/*Metodo usado para guardar un nuevo pedido*/
-	public Long guardarPedido(Long cve_ped, Long cve_req, Date fecha, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_req_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento,Double ieps, int ejercicio, int id_grupo){
+	public Long guardarPedido(Long cve_ped, Long cve_req, Date fecha, String contrato, int cve_concurso, String fecha_entrega, String cve_beneficiario, int cve_pers, String condicion_pago, String lugar_entrega, String notas, List<Long> id_req_movtos, List<Double> cantidades, List<String> conceptos, List<Double> precios_unit, Double iva, int tipo_iva, Double descuento, int ejercicio, int id_grupo, Double ieps){
 		int i=0;
 		double subtotal = 0L;
 		double total = 0L;
@@ -153,7 +153,8 @@ public class GatewayPedidos extends BaseGateway {
 		/*guarda los datos*/
 		String SQL = "INSERT INTO SAM_PEDIDOS_EX (EJERCICIO, CLV_BENEFI, CVE_PERS, SUBTOTAL, IVA, TIPO_IVA, DESCUENTO, TOTAL, CONTRATO, ENTREGA, NOTAS, FECHA_CRE, FECHA_PED, STATUS, COMPROMETE, EJERCE, CVE_CONCURSO, FECHA_ENTREGA, CONDICION_PAGO, ID_GRUPO, CVE_REQ ) " +
 					 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.getJdbcTemplate().update(SQL, new Object[]{ ejercicio, cve_beneficiario, cve_pers, subtotal, iva, tipo_iva, descuento, total, contrato, lugar_entrega, notas, fecha_cap, fecha, this.PED_STATUS_NUEVO, 0, 0, cve_concurso, fecha_entrega, condicion_pago, id_grupo,cve_req});
+		this.getJdbcTemplate().update(SQL, new Object[]{ ejercicio, cve_beneficiario, cve_pers, subtotal, iva, tipo_iva, descuento, total, contrato, lugar_entrega, notas, fecha_cap, fecha, this.PED_STATUS_NUEVO, 0, 0, cve_concurso, fecha_entrega, condicion_pago, id_grupo, cve_req });
+		
 		
 		cve_ped = getNumeroPedido(ejercicio);
 		String num_ped = this.rellenarCeros(cve_ped.toString(), 6);	
@@ -181,7 +182,7 @@ public class GatewayPedidos extends BaseGateway {
 			SQL = "INSERT INTO SAM_PED_MOVTOS(CVE_PED, PED_CONS, ID_REQ_MOVTO, DESCRIP, CANTIDAD, PRECIO_UNI, STATUS) VALUES (?,?,?,?,?,?,?)";
 			this.getJdbcTemplate().update(SQL, new Object []{cve_ped, (i+1), id, conceptos.get(i).trim(),cantidades.get(i),precios_unit.get(i), this.PED_STATUS_NUEVO} );
 			/*Cambiar tambien el status de los elementos de la requisicion*/
-			gatewayRequisicion.cambiaStatusMovimientoRequisicion(cve_req, id, gatewayRequisicion.REQ_MOVTO_SOLICITADO);
+			gatewayRequisicion.cambiaStatusMovimientoRequisicion(cve_req, id, gatewayRequisicion.REQ_MOVTO_CERRADO);
 			/*Guardar en bitacora*/
 			gatewayBitacora.guardarBitacora(gatewayBitacora.AGREGO_MOV_PEDIDO, ejercicio, cve_pers, cve_ped, this.rellenarCeros(cve_ped.toString(), 6), "PED", fecha_cap, null, null, "Consec: " + (i+1) + " Cantidad: "+cantidades.get(i)+" Precio_Unit: "+precios_unit.get(i)+" Descripcion: "+conceptos.get(i).trim(), (Double) cantidades.get(i)* (Double) precios_unit.get(i));
 			i++;
@@ -391,7 +392,7 @@ public class GatewayPedidos extends BaseGateway {
 		try  
 		{
 			String sql = "SELECT SAM_PEDIDOS_EX.CVE_PED, SAM_PEDIDOS_EX.NUM_PED, CONVERT(varchar(10), SAM_PEDIDOS_EX.FECHA_PED, 103) AS FECHA_PED, SAM_PEDIDOS_EX.FECHA_PED as FECHA_PED2, CONVERT(varchar(10), SAM_PEDIDOS_EX.FECHA_CIERRE, 103) AS FECHA_CIERRE, SAM_PEDIDOS_EX.FECHA_CIERRE AS FECHA_CIERRE2, "+
-									"SAM_PEDIDOS_EX.cve_concurso, SAM_PEDIDOS_EX.FECHA_ENTREGA, SAM_PEDIDOS_EX.CLV_BENEFI, CAT_BENEFI.NCOMERCIA, CAT_BENEFI.COLONIA, CAT_BENEFI.CIUDAD, "+
+									"SAM_PEDIDOS_EX.cve_concurso, SAM_PEDIDOS_EX.FECHA_ENTREGA, SAM_PEDIDOS_EX.CLV_BENEFI,SAM_PEDIDOS_EX.IEPS ,CAT_BENEFI.NCOMERCIA,CAT_BENEFI.COLONIA, CAT_BENEFI.CIUDAD, "+
 									"CAT_BENEFI.ESTADO, CAT_BENEFI.DOMIFISCAL, CAT_BENEFI.TELEFONOS, SAM_PEDIDOS_EX.CONTRATO, SAM_ESTATUS_PED.DESCRIPCION AS STATUS_DESC, SAM_PEDIDOS_EX.CONDICION_PAGO,"+
 									"SAM_PEDIDOS_EX.NOTAS, SAM_PEDIDOS_EX.STATUS, SAM_PEDIDOS_EX.ENTREGA, SAM_PEDIDOS_EX.IVA, SAM_PEDIDOS_EX.TIPO_IVA, SAM_PEDIDOS_EX.DESCUENTO, ROUND(SAM_PEDIDOS_EX.TOTAL,2) AS TOTAL, SAM_REQUISIC.CVE_REQ,"+
 									"SAM_REQUISIC.NUM_REQ, SAM_REQUISIC.CVE_VALE, SAM_REQUISIC.ID_PROYECTO, SAM_REQUISIC.CLV_PARTID, SAM_REQUISIC.CVE_CONTRATO, SAM_PEDIDOS_EX.ID_GRUPO, SAM_REQUISIC.ID_DEPENDENCIA, SAM_REQUISIC.TIPO, "+
@@ -428,22 +429,14 @@ public class GatewayPedidos extends BaseGateway {
 			throw new RuntimeException("No se puede aperturar el Pedido "+pedido.get("NUM_PED").toString()+", consulte a su administrador");
 		
 	}
-  
-	
-	
-	/*Metodo para determinar si una requisicion es anualizada*/
-	public boolean esAnualizadaRequisicion(Long cve_req){
-		return this.getJdbcTemplate().queryForInt("SELECT (CASE TIPO WHEN '7' THEN 1 ELSE 0 END) AS N FROM SAM_REQUISIC WHERE CVE_REQ = ? ", new Object []{cve_req})!=0;
-	}
+
 	/*Metodo para comprobar si existe una orden de pago asignada a un pedido*/
 	public boolean ordenPagoEnPedido(Long cve_ped){
 		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_OP_COMPROBACIONES AS P INNER JOIN SAM_ORD_PAGO AS O ON (O.CVE_OP = P.CVE_OP) WHERE O.CVE_PED = ? AND O.STATUS IN (0,1) AND P.CVE_PED IS NOT NULL", new Object[]{cve_ped})!=0;
 		//cont += getJdbcTemplate().queryForInt("SELECT COUNT(CVE_OP) AS N FROM ORD_PAGO WHERE PED = ? AND STATUS IN(0,1)", new Object[]{cve_ped});
 	}
 	
-	
-	
-	
+//------------------------------------------------------------------------------ CLASE EN REVISION ------------------------------------------------	
 //--------------------------------------   CANCELAR DE PEDIDOS  -----------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------	
 	
@@ -469,7 +462,7 @@ public class GatewayPedidos extends BaseGateway {
 				}
 				
 	        	//Si el estatus descripcion es cerrado
-	        	if( pedido.get("STATUS_DESC").equals("CERRADO")){ //esta comprometiendo
+	        	if( pedido.get("STATUS_DESC").equals("CERRADO")){//esta comprometiendo
 	        		descomprometerPedido(cve_ped, ejercicio, Long.parseLong(pedido.get("ID_PROYECTO").toString()), pedido.get("CLV_PARTID").toString(), Double.parseDouble(pedido.get("TOTAL").toString()));
 	        	}
 
@@ -478,17 +471,17 @@ public class GatewayPedidos extends BaseGateway {
 	        	
 	        	//Obtener la requisicion del pedido
 	        	Map req = gatewayRequisicion.getRequisicion(Long.parseLong(pedido.get("CVE_REQ").toString()));
-	        	
-	        	//Comprobar si es anualizada la requisicion y de ser asi devolver los lotes que correspondan
-	        	//if (esAnualizadaRequisicion(Long.parseLong(pedido.get("CVE_REQ").toString())))
-    			Integer tipor = (Integer) req.get("TIPO");
-    			
+	     
     			//Obtener los lotes del pedido
     			List<Map<String, Object>>Lotes= getConceptos(cve_ped);
-	        		        	
-    			//List<Map<String, Object>> Lotes2 = getJdbcTemplate().queryForList("SELECT * FROM SAM_PED_MOVTOS WHERE STATUS=1 AND CVE_PED=?", new Object[]{cve_ped});
+	        	for(Map partid: Lotes){
+					
+					devolverLotesRequisicion(Long.parseLong(partid.get("ID_PED_MOVTO").toString()),Long.parseLong(partid.get("ID_REQ_MOVTO").toString()));
+				}
     			
-    			if (tipor==7){
+    			//Cambiar si es necesario el status de la requisicion
+        	    gatewayRequisicion.cambiaStatusRequisicion(Long.parseLong(pedido.get("CVE_REQ").toString()));
+    			/*if (tipor==7){
     				
     				for(Map partid: Lotes){
     					
@@ -508,7 +501,7 @@ public class GatewayPedidos extends BaseGateway {
 	        			getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ?, COMPROMETIDO = ? WHERE CVE_REQ = ?", new Object[]{gatewayRequisicion.REQ_MOVTO_SOLICITADO, 1, Long.parseLong(pedido.get("CVE_REQ").toString())});
 	        			
 	        				        			
-	        	}
+	        	}*/
 	        	
 	        	//Si tienen contrato
 	        	if(pedido.get("CVE_CONTRATO")!=null){
@@ -578,53 +571,43 @@ public class GatewayPedidos extends BaseGateway {
 		    this.getJdbcTemplate().update("UPDATE SAM_COMP_REQUISIC SET PERIODO =? WHERE TIPO ='COMPROMISO' AND CVE_PED IS NULL AND CVE_REQ = (SELECT CVE_REQ FROM SAM_PEDIDOS_EX WHERE CVE_PED = ?)", new Object[]{mesActivo, idPedido});
 	    }
 	
+		/*Metodo que se usa para devolover la cantidad de lote a los lotes de una requisicion*/
+		public void devolverLotesRequisicion(Long ID_MOV_PED, Long ID_REQ_MOVTO){
+							
+			try
+			{
+				BigDecimal LoteTotal=new BigDecimal("0.0");
+				
+				
+				//Obtengo la cantidad del lote en la requisicion
+				Double cant_req = (Double) getJdbcTemplate().queryForObject("SELECT CANTIDAD FROM SAM_REQ_MOVTOS WHERE ID_REQ_MOVTO = ?", new Object[]{ID_REQ_MOVTO},Double.class);
+				
+				//Obtengo la cantidad del lote a devolver
+				Double cant_ped = (double) getJdbcTemplate().queryForLong("SELECT CANTIDAD FROM SAM_PED_MOVTOS WHERE ID_PED_MOVTO = ?", new Object[]{ID_MOV_PED});
+				
+				//incremento cantidad en lote de requi + cantidad devuelta por cancelacion del pedido...
+				cant_req+=cant_ped;
+				
+				//actualiza el lote que corresponde a la requisicion
+				this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET CANTIDAD = ?, STATUS = ?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = ?", new Object[]{cant_req,gatewayRequisicion.REQ_MOVTO_CERRADO, 1, ID_REQ_MOVTO});
+				log.info("El total del lotes es: " +cant_req);
+				System.out.println("Este el el total a actualizar: " +cant_req);
+							
+				log.info(this.getConcepto(ID_MOV_PED));
+			}
+			catch ( DataAccessException e) {
+				log.info(e.getMessage());
+			}
+		}	
+		
+		
 	public boolean existeFactura(Long cve_pedido){
 		
 		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_FACTURAS WHERE STATUS IN (1,3) AND CVE_PED=?", new Object[]{cve_pedido})>0;
 		
 	}
 	
-	/*Metodo que se usa para devolover la cantidad de lote a los lotes de una requisicion*/
-	public void devolverLotesRequisicion(Long ID_MOV_PED){
-						
-		try
-		{
-			//obtengo el lote del pedido
-			Map lote = this.getConcepto(ID_MOV_PED);
-			
-			//throw new RuntimeException("Cantidad del lote que se debe regresar" + Can_Lote);
-			BigDecimal enrequi = (BigDecimal) getJdbcTemplate().queryForObject("SELECT CANTIDAD FROM SAM_REQ_MOVTOS WHERE ID_REQ_MOVTO = ?", new Object[]{lote.get("ID_REQ_MOVTO")},BigDecimal.class);
-			
-			enrequi = enrequi.add((BigDecimal)lote.get("CANTIDAD"));
-			System.out.println("Cantidad a devolver a la requisicion BIGDECIMAL es: " + enrequi);
-			
-			
-			Double Can_Lote = (double) getJdbcTemplate().queryForLong("SELECT CANTIDAD FROM SAM_PED_MOVTOS WHERE ID_PED_MOVTO = ?", new Object[]{ID_MOV_PED});
-			System.out.println("Cantidad a devolver a la requisicion es: " + Can_Lote);
-			
-		
-			
-			Double Devolucion=Double.parseDouble(lote.get("CANTIDAD").toString());
-			System.out.println("Cantidad a devolver a la requisicion es: " + Devolucion);
-			
-			Double Cant_requi = (double) getJdbcTemplate().queryForLong("SELECT CANTIDAD FROM SAM_REQ_MOVTOS WHERE ID_REQ_MOVTO = ?", new Object[]{lote.get("ID_REQ_MOVTO")});
-			System.out.println("Cantidad en la requisicion es: " + Cant_requi);
-		
-			
-			Double Devuelto = Cant_requi+Devolucion;
-			System.out.println("Cantidad a devolver a la requisicion mas la cantidad en pedido: " + Devuelto);
-			
-		
-						
-			//actualiza el lote que corresponde a la requisicion
-			this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET CANTIDAD = ?, STATUS = ?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = ?", new Object[]{enrequi,this.PED_MOVTO_PENDIENTE, 1, lote.get("ID_REQ_MOVTO").toString()});
-			
-			log.info(this.getConcepto(ID_MOV_PED));
-		}
-		catch ( DataAccessException e) {
-			log.info(e.getMessage());
-		}
-	}
+	
 	
 	//Mueve lotes entre pedidos
 	public void moverLotes(Long id_ped_movto, int cve_pers, Long cve_ped_fuente, Long cve_ped_destino, int ped_cons, int ejercicio){	 
@@ -690,7 +673,7 @@ public class GatewayPedidos extends BaseGateway {
 			Map pedido = this.getPedido(cve_ped);
 			Map lote = this.getConcepto(id_ped_movto);
 			/*Reactivar el lote correspondiente en la requisicion*/
-			this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = (SELECT ID_REQ_MOVTO FROM SAM_PED_MOVTOS WHERE ID_PED_MOVTO = ?)", new Object []{this.gatewayRequisicion.REQ_MOVTO_SOLICITADO, 1, id_ped_movto});
+			this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = (SELECT ID_REQ_MOVTO FROM SAM_PED_MOVTOS WHERE ID_PED_MOVTO = ?)", new Object []{this.gatewayRequisicion.REQ_MOVTO_CERRADO, 1, id_ped_movto});
 			/*Eliminar el lote en pedidos */
 			this.getJdbcTemplate().update("DELETE FROM SAM_PED_MOVTOS WHERE ID_PED_MOVTO = ?", new Object []{id_ped_movto});
 			//actualiza el status de la requisicion
@@ -820,16 +803,14 @@ public class GatewayPedidos extends BaseGateway {
  
 //--------------------------------------   CIERRE DE PEDIDOS  -----------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------
-	public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final int cve_pers, final int ejercicio){
+	public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final int cve_pers, final int ejercicio, final boolean pcalendarizado){
 		try
 		{
 			/*this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
             Override
             protected void   doInTransactionWithoutResult(TransactionStatus status) {*/
             	//<myList.size()
-				if (calendario.isEmpty()&&tipo==7){
-					throw new RuntimeException("Debe habilitar el pedido calendarizado");
-				}
+				
 				Map pedido =getPedido(cve_ped);
 				int mesActivo =gatewayMeses.getMesActivo(ejercicio);
 				Long proyecto= Long.parseLong(pedido.get("ID_PROYECTO").toString());
@@ -842,7 +823,7 @@ public class GatewayPedidos extends BaseGateway {
 				Long cve_vale = new Long((pedido.get("CVE_VALE")==null) ? 0L:(Integer)pedido.get("CVE_VALE"));
 					
 				//REQ. CALENDARIZADA										
-				if (tipo==7){
+				if (tipo==7 && pcalendarizado==true){
 					
 					boolean tiene_precom = tienePrecompromisoDisponiblePrecom(proyecto, partida, idReq, importe, cve_contrato, cve_vale );
 					
@@ -883,7 +864,7 @@ public class GatewayPedidos extends BaseGateway {
 				}
 					
 				//Pedido normal 
-					else if (tipo==1){
+					else if (tipo==1 || tipo==7){
 						boolean tiene = tienePrecompromisoDisponible(proyecto, partida, mesActivo, idReq, importe, cve_contrato, cve_vale );
 						
 						if (tiene){	
@@ -929,7 +910,7 @@ public class GatewayPedidos extends BaseGateway {
 				
 				
 				else {
-					throw new RuntimeException("El monto del Pedido actual es mayor al precompromiso de la Requisición 2018<br>- La Requisición no esta precomprometiendo el recurso del periodo actual");
+					throw new RuntimeException("El monto del Pedido actual es mayor al precompromiso de la Requisición <br>- La Requisición no esta precomprometiendo el recurso del periodo actual");
 				}
               /*} 
            });*/
@@ -962,7 +943,7 @@ public class GatewayPedidos extends BaseGateway {
 						
 					dif = (Double.parseDouble(row.get("CANTIDAD2").toString()) + Double.parseDouble(row.get("CANTIDAD").toString()));
 						
-					status = this.gatewayRequisicion.REQ_MOVTO_SOLICITADO;
+					status = this.gatewayRequisicion.REQ_MOVTO_CERRADO;
 					comprometido = 1;
 						
 					this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET CANTIDAD = ?, STATUS=?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = ?", new Object[]{dif, status, comprometido, Long.parseLong(row.get("ID_REQ_MOVTO").toString())});
@@ -1002,7 +983,7 @@ public class GatewayPedidos extends BaseGateway {
 						comprometido = 0;
 					}
 					else{
-						status = this.gatewayRequisicion.REQ_MOVTO_SOLICITADO;
+						status = this.gatewayRequisicion.REQ_MOVTO_CERRADO;
 						comprometido = 1;
 					}
 					
@@ -1011,7 +992,7 @@ public class GatewayPedidos extends BaseGateway {
 				}
 				else
 				{
-					status = this.gatewayRequisicion.REQ_MOVTO_SURTIDO;
+					status = this.gatewayRequisicion.REQ_MOVTO_CERRADO;
 					comprometido = 0;
 					//actualiza los lotes de la requisicion
 					this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET CANTIDAD = ?, STATUS=?, COMPROMETIDO = ? WHERE ID_REQ_MOVTO = ?", new Object[]{dif, status, comprometido, Long.parseLong(row.get("ID_REQ_MOVTO").toString())});

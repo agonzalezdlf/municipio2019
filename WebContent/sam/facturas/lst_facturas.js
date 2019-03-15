@@ -75,9 +75,7 @@ function iniciarBusqueda(){
 	
 	var checkStatus = [];
 	var cont=0;
-	
-	alert('Selected values: ' + $('#cbostatus').multipleSelect('getSelects'));
-	alert('Selected texts: ' + $('#cbostatus').multipleSelect('getSelects', 'text'));
+
 	if ($('#selectItemcbostatus').is(':checked') ) {
 	    console.log("Checkbox seleccionado");
 	}

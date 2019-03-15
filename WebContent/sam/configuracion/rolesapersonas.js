@@ -120,7 +120,7 @@ function guardarDato(){
 				  if (result.dismiss === swal.DismissReason.timer) {
 					  controladorRolesAPersonasRemoto.guardarRolUsuario(lista,usuario,{
 					        callback:function(items) {
-								swal("Good job!", "Rol guardada con éxito!", "success");
+								swal({title:"Good job!", text: "Rol guardada con éxito!", type:"success",timer:300});
 								$('#usuario' ).val('');	
 								quitRow( "detallesListas");
 								$('#filaPrivilegio').hide();	

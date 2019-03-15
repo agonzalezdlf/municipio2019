@@ -53,7 +53,10 @@ public class ControladorListadoValesFinanzas extends ControladorBase {
 		String cve_benefi= request.getParameter("cboprestadorservicio");
 		String beneficiario=request.getParameter("cboprestadorservicio");//beneficiario
 		String numcontrato = request.getParameter("txtcontrato");
+		String cbostatus = String.valueOf(request.getParameter("cbostatus")==null ? 1 : (String) request.getParameter("cbostatus"));
 		
+		modelo.put("cbostatus",cbostatus) ;
+		modelo.put("clv_benefi",gatewayBeneficiario.getBeneficiariosTodos(0));
 		modelo.put("idUnidad", unidad);
 		modelo.put("ejercicio",this.getSesion().getEjercicio());
 		modelo.put("txtnumvale", numvale);
@@ -61,13 +64,14 @@ public class ControladorListadoValesFinanzas extends ControladorBase {
 		modelo.put("fechaInicial",fechaIni);
 		modelo.put("fechaFinal",fechaFin);
 		modelo.put("status",estatus);
+		
 		modelo.put("cbotipogasto",tipoGasto );
 		modelo.put("idUnidadSes",this.getSesion().getClaveUnidad());
 		modelo.put("nombreUnidad",this.getSesion().getUnidad());
 		modelo.put("CVE_BENEFI",cve_benefi );
 		modelo.put("clv_benefi",gatewayBeneficiario.getBeneficiariosTodos(0));
 		
-		modelo.put("vales",this.getListadoVales(unidad, estatus, cve_benefi, numvale, numcontrato, fechaIni,fechaFin,this.getSesion().getEjercicio(),tipoGasto,this.getSesion().getIdUsuario(), privilegio));		
+		modelo.put("vales",this.getListadoVales(unidad, cbostatus, cve_benefi, numvale, numcontrato, fechaIni,fechaFin,this.getSesion().getEjercicio(),tipoGasto,this.getSesion().getIdUsuario(), privilegio));		
 	    return "sam/vales/lista_vales_finanzas.jsp";
 	}
 	
@@ -80,7 +84,12 @@ public class ControladorListadoValesFinanzas extends ControladorBase {
     public List<Map<String, Object>> getTiposDeGasto(){
     	return gatewayPlanArbit.getTipodeGasto();
     }
-		
+	
+	@ModelAttribute("beneficiarios")
+	public List<Map<String, Object>>getBeneficiarios(){
+		return (List<Map<String, Object>>) gatewayBeneficiario.getListaBeneficiarios();
+	}
+	
 	public List <Map<String, Object>>getListadoVales(String unidad, String  estatus , String clv_benefi, String numvale, String numcontrato, String fechaInicial, String fechaFinal , Integer ejercicio, String tipoGasto, Integer idUsuario, Boolean privilegio){
 		return this.gatewayVales.getListaDeValesPorEjemplo(unidad, estatus , clv_benefi, numvale, numcontrato, this.formatoFecha(fechaInicial), this.formatoFecha(fechaFinal) , ejercicio, tipoGasto, idUsuario, "SI", privilegio);
 	}

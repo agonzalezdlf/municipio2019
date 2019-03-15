@@ -110,13 +110,7 @@ function __listadoPresupuestoContrato(idproyecto, proyecto, partida, mes, tipoGa
 }
 
 function __listadoPresupuesto(idproyecto, proyecto, partida, mes, tipoGasto, idDependencia ){
-	alert('Selecciono la unidad: ' +idDependencia + '|' + idproyecto + '|' + proyecto + '|' + partida + '|' + mes );
-	//swal({
-	   // title: 'Informacion Presupuestal',
-	    //width: 800,
-	    //html:
-	      // 	'<iframe width="800" height="410" name="consultaPre" id="consultaPre" frameborder="0" src="../../sam/consultas/muestra_presupuesto.action?idproyecto='+idproyecto+'&proyecto='+proyecto+'&partida='+partida+'&mes='+mes+'&tipoGasto='+tipoGasto+'&unidad='+idDependencia+'"></iframe>', 
-	   //})
+	
 	swal({
 		  title: 'Informacion Presupuestal',
 		  width: 800,

@@ -569,6 +569,11 @@ public void aperturarOrdenes(final List<Long> cvOrdenes, final int ejercicio, fi
 	            			//gatewayProyectoPartidas.comprometerPresupuesto(proyecto, partida, mes,importe.doubleValue(),"REDUCCION");
 	            		}            		
 	                }
+	                /*VERIFICAR SI LA OP FUE RECIBIDA EN PROGRAMACION*/
+		            if(getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_ORD_PAGO WHERE CVE_OP = ? AND FECHA_RECEP_P IS NOT NULL", new Object[]{cveOrden})>0){
+            			throw new RuntimeException("Imposible cancelar la Orden de Pago, ya fue recibida en la Dirección de Programación, consulte a su administrador del sistema");
+            		}
+	                
             		actualizarOrdenStatus(cveOrden ,OP_ESTADO_EN_EDICION, orden.get("STATUS").toString(), "");
             		/*por si hay algo en contratos*/
             		//getJdbcTemplate().update("DELETE FROM SAM_COMP_CONTRATO WHERE CVE_DOC = ? AND TIPO_DOC = ? AND TIPO_MOV =?", new Object[]{cveOrden, "OP","LIBERACION"});
@@ -607,31 +612,31 @@ public Map getProyectoPartidaOP(Long cve_op){
     }	
 	
 }
-
 public List<Map<String, Object>> getListadoOrdenesPagoEjercer(int mes, int listado, int ejercicio){
-	Map parametros =  new HashMap<String,Object>();
+	Map<String, Object> parametros =  new HashMap<String,Object>();
 	/*Asignacion de parametros*/
 	parametros.put("ejercicio", ejercicio);
 	parametros.put("mes", mes);
 	String where = "";
 	
 	switch(listado){
-		case 1: where = "WHERE SAM_ORD_PAGO.STATUS = "+this.OP_ESTADO_NUEVA;
+		case 1: where = "WHERE SAM_ORD_PAGO.STATUS = "+this.OP_ESTADO_NUEVA;//0
 			break;
-		case 2: where = "WHERE SAM_ORD_PAGO.STATUS = "+this.OP_ESTADO_PAGADA;
+		case 2: where = "WHERE SAM_ORD_PAGO.STATUS = "+this.OP_ESTADO_PAGADA;//6
 			break;
-		case 3: where = "WHERE SAM_ORD_PAGO.STATUS IN ("+this.OP_ESTADO_NUEVA+","+this.OP_ESTADO_PAGADA+")";
+		case 3: where = "WHERE SAM_ORD_PAGO.STATUS IN ("+this.OP_ESTADO_NUEVA+","+this.OP_ESTADO_PAGADA+")";//0 y 6
 			break;
 	}
 	
 	String sql = "SELECT CVE_OP, NUM_OP, SAM_ORD_PAGO.TIPO, SAM_ORD_PAGO.STATUS, SAM_ORD_PAGO.NOTA, CAT_BENEFI.NCOMERCIA, convert(varchar(10), SAM_ORD_PAGO.FECHA ,103) FECHA, convert(varchar(10), ORDENDPAGO.FECHA_EJER ,103) FECHA_EJER, YEAR(SAM_ORD_PAGO.FECHA) AS ANIO, MONTH(SAM_ORD_PAGO.FECHA) AS MES, DAY(SAM_ORD_PAGO.FECHA) AS DIA, SAM_ORD_PAGO.IMPORTE FROM SAM_ORD_PAGO INNER JOIN CAT_BENEFI ON (CAT_BENEFI.CLV_BENEFI = SAM_ORD_PAGO.CLV_BENEFI) LEFT JOIN ORDENDPAGO ON (ORDENDPAGO.ID_OP = SAM_ORD_PAGO.CVE_OP) " + where;
 	
 	switch(listado){
-	case 1: if(mes!=0) sql += " and (MONTH(SAM_ORD_PAGO.FECHA)=:mes)";
+	
+	case 1: if(mes!=0) sql += " and (MONTH(SAM_ORD_PAGO.FECHA)=:mes)"; //0
 		break;
-	case 2: if(mes!=0) sql += " and (MONTH(ORDENDPAGO.FECHA_EJER)=:mes)";
+	case 2: if(mes!=0) sql += " and (MONTH(ORDENDPAGO.FECHA_EJER)=:mes)";//6
 		break;
-	case 3: if(mes!=0) sql += " and (MONTH(SAM_ORD_PAGO.FECHA)=:mes OR MONTH(ORDENDPAGO.FECHA_EJER)=:mes)";
+	case 3: if(mes!=0) sql += " and (MONTH(SAM_ORD_PAGO.FECHA)=:mes OR MONTH(ORDENDPAGO.FECHA_EJER)=:mes)";//0 ó 6
 		break;
 	}
 
@@ -1016,7 +1021,7 @@ public void ejercerOrdenPagoFinal(Long cve_op, Date fecha_ejerce, int ejercicio,
 		return p.get("descr").toString();
 	}
 	
-public boolean ejercerOrdenPago(final Long cve_op, final boolean bfecha, final Date fecha_ejerce, final int ejercicio, final int cve_pers){
+public boolean ejercerOrdenPago(final Long cve_op, final Date fecha_ejerce, final int ejercicio, final int cve_pers){
 	try {   
 		this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
             @Override

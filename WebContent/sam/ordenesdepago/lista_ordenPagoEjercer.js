@@ -1,30 +1,33 @@
 var cve_op = 0;
+var demo_option=null;
 
 $(document).ready(function() { 
-				$(".trigger").click(function(){
-				$(".panel").toggle("fast");
-				$(this).toggleClass("active");
-				return false;
-			});
-		 $('#div_unidades').hide();
-		 //$("#txtfecha").datepicker({showOn: 'button', buttonImage: '../../imagenes/cal.gif', buttonImageOnly: true,dateFormat: 'dd/mm/yy'});
-		 $('#btnBuscar').click(function(event){buscarOpMes();})
-		 $('#cmdfecha').click(function(event){cambiarFecha();})
-		 $('#cmdejercer').click(function(event){ejercerOP();});
-		 
-		 //$("#txtfechanueva").datepicker({showOn: 'button', buttonImage: '../../imagenes/cal.gif', buttonImageOnly: true,dateFormat: 'dd/mm/yy'});
-		 //$("#txtfechaentrada").datepicker({showOn: 'button', disabled: true, buttonImage: '../../imagenes/cal.gif', buttonImageOnly: true,dateFormat: 'dd/mm/yy'});
-		 $('#cbotiporelacion').change(function(event){cambiarTipoRelacion();});
-		 $('#cborelacion').change(function(event){cargarRelacion();});
-		 $('#cmdabrir').click(function(event){abrirCerrarRelacion();});
-		 $('#cmdmodificar').click(function(event){modificarRelacion();});
-		 $('#cmdnueva').click(function(event){nuevaRelacion();});
-		 $('#cmdagregar').click(function(event){agregarOpRelacion();});
-		 $('#cmdeliminar').click(function(event){eliminarOpRelacion();});
-		 $('#cmdimprimir').click(function(event){imprimirRelacion();});
-		 $('#cmdimprimirgeneral').click(function(event){imprimirGeneral();})
-		 $('#txtnumop').keypress(function(event){if (event.keyCode == '13'){$('#cmdagregar').click();}});
-		 $('#ui-datepicker-div').hide();
+	
+		$(".trigger").click(function(){
+			$(".panel").toggle("fast");
+			$(this).toggleClass("active");
+			return false;
+		});
+		$('#div_unidades').hide();
+		$('#cmdfecha').click(function(event){cambiarFecha();})
+		$('#cmdejercer').click(function(event){ejercerOP();});
+		
+		$('#cbotiporelacion').on('change',function(event){
+			cambiarTipoRelacion()
+		});
+		$('#cborelacion').on('change',function(event){
+			cargarRelacion()
+		});
+				
+		$('#cmdabrir').click(function(event){abrirCerrarRelacion();});
+		$('#cmdmodificar').click(function(event){modificarRelacion();});
+		$('#cmdnueva').click(function(event){nuevaRelacion();});
+		$('#cmdagregar').click(function(event){agregarOpRelacion();});
+		$('#cmdeliminar').click(function(event){eliminarOpRelacion();});
+		$('#cmdimprimir').click(function(event){imprimirRelacion();});
+		$('#cmdimprimirgeneral').click(function(event){imprimirGeneral();})
+		//$('#txtnumop').keypress(function(event){if (event.keyCode == '13'){$('#cmdagregar').click();}});
+		$('#ui-datepicker-div').hide();
 		 
 		 if($('#txtfecha').val()=='')
 		 {
@@ -33,8 +36,7 @@ $(document).ready(function() {
 		 }
 		 
 		 $('#cbotiporelacion').val(0);
-		 //
-		 
+				 
 		 $('#txtfecha_ejercer').datetimepicker({
 				format: 'DD/MM/YYYY',
 			    useCurrent: false //Important! See issue #1075
@@ -49,60 +51,76 @@ $(document).ready(function() {
 				format: 'DD/MM/YYYY',
 			    useCurrent: false //Important! See issue #1075
 			});
-		 txtfecha_ejercido
+		 		 
+		 $('.selectpicker').selectpicker();
 		
+		 $('#cbstatusOP').on('change',function(event){
+				buscarOpMes();
+		 });
+		 
+		 
+	
 });
 
+function demoAjax(){
+	
+	var statusOP=$('#cbstatusOP').val();
+	var s = "?mes="+$('#cbomes').val()+"&statusOP="+$('#cbstatusOP').val();
+	
+	var data = JSON.stringify({"statusOP": statusOP,"s":s});
+	
+	$.ajax({
+		type: "POST",
+		url:"${pageContext.request.contextPatch}/xxxxxx",
+		contentType: "application/json",
+		data: data,
+		success: function (data){
+			
+			if(data===""){
+				return;
+			}else{
+				var html =[];
+				html.push
+			}
+		}
+		
+	})
+}
+
+//funcion para bu{-}scar ordenes de pago segun criterio del mes
+function buscarOpMes(){
+	
+	//var s = "?por_ejercer="+$('#chk_ejercer').prop('checked')+"&ejercidas="+$('#chk_ejercercidas').prop('checked')+"&mes="+$('#cbomes').val()+"&fecha_ejercer="+$('#chkfecha').prop('checked')+"&fecha="+$('#txtfecha_ejercer').val();
+	
+	var statusOP=$('#cbstatusOP').val();
+	var s = "?mes="+$('#cbomes').val()+"&statusOP="+$('#cbstatusOP').val();
+	//console.log('Estatus mandado al controlador: ' +$('#cbstatusOP').selectpicker('val')+" & "+statusOP);
+	document.location = s;
+}
 
 
 function imprimirGeneral(){
 	var tipo = "";
+	//Relacion tipo 1 == Envio OP
 	if($('#cbotiporelacion').val()==1) 
 		tipo = "ENVIO";
+	//Relacion tipo 2 == Devolucion OP
 	else if($('#cbotiporelacion').val()==2)
 		tipo = "DEVOLUCION";
+	//Relacion tipo 3 == Envio Vale
 	else if($('#cbotiporelacion').val()==3)
 		tipo = "VALES";
+	//Relacion tipo 3 == Envio Vale
 	else
 		tipo = "VALES_DEVOLUCION";
 		
 	window.open('../consultas/rpt_relacion_globalOP.action?tipo='+tipo,'mywindow2','');
 }
 
-function cambiarFechaRelacion(){
-	var fecha = $('#txtfecharelacion').attr('value');
-	var id_relacion = $('#cborelacion').val();
-	var IdDependencia = $('#cbodependenciaM').val();
-	
-	//ShowDelay('Cambiando fecha a la relacion');
-	if(fecha=='') {jAlert('La fecha de la relacion no es valida','Advertencia'); return false;}
-	controladorListadoOrdenPagoEjercidoRemoto.cambiarFechaRelacion(fecha, id_relacion, IdDependencia,{
-						callback:function(items) {
-							if(items!='') 
-								jError(items,'Error');
-							else
-								{
-									//CloseDelay('Fecha cambiada con exito',2000);
-									if($('#cbotiporelacion').val()==1)
-										cargarRelacionEnvio(id_relacion);
-									else if($('#cbotiporelacion').val()==2)
-										cargarRelacionDevolucion(id_relacion);
-									else if($('#cbotiporelacion').val()==4)
-										cargarRelacionValesDevolucion(0);
-									else
-										cargarRelacionVales(id_relacion);
-								}
-						} 					   				
-					 ,
-					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 1:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
-					 }
-		});
-}
 
 function imprimirRelacion(){
 	var id_relacion = $('#cborelacion').val();
-	//$('#id_relacion').val(id_relacion);
+	$('#id_relacion').val(id_relacion);
 	console.log('Esta es la opcion de impresion: ' +id_relacion + '|' +$('#id_relacion').val(id_relacion) );
 	$('#frmreporte').attr('action',"../reportes/rpt_relacion_envio.action");
 
@@ -132,15 +150,16 @@ function nuevaRelacion2(){
 	jWindow(html,'Nueva Relacion de '+subtitulo, '','',0);
 	$('#cmdcrearrelacion').click(function(event){crearRelacionOP();})
 	$('#cmdcancelar').click(function(event){$.alerts._hide();})
-	$('#txtfecharelacion').keypress(function(event){if (event.keyCode == '13'){$('#cmdcrearrelacion').click();}});
+	//$('#txtfecharelacion').keypress(function(event){if (event.keyCode == '13'){$('#cmdcrearrelacion').click();}});
 
 }
 
 function nuevaRelacion(){
 	
-	 //$('#fecha').val()
+	var subtitulo = ($('#cbotiporelacion').val()==2||$('#cbotiporelacion').val()==4) ? 'Devolucion':'Envio';
+	var t_rel = ($('#cbotiporelacion').val()==1 ||$('#cbotiporelacion').val()==2) ? 'Orden de Pago':'Vales';
 	swal({
-		  title: '<h2 style="font-size: 30px;">Crear relacion de Orden de Pago</h2>',
+		  title: '<h2 style="font-size: 30px;">Crear relacion de '+t_rel+'  </h2> '+ 'Tipo: '+subtitulo,
 		  html: '<div class="input-group date" id="fecha_relacion"> ' +
                 '<input type="text" id="fecha_d" name="fecha_d" class="form-control" />	 ' +
                 '<span class="input-group-addon"> ' +
@@ -151,13 +170,11 @@ function nuevaRelacion(){
 		  customClass: 'swal2-overflow',
 		  inputPlaceholder: 'dd/mm/aaaa',
 		  showCancelButton: true,
-		  confirmButtonColor: '#3085d6',
-		  cancelButtonColor: '#d33',
-		  confirmButtonText: 'Sí, confirmar!',
+		  confirmButtonText: 'Sí, crear!',
 		  cancelButtonText: 'No, cancelar!',
 		  confirmButtonClass: 'btn btn-success',
 		  cancelButtonClass: 'btn btn-danger',
-		  buttonsStyling: false,
+		  allowOutsideClick: false,
 		  onOpen: function() {
 		    	$('#fecha_relacion').datetimepicker({
 		    		format: 'DD/MM/YYYY',
@@ -199,33 +216,35 @@ function nuevaRelacion(){
 				  cancelButtonClass: 'btn btn-danger',
 				  buttonsStyling: false
 				}).then(function (r) {
-				  swal('Creada!','Tu documento fue creado con éxito!','success')
+				  swal('Creada!','Tu documento fue creado con éxito!','success');
 				  //clase para cencelacion
 						  if(r){
 								swal.showLoading();
 								//var fecha = $('#txtfecharelacion').attr('value');
 								var idDependencia = $('#cbodependencia2').val();
+								var tiporel = $('#cbotiporelacion').val();
 								if(idDependencia==null) idDependencia = 0;
-								controladorListadoOrdenPagoEjercidoRemoto.nuevaRelacion(fecha, $('#cbotiporelacion').val(), idDependencia, {
+								controladorListadoOrdenPagoEjercidoRemoto.nuevaRelacion(fecha, tiporel, idDependencia, {
 									callback:function(items) {
-										limpiar();
+										
 										if($('#cbotiporelacion').val()==1)
 											//cargarRelacionEnvio(items);
 											setTimeout('cargarRelacionEnvio('+items+')',1300);
-										else if($('#cbotiporelacion').attr('value')==2)
+										else if($('#cbotiporelacion').val()==2)
 											setTimeout('cargarRelacionDevolucion('+items+')',1300);
 											//cargarRelacionDevolucion(items);
-										else if($('#cbotiporelacion').attr('value')==4)
+										else if($('#cbotiporelacion').val()==4)
 											setTimeout('cargarRelacionVales('+items+')',1300);
 											//cargarRelacionValesDevolucion(0);
 										else
 											cargarRelacionVales(items);
-										
+										swal({title:'Relacion creada con exito!!',showConfirmButton: false,timer:1000,type:"success"});
 										//CloseDelay('Relacion creada con exito ',2000);
+										//limpiar();
 								 } 					   				
 								 ,
 								 errorHandler:function(errorString, exception) { 
-									swal('',"Fallo la operacion 2:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+									swal("Fallo la operacion 2:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 								 }
 					}); 
 						
@@ -251,12 +270,13 @@ function nuevaRelacion(){
 
 	
 function cargaDetalles(){
-	if($('#hddetalle').attr('value')!=0) {
+	alert('Revisando carga Detalles');
+	if($('#hddetalle').val()!=0) {
 		//metodo cancelar
-		$('#hddetalle').attr('value',0);
-		$('#txtnumop').attr('value', '');
-		$('#txtarea').attr('value', '');
-		$('#cmdmodificarop').attr('value', 'Modificar');
+		$('#hddetalle').val(0);
+		$('#txtnumop').val('');
+		$('#txtarea').val('');
+		$('#cmdmodificarop').val('Modificar');
 		$('#cmdeliminar').attr('disabled', false);
 		$('#chkdevuelto').attr('checked', false);
 		return false;
@@ -265,22 +285,23 @@ function cargaDetalles(){
 	//ShowDelay('Cargando detalle');
 	controladorListadoOrdenPagoEjercidoRemoto.cargarDetalle(id, {
 						callback:function(items) { 	
-							$('#hddetalle').attr('value', items.ID_DETALLE);
-							$('#txtnumop').attr('value', items.CVE_OP);
-							$('#txtarea').attr('value', getHTML(items.OBSERVACIONES));
+							$('#hddetalle').val(items.ID_DETALLE);
+							$('#txtnumop').val(items.CVE_OP);
+							$('#txtarea').val(getHTML(items.OBSERVACIONES));
 							$('#chkdevuelto').attr('checked', (items.DEVOLUCION=='S') ? true: false);
-							$('#cmdmodificarop').attr('value', 'Cancelar');
+							$('#cmdmodificarop').val('Cancelar');
 							$('#cmdeliminar').attr('disabled', true);
 							//_closeDelay();
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 3:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						 swal("Fallo la operacion 3:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 }
 
 function validarList(){
+	
 	var cont=0;
 	$("#lstdetalles option").each(function(){
 		cont++;
@@ -298,6 +319,76 @@ function validarList(){
 }
 
 function modificarRelacion(){
+	
+	swal({
+		title: '<h2>Editar propiedades de la relacion</h2>',
+		html: '<div class="row">'+  
+					'<div class="form-group">' +
+						'<div style="font-size: 16px;"><strong>Unidad Administrativa.:</strong></div> ' +
+						'<div><select name="cbodependenciaM"  id="cbodependenciaM" class="form-control input-sm" style="width:300px"></select></div> ' +
+					'</div>' +
+			  '</div>'+
+			  '<div class="form-group">' +
+			   '<label for="fecha_relacion" class="control-label">Fecha:</label>' +
+			   '<div class="row">' +
+			   '<div class="col-sm-6">'+ 
+	    	   	'<div class="input-group date" id="date_new" style="width:150px" value=""> ' +
+	    	   		'<input type="text" id="newfecha_r" name="newfecha_r" class="form-control datos" value="'+$('#divfechaentrada').text()+'" />	 ' +
+	    	   		'<span class="input-group-addon"> ' +
+	    					'<span class="glyphicon-calendar glyphicon"></span> ' +
+	    			'</span> ' +
+	    		'</div>' +
+	    	   '</div>' +
+	    	   '</div>' + 
+	    	   '</div>',
+		customClass: 'swal2-overflow',
+		showCancelButton: true,
+		allowOutsideClick: false,
+	   	onOpen: function() {
+	   		
+	    	$('#date_new').datetimepicker({
+	    		format: 'DD/MM/YYYY',
+	    		useCurrent: false, 
+	    		defaultDate: new Date(),
+	    		widgetPositioning: {
+	    	        vertical: 'auto',
+	    	        horizontal: 'auto'
+	    	    }
+	     	});
+	    },
+	    inputValidator: function (result) {
+		    return new Promise(function (resolve, reject) {
+		      	if (result) {
+		      		resolve()
+		        } else {
+		      		reject('Debe escribir una fecha a la realación')
+		      	}
+		    })//cierra new promisse
+		}//cierra inputvalidator
+	  }).then(function(result) {
+		  if (result) {
+			 
+			  var fecha_rel = $('#newfecha_r').val();
+			  var id_relacion = $('#cborelacion').val();
+			  var IdDependencia = $('#cbodependenciaM').val();
+			 
+			  if(IdDependencia==null)
+				  IdDependencia=0;
+			  
+			  //swal('Cambiando fecha a la relacion');//swal2-confirm
+			  cambiarFechaRelacion(fecha_rel, id_relacion, IdDependencia);
+			  $('#cbodependenciaM').append($("#cbodependencia2 > option").clone());
+				$('#cbodependenciaM').val($("#cbodependencia2").val());
+				
+				if($('#cbotiporelacion').val()!=2) 
+					$('#cbodependenciaM').prop('disabled', true);
+			  swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+		  } else{
+			  alert('Aceptar el movimiento'+fecha_newr);
+		  }
+	  })//Finaliza el then
+	/*************************************************************************************************************/
+	/*
 	var html = '<table width="500" border="0" cellspacing="0" cellpadding="0">' +
 				  '<tr>'+
 					'<td height="30" width="120"><strong>Unidad Administrativa.:</strong></td>'+
@@ -322,83 +413,196 @@ function modificarRelacion(){
 
 	$('#cbodependenciaM').append($("#cbodependencia2 > option").clone());
 	$('#cbodependenciaM').val($("#cbodependencia2").val());
-	
-	if($('#cbotiporelacion').val()!=2) 
-		$('#cbodependenciaM').attr('disabled', true);
+	*/
+	//if($('#cbotiporelacion').val()!=2) 
+		//$('#cbodependenciaM').attr('disabled', true);
 
 }
 
+function cambiarFechaRelacion(fecha_rel, id_relacion, IdDependencia){
+	console.log('Datos recibidos: ' +fecha_rel + 'Relacion: ' +id_relacion+'Dependencia: ' + IdDependencia);
+	//swal('Cambiando fecha a la relacion');
+	//if(newfecha_r=='') {jAlert('La fecha de la relacion no es valida','Advertencia'); return false;}
+	controladorListadoOrdenPagoEjercidoRemoto.cambiarFechaRelacion(fecha_rel, id_relacion, IdDependencia,{
+						callback:function(items) {
+							if(items!='') 
+								swal('',items,'error');
+							else
+								{
+									//CloseDelay('Fecha cambiada con exito',2000);
+									if($('#cbotiporelacion').val()==1)
+										cargarRelacionEnvio(id_relacion);
+									else if($('#cbotiporelacion').val()==2)
+										cargarRelacionDevolucion(id_relacion);
+									else if($('#cbotiporelacion').val()==4)
+										cargarRelacionValesDevolucion(0);
+									else
+										cargarRelacionVales(id_relacion);
+								}
+						} 					   				
+					 ,
+					 errorHandler:function(errorString, exception) { 
+						swal('Opsss..',"Fallo la operacion 1:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+					 }
+		});
+}
+
+
 function eliminarOpRelacion(){
+	
 	var titulo = "la Orden de Pago";
 	if($('#cbotiporelacion').val()==3||$('#cbotiporelacion').val()==4) titulo = "el vale";
 	var op = [];
 	$("#lstdetalles option").each(function(){
-		if($(this).attr('selected')) op.push($(this).val());
+		if($(this).prop('selected')) op.push($(this).val());
 	});
+	
 	if(op.length>0){
-		jConfirm('Confirma que desea eliminar '+titulo+' de la relación actual?','Confirmar', function(r){
-					if(r){
-						ShowDelay('Eliminando detalles');
+		
+		swal({
+            title: "¿Confirma que desea eliminar "+titulo+" de la relación actual?", 
+            text: "Eliminando detalles", 
+            type: "warning",
+            confirmButtonText: "Sí, eliminar",
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+			  preConfirm: function() {
+			    return new Promise(function(resolve, reject) {
+			    	setTimeout(function() {
+			    		
 						controladorListadoOrdenPagoEjercidoRemoto.eliminarOpRelacion(op,{
 						callback:function(items) { 	
 							if(items=="") 
-								CloseDelay(($('#cbotiporelacion').val()==3 || $('#cbotiporelacion').val()==4) ? 'Vales eliminados con exito':'Ordenes de Pago eliminadas con exito', 2000, cargarRelacion());
+								swal({title: $('#cbotiporelacion').val()==3 || $('#cbotiporelacion').val()==4 ? 'Vales eliminados con exito':'Ordenes de Pago eliminadas con exito',showConfirmButton: false,timer:3000,type:"success"});
 							else 
-								jError(items, 'Error');
-						 } 					   				
-						 ,
+								swal('',items, 'error');
+						 },
 						 errorHandler:function(errorString, exception) { 
-							jError("Fallo la operacion 4:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+							swal('',"Fallo la operacion 4:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'info');          
 						 }
 						});
-					}
-			});
+			    		resolve();
+			    	},2000);
+			    });
+			  },
+        	}).then(function (result)  {
+        		cargarRelacion();
+            })//.catch(swal.noop);
 	}
 	else
-		jAlert('Es necesario seleccionar almenos una Orden de Pago de la lista','Advertencia');
+		swal('Opss..','Es necesario seleccionar almenos una Orden de Pago de la lista','warning');
 }
 
-
+/*Agragar la op manualmente*/
 function agregarOpManual(){
 	var checks = [];
 	var titulo = "Ordenes de Pago";
 	if($('#cbotiporelacion').val()==3) titulo = "Vales";
-	var texto = $('#txtarea').attr('value');
-	var op = $('#txtnumop').attr('value');
+	var texto = $('#txtarea').val();
+	var op = $('#txtnumop').val();
 	checks.push(op);
 	var id_relacion = $('#cborelacion').val();
-	if(op=='') {jAlert('El n&uacute;mero de Orden de Pago/Vale no es v&aacute;lido, debe seleccionar del listado o introducirlo manualmente', 'Advertencia'); $('#txtnumop').focus(); return false;}
+	if(op=='') {
+		swal('','El n&uacute;mero de Orden de Pago/Vale no es v&aacute;lido, debe seleccionar del listado o introducirlo manualmente', 'warning'); $('#txtnumop').focus(); return false;
+	}
 	if($('#cbotiporelacion').val()<2)
 		texto="";
-	//agregar ops automaticamnte
-	//ShowDelay('Agregando '+titulo);
+	//$('#txtnumop').val("");
+	//cargarRelacion();
+	//CloseDelay(titulo+' agregadas con éxito', 2000, cargarRelacion());
+	swal({
+	   	  text: 'Agregando '+titulo,
+	   	  onOpen: function () {
+	   	    swal.showLoading()
+	   	    controladorListadoOrdenPagoEjercidoRemoto.agregarOpRelacion(checks, id_relacion, texto,{
+		    			callback:function(items) { 
+		    				alert('Pasa por agregarOpManual con remoro agregarOpRelacion')+JSON.stringify(checks)+'|'+items;
+							if(!items=="") 
+								swal(items);
+							else{
+								
+								cargarRelacion();
+								
+							}
+								
+						},
+						errorHandler:function(errorString, exception) { 
+							swal(errorString);          
+					 }
+		    		});
+	   	    setTimeout(function () {
+	   	    	cargarRelacion();
+	   	      swal.close()
+	   	    }, 2000)
+	   	  }
+	   	})
+	/*swal({
+        title: "¿Confirma que desea eliminar "+titulo+" de la relación actual?", 
+        text: "Eliminando detalles", 
+        type: "warning",
+        confirmButtonText: "Sí, eliminar",
+        showCancelButton: true,
+        showLoaderOnConfirm: true,
+		  preConfirm: function() {
+		    return new Promise(function(resolve) {
+		    	setTimeout(function() {
+		    		controladorListadoOrdenPagoEjercidoRemoto.agregarOpRelacion(checks, id_relacion, texto,{
+		    			callback:function(items) { 	
+							if(!items=="") 
+								swal(items, 'error');
+								
+							else{
+								
+								cargarRelacion();
+							}
+								
+						},
+						errorHandler:function(errorString, exception) { 
+							swal(errorString);          
+					 }
+		    		});
+				    resolve();
+		    	},2000);
+		    });
+		  },
+    	}).then(function (result)  {
+    		swal({title: titulo+' agregadas con éxito',showConfirmButton: false,timer:3000,type:"success"});
+    		//cargarRelacion();
+        })//.catch(swal.noop);*/
+	/*swal('Agregando '+titulo);
 	controladorListadoOrdenPagoEjercidoRemoto.agregarOpRelacion(checks, id_relacion, texto,{
-					callback:function(items) { 	
-						if(items=="") 
-							CloseDelay(titulo+' agregadas con �xito', 2000, cargarRelacion());
-						else 
-							jError(items, 'Error');
-				 } 					   				
-				 ,
-				 errorHandler:function(errorString, exception) { 
-					jError(errorString);          
-				 }
-	});
-
+		callback:function(items) { 	
+			if(items=="") 
+				//CloseDelay(titulo+' agregadas con éxito', 2000, cargarRelacion());
+				swal({
+					  title: "Auto close alert!",
+					  text: "I will close in 2 seconds.",
+					  timer: 2000,
+					  showConfirmButton: false
+					},cargarRelacion());
+				//alert('agregades: '+items );
+			else 
+				swal(items, 'error');
+		 },errorHandler:function(errorString, exception) { 
+			swal(errorString);          
+		 }
+	});*/
 }
 
 function guardarCambiosOP(){
+	alert('Entro a la clase guardarCambiosOP');
 	var titulo = "Ordenes de Pago";
 	if($('#cbotiporelacion').val()==3) titulo = "Vales";
 	var id = parseInt($('#lstdetalles').val());
-	var texto = $('#txtarea').attr('value');
+	var texto = $('#txtarea').val();
 	var devolucion = ($('#chkdevuelto').is(':checked') ? 'S':'N');
 	var idDependencia = $('#cbodependencia').val();
 	//ShowDelay('Guardando cambios');
 	controladorListadoOrdenPagoEjercidoRemoto.guardarOpDetalle(id, texto, devolucion, idDependencia, {
 						callback:function(items) { 	
 							if(items==""){ 
-								CloseDelay(titulo+' guardada con éxito', 2000, cargarRelacion());
+								//CloseDelay(titulo+' guardada con éxito', 2000, cargarRelacion());
+								swal({title:titulo+' guardada con éxito',timer: 2000,showConfirmButton: false },cargarRelacion());
 								$('#hddetalle').val(0);
 								$('#txtnumop').val('');
 								$('#txtarea').val('');
@@ -407,21 +611,22 @@ function guardarCambiosOP(){
 								$('#chkdevuelto').attr('checked', false);
 							}
 							else 
-								jError(items, 'Error');
+								swal(items);
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 5:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 5:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 }
 
 function agregarOpRelacion(){
+	
 	var titulo = "";
 	var checks = [];
 	var id_relacion = $('#cborelacion').val();
 	var texto = $('#txtarea').val();
-	if($('#hddetalle').attr('value')!=0&&$('#cbotiporelacion').val()>1) {guardarCambiosOP(); return false;}
+	if($('#hddetalle').val()!=0&&$('#cbotiporelacion').val()>1) {guardarCambiosOP(); return false;}
 	$('input[id=chkOP]:checked').each(function() {checks.push($(this).val()); });
 
 	/*comporvar si es vale*/
@@ -429,39 +634,51 @@ function agregarOpRelacion(){
 		titulo = "Vales";
 	else 
 		titulo = "Orden de pago";
-		
+	
+	/*comporvar si es relacion de devolucion de vale*/
 	if($('#cbotiporelacion').val()=="3"&&$('#txtnumop').val()!=''){
 		var val = $('#txtnumop').val();
 		checks = [];
 		checks.push(val);
 	}
-	if(checks.length==0&&$('#cbotiporelacion').val()==3){jAlert('El n&uacute;mero de vale no es v&aacute;lido, vuelva a escribirlo','Advertencia'); return false;}
+	//Valida que se escriba un numero de vale 
+	if(checks.length==0&&$('#cbotiporelacion').val()==3){
+		swal({title:'',text:'El número de vale no es válido, vuelva a escribirlo',type:'info',width:300,timer:1200, showConfirmButton: false}); 
+		return false;
+	}
 	
 	if (checks.length>0){
+		
 		//agregar ops automaticamnte
-		//ShowDelay('Agregando '+titulo);
+		//swal('Agregando '+titulo);
 		controladorListadoOrdenPagoEjercidoRemoto.agregarOpRelacion(checks, id_relacion, texto,{
 						callback:function(items) { 	
+							
 							if(items=="") {
+								
 								if($('#cbotiporelacion').val()==3||$('#cbotiporelacion').val()==4)
-									CloseDelay('Vale agregado con éxito', 2000, cargarRelacion());
+									cargarRelacion();
+									//CloseDelay('Vale agregado con éxito', 2000, cargarRelacion());
+									//swal({title:'Vale agregado con éxito',timer: 5000,showConfirmButton: false });
 								else
-									CloseDelay(titulo+' agregados con éxito', 2000, cargarRelacion());
-								//$("input[id=chkOP]:checked").attr('checked', false);
+									cargarRelacion();	
+									//CloseDelay(titulo+' agregados con éxito', 2000, cargarRelacion());
+								   
 							}
 							else 
-								jError(items, 'Error');
+								//Si ya existen en una relacion manda el error
+								swal(items+'La orden ya esta relacionada');
 					 } 	
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 6:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 6:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 	}
 	else
 	{
 		agregarOpManual();
-		
+		alert('Manda a capturar manual!!!');
 	}
 }
 
@@ -482,7 +699,7 @@ function abrirCerrarRelacion(){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		}
@@ -521,11 +738,11 @@ function cargarRelacionValesDevolucion(id){
 							$('#cborelacion').attr('disabled', false);
 						 	dwr.util.addOptions('cborelacion',items,"ID_RELACION", "DESCRIPCION");
 							$('#cmdnueva').attr('disabled', false);
-							_closeDelay();
+							//_closeDelay();
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 13:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 	}
@@ -588,10 +805,11 @@ function limpiar(){
 		$('#cmdmodificarop').attr('value', 'Modificar');
 		$('#chkdevuelto').attr('disabled', true);
 		$('#chkdevuelto').attr('checked', false);
+		
 }
 
 function cargarRelacion(){
-	//alert('Entro a la nueva clase cargarRelacion: ');
+	
 	var id_relacion = $('#cborelacion').val();
 	var cont =0;
 	
@@ -624,7 +842,7 @@ function cargarRelacion(){
 								$('#hddevuelta').attr('value', this.DEVUELTO);
 								$('#hdcerrada').attr('value', this.CERRADA);
 								
-								(this.CERRADA=='S') ? $('#cmdabrir').attr('value', 'Abrir relacion'): $('#cmdabrir').attr('value', 'Cerrar relacion');
+								(this.CERRADA=='S') ? $('#cmdabrir').val('Abrir relacion'): $('#cmdabrir').val('Cerrar relacion');
 								//Recupera la Unidad administrativa
 								$('#cbodependencia2').val(this.ID_DEPENDENCIA_DEV);
 								
@@ -648,11 +866,13 @@ function cargarRelacion(){
 								$('#txtarea').attr('value', '');
 								$('#txtarea').attr('disabled', true);
 						}
+						 
 							_closeDelay();
+							
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 14:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 }
@@ -679,7 +899,7 @@ function cargarRelacionVales(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 15:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		$('#cmdagregar').attr('disabled', false);
@@ -700,7 +920,8 @@ function cargarRelacionVales(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 7:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						 
+						swal("Fallo la operacion 16:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		$('#cmdagregar').attr('disabled', false);
@@ -729,7 +950,7 @@ function cargarRelacionDevolucion(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 8:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 8:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		$('#cmdagregar').attr('disabled', false);
@@ -750,7 +971,7 @@ function cargarRelacionDevolucion(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 9:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 9:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		
@@ -781,7 +1002,7 @@ function cargarRelacionEnvio(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 10:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						swal("Fallo la operacion 10:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		$('#cborelacion').val(0);
@@ -802,7 +1023,7 @@ function cargarRelacionEnvio(id){
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 11:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						 swal("Fallo la operacion 11:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 		});
 		$('#cmdagregar').attr('disabled', false);
@@ -843,68 +1064,102 @@ function ejercerOP()
 {
 	var now = new Date();
 	var checkClaves = [];
-	
-	$('#txtfecha_ejercido').datetimepicker({
-		format: 'DD/MM/YYYY',
-	    useCurrent: false //Important! See issue #1075
-	});
-	
-	var bfecha = $('#chkfecha').is(":checked");
-	var fecha_ejerce = $('#txtfecha_ejercido').val();
-	
-	//alert('Valor de bfecha: '+fecha_ejerce);
 
-	if (bfecha==true)
-		alert('Selecciono fecha a ejercer' + fecha_ejerce);
-	else
-		alert('fecha del dia a ejercer'+ now);	
-	//if(fecha_ejerce=="") fecha_ejerce = now.getDay()+"-"+(now.getMonth()+1)+"-"+now.getYear();
-	
-	//recuperar las claves a ejercer
-    $('input[id=chkOP]:checked').each(function() { checkClaves.push($(this).val());});	
+	//Lista de Ordenes de pago a Ejercer
+    $('input[id=chkOP]:checked').each(function() {checkClaves.push($(this).val());});	
           
-     
-	 if (checkClaves.length>0){
-		 swal({
-			    title: "Es seguro?",
-			    text: "Los cambios no podran revertirse!",
-			    type: "warning",
-			    showCancelButton: true,
-			    confirmButtonClass: 'btn btn-success',
-				cancelButtonClass: 'btn btn-danger',
-			    confirmButtonText: "Sí, ejercer",
-			    cancelButtonText: "No, canelar",
-			    //closeOnConfirm: true,
-			    //closeOnCancel: true,
-			    showLoaderOnConfirm: true,
-			    preConfirm: function() {
-			    return new Promise(function(resolve) {
-			      setTimeout(function() {resolve()}, 2000)
-			      if(resolve){
-			          ShowDelay('Ejerciendo Orden(es) de Pago','');
-			          controladorListadoOrdenPagoEjercidoRemoto.ejercerOrdenPago(checkClaves, bfecha, fecha_ejerce, {
-			        	  callback:function(items) {  
-			        		  buscarOpMes();
-			        		  swal.showLoading();
-			            	
-			            //CloseDelay('Orden(es) de Pago Ejercida(s) con exito', 2000, function (){buscarOpMes();});
-			            //swal ({title : 'Orden(es) de Pago Ejercida(s) con exito' , showConfirmButton: false, timer : 5000 });
-			           
-			           
-			        	  },
-			           			errorHandler:function(errorString, exception) {swal('',errorString,'error');}
-			         });
-			      }//Cierre del if(resolve)
-			    })
-			  }
-			}).then(function() {
-			  
-			  swal('','Error la orden de pago no se ejercio!','error')}).catch(swal.noop)
-		
-	 }//Cierra el if
+    if (checkClaves.length>0){
+    	
+    	swal({
+      		title: 'Confirma que desee ejercer la(s) op(s)!! ',
+      		html:'<div class="row">OPS '+ checkClaves +' </div></br>'+ 
+		    '<label for="fecha_relacion" class="control-label">Fecha de ejercido:</label>' +
+		    '<div class="row">' +
+		   	'<div class="col-sm-6">'+ 
+    			'<div class="input-group date" id="fechas" style="width:150px" value=""> ' +
+    				'<input type="text" id="fecha_eje" name="fecha_eje" class="form-control datos" value="" />	 ' +
+    				'<span class="input-group-addon"> ' +
+    					'<span class="glyphicon-calendar glyphicon"></span> ' +
+    				'</span> ' +
+    			'</div>' +
+    		'</div>' +
+    		'</div>', 
+      		allowOutsideClick: false,
+      		allowEscapeKey: false, 
+      		showConfirmButton: true,
+      		customClass: 'swal2-overflow',
+      		showCancelButton: true,
+      		confirmButtonText:'Ejercer',
+      		onOpen:()=> {
+        		swal.showLoading();
+        		setTimeout(() => { 
+        			swal.hideLoading()
+        			$('#fechas').datetimepicker({
+    		    		format: 'DD/MM/YYYY',
+    		    		defaultDate: new Date(),
+    		    		widgetPositioning: {
+    		    	        vertical: 'auto',
+    		    	        horizontal: 'auto'
+    		    	    }
+    		     	});
+        		
+        		},5000);
+        		
+      			}
+    	}).then((result) => {
+    			fecha_nueva = $('#fecha_eje').val();
+    			if (!result.dismiss) {
+    				  controladorListadoOrdenPagoEjercidoRemoto.ejercerOrdenPago(checkClaves, fecha_nueva, {
+	  		        	  callback:function(items) {  
+	  		        		  swal.showLoading();
+	  		        		  buscarOpMes(); 
+	  		        		  
+	  		        	  },
+	  		           	  errorHandler:function(errorString, exception) {
+	  		           		swal({text:errorString,type:'error', showConfirmButton: false,timer:4000});
+	  		           	    demo_option=0;
+	  		           	  }
+    				  });
+    				  
+    				swal({
+    					title:'Proceso cocluido con exito!!',
+    					showConfirmButton: false,
+    					type:"success",
+    						onOpen:()=> {
+    			        		swal.showLoading();
+    			        		setTimeout(() => {swal.hideLoading()},5000);
+    			        		
+    			        	}
+    						
+    				});
+    				demo_option=1;
+	        		
+    				
+    			}else if (result.dismiss === 'cancel') {
+    				swal({title:'Proceso abortado con exito!!',showConfirmButton: false,timer:3000,type:"info"});
+    			}
+    	})
+    	alert('Valord de: '+demo_option);
+    	if (demo_option==1){
+    		$.notify("Orden (es) de pago Ejercida (s) con éxito!!!!!",{
+    			offset: {
+    				x: 50,
+    				y: 100
+    			}
+    		});
+    	}else if(demo_option==0){
+    		$.notify("Error al ejerver Orden (es) de pago!!!!!",{
+    			offset: {
+    				x: 50,
+    				y: 100
+    			}
+    		});
+    	}
+	 }//Cierra debe seleccionar al menos una op para ejercer...
 	 else 
 	    swal('','Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción', 'warning');
 }
+
 
 //funcion para cambiar la fecha de la orden de pago
 function cambiarFecha(){
@@ -945,22 +1200,18 @@ function cambiarFechaOP(){
 							if(items)
 						 		CloseDelay('Fecha cambiada con exito a: '+fechatemp, 2000, function (){cve_op =0;setTimeout('buscarOpMes()',1000);});
 							else 
-								jError('No se pudo cambiar la fecha de las Ordenes de Pago, puede que la fecha especificada no sea una fecha v�lida, verifique nuevamente','Error');  
+								swal('No se pudo cambiar la fecha de las Ordenes de Pago, puede que la fecha especificada no sea una fecha v�lida, verifique nuevamente','error');  
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError("Fallo la operacion 12:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
+						 swal("Fallo la operacion 12:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
 					 }
 				    });
 			}
 	});
 }
 
-//funcion para bu{-}scar ordenes de pago segun criterio del mes
-function buscarOpMes(){
-	var s = "?por_ejercer="+$('#chk_ejercer').prop('checked')+"&ejercidas="+$('#chk_ejercercidas').prop('checked')+"&mes="+$('#cbomes').val()+"&fecha_ejercer="+$('#chkfecha').prop('checked')+"&fecha="+$('#txtfecha_ejercer').val();
-	document.location = s;
-}
+
 /*
 function mostrarOpcionPDF(cve_op){
 	var html = '<table class="listas" border="0" align="center" cellpadding="1" cellspacing="2" width="405" >'+

@@ -33,17 +33,18 @@ $(document).ready(function() {
 	
 	 
 	 //$("input:checkbox[name='one']")
-	 if($('#CVE_PED').val()=='0'||$('#CVE_PED').val()=='') $('#cboiva').val(1);
-	 $('#txtcontrato').focus();
+	 if($('#CVE_PED').val()=='0'||$('#CVE_PED').val()=='') 
+		 $('#cboiva').val(1);
+	 	 $('#txtcontrato').focus();
+	 	
 	 
 	 
 	 /*
 		
 	 //Configura los tabuladores
-	 $('#tabuladores').tabs();
-	 $('#tabuladores').tabs('enable',0);
-	 
-	  $('#ui-datepicker-div').hide();
+	 	$('#tabuladores').tabs();
+	 	$('#tabuladores').tabs('enable',0);
+	 	$('#ui-datepicker-div').hide();
 	 */
 	 
 	$('[data-unitprice=precio]').on('blur', function(){
@@ -162,7 +163,6 @@ function _guardarPedido(){
 		cantidad.push($('#txtcantidad'+$(this).val()).val());
 	});
 		
-	
 	controladorPedidos.guardarPedido($('#CVE_PED').val(), $('#CVE_REQ').val(), $('#txtfecha').val(), $('#txtcontrato').val(), $('#txtfechaentrega').val(), $('#xBeneficiario').selectpicker('val'), $('#txtcondicionespago').val(), $('#txtlugarentrega').val(),$('#txtdescripcion').val(), checks, cantidad, notas, precio_unit, $('#txtiva').val(), $('#cboiva').val(), $('#txtdescuento').val(),$('#txtieps').val(),{
 			  callback:function(items){
 				  		if(items.EVENT==true){
@@ -279,10 +279,11 @@ function cerrarPedido(){
 		}).then((result) => {
 			
 		  if (result.value) {
+			  
 			  if ($('#ped_cal').is(':checked')){
 				  getPresupuesto();
+				 
 			  }else{
-					
 				  _cerrarPedido($('#CVE_PED').val(), $('#txtiva').val());
 			  }
 		  } else if (
@@ -300,14 +301,7 @@ function cerrarPedido(){
 	/*Metodo interno para el cierra del pedido*/
 	function _cerrarPedido(cve_ped, iva){
 		
-		/*if ($('#TIPO_REQ').val()==7){
-			//array.length != nullarr.length === 0
-			if ( Object.keys(checkPresupuesto).length == null )
-				console.log('Esta aqui');
-				swal('','Debe calendarizar el pedido','error');
-			return false;
-		}*/
-		controladorPedidos.cerrarPedido(cve_ped, $('#TIPO_REQ').val(), iva, checkPresupuesto,{
+		controladorPedidos.cerrarPedido(cve_ped, $('#TIPO_REQ').val(), iva, checkPresupuesto,$('#ped_cal').val(),{
 			callback:function(items){
 				
 					swal({
@@ -763,15 +757,15 @@ function getTotales(){
 	var valor = 0;
 	var i =0;
 	var tablita = "";
-	$("input[id='chkconcepto'][type='checkbox']").each(function(){ if($(this).val()!=0){ 														   
-					if($(this).prop('checked')){
-						
-						subtotalsieps =  subtotalsieps + ($('#txtcantidad'+$(this).val()).val()*$('#txtpreciounit'+$(this).val()).val());
-						$('#divcosto'+$(this).val()).text('$'+formatNumber($('#txtcantidad'+$(this).val()).val()*$('#txtpreciounit'+$(this).val()).val()));
+	$("input[id='chkconcepto'][type='checkbox']").each(function(){ 
+		if($(this).val()!=0){ 														   
+			if($(this).prop('checked')){
+				subtotalsieps =  subtotalsieps + ($('#txtcantidad'+$(this).val()).val()*$('#txtpreciounit'+$(this).val()).val());
+				$('#divcosto'+$(this).val()).text('$'+formatNumber($('#txtcantidad'+$(this).val()).val()*$('#txtpreciounit'+$(this).val()).val()));
 						if(isNaN($('#txtpreciounit'+$(this).val()).val())) valor++;
-					}
-				}
-			});
+			}
+		}
+	});
 	/*Comprueba valores numericos*/
 	$("input[id='chkconcepto'][type='checkbox']").each(function(){ if($(this).val()!=0){ 														   
 					if($(this).prop('checked')){
@@ -796,10 +790,10 @@ function getTotales(){
 	if(isNaN($('#txtieps').val())){jAlert('El valor númerico del <strong>IEPS</strong> no es valido, vuelva a escribirlo', 'Advertencia'); return false;}
 	if($('#txtieps').val()=='') $('#txtieps').prop('value', '0');
 	
-	subtotal = subtotalsieps +Number($('#txtieps').val());
+	subtotal = subtotalsieps //+Number($('#txtieps').val());
 	
 	
-	$('#divsubtotal').text('$'+formatNumber(subtotal+Number(ieps)));
+	$('#divsubtotal').text('$'+formatNumber(subtotal/*+Number(ieps)*/));
 	
 	
 	
@@ -832,9 +826,9 @@ function getTotales(){
 		total = subtotal + iva;
 	}
 	else 
-		total = (subtotal)  + iva ;
-		
-	$('#divtotal').text('$'+formatNumber(redondeo(total)));
+		total = (subtotal) + ieps  + iva ;
+		//+Number($('#txtieps').val())
+	$('#divtotal').text('$'+formatNumber(redondeo(total+Number($('#txtieps').val()))));
 	
 	total_pedido='$'+formatNumber(redondeo(total))
 	console.log('Total del pedido: ' + total_pedido);
@@ -846,6 +840,9 @@ function getTotales(){
 
 function getTotalesMasIva(){
 	var iva_temp = 0.00;
+	var ieps = 0.00;
+	
+	ieps= $('#txtieps').val();
 	if($('#cboiva').val()==1||$('#cboiva').val()==2) {
 		//if($('#txtiva').attr('value')=='0'||$('#txtiva').attr('value')=='') 
 			iva_temp = (1* $('#txtiva').val());

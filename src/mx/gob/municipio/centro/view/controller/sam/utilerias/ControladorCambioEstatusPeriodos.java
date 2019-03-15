@@ -38,17 +38,7 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase {
 	public String  requestGetControlador( Map modelo, HttpServletRequest request ) {
 		
 		String  acciones= request.getParameter("acciones");
-		/*if ("guardar".equals(acciones)) {
-			Integer idMes= request.getParameter("idMes")==null ? null: request.getParameter("idMes").equals("")? null: Integer.parseInt(request.getParameter("idMes"));
-			String  estatus= request.getParameter("estatus");
-			String  tipoEstatus= request.getParameter("tipoEstatus");
-			estatus = estatus.equals("ACTIVO") ? "INACTIVO": "ACTIVO";
-			if (tipoEstatus.equals("DOC"))
-				gatewayMeses.actializarEstatusDoc(idMes,estatus);
-			else
-				gatewayMeses.actializarEstatusEva(idMes,estatus);
-		}	*/	
-		
+	
 		modelo.put("meses",getMeses());
 		modelo.put("mesactivo",mesActivo());
 		
@@ -80,20 +70,22 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase {
 	                		int mesAct = mesActivo();
 	                		int mes = mesAct + 1;
 	                		
+	                		//Migrar periodo del vale
+		                	migrarVale(mes, mesAct);
+		                	
 	                		//Migrar los Devengados en Facturas
-	                		//migrarDevengado(mes, mesAct);
+	                		migrarDevengado(mes, mesAct);
 	                		
 		                	//Migrar la seccion de Contratos
-	                		//migrarContratos(mes, mesAct);
+	                		migrarContratos(mes, mesAct);
 	                		
 	                		//Migrar el saldo de las Requisiciones y Orden de Trabajo
-		                	//migrarRequisiciones(mes, mesAct);
+		                	migrarRequisiciones(mes, mesAct);
 		                	
 		                	//Migrar el saldo de los Pedidos
 		                	migrarPedidos(mes, mesAct);
 		                	
-		                	//Migrar periodo del vale
-		                	//migrarVale(mes, mesAct);
+		                	
 		                	
 	            	}
                 	//Cambiamos el periodo al siguiente mes
@@ -179,63 +171,42 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase {
 	//CIERRE DE PERIODO PARA LAS REQUISICIONES.
 	public void migrarRequisiciones(int mes, int mesAct)
 	{
-	
-		List<Map> Requisiciones = getJdbcTemplate().queryForList("SELECT CR.CVE_REQ,R.TIPO,R.STATUS,SUM(CR.IMPORTE)COMPROMETIDO_MES,R.FECHA_CIERRE,R.FECHA_FINIQUITADO, " +
-																 "( " +
-																	" CASE " +    
-																			" WHEN R.TIPO IN (1,7) THEN  ISNULL((SELECT SUM(P.TOTAL) FROM SAM_PEDIDOS_EX P WHERE P.STATUS IN (1,5) AND P.CVE_REQ=CR.CVE_REQ),0.00) " +
-																			" WHEN R.TIPO NOT IN (1,7) THEN ISNULL((SELECT SUM(FD.IMPORTE) FROM SAM_FACTURA_DETALLE FD INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FD.CVE_FACTURA AND F.CVE_REQ=CR.CVE_REQ AND CR.PERIODO=MONTH(FECHA_CIERRE) WHERE  F.STATUS IN (1,3)),0.00) " +
-																	"END " +
-																	") OCUPADO_MES,SUM(CR.IMPORTE)-( " +
-																			"CASE " +   
-																			" WHEN R.TIPO IN (1,7) THEN  ISNULL((SELECT SUM(P.TOTAL) FROM SAM_PEDIDOS_EX P WHERE P.STATUS IN (1,5) AND P.CVE_REQ=CR.CVE_REQ),0.00) " +
-																			" WHEN R.TIPO NOT IN (1,7) THEN ISNULL((SELECT SUM(FD.IMPORTE) FROM SAM_FACTURA_DETALLE FD INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FD.CVE_FACTURA AND F.CVE_REQ=CR.CVE_REQ AND CR.PERIODO=MONTH(FECHA_CIERRE) WHERE  F.STATUS IN (1,3)),0.00) " +
-																			" END " +
-																			" )DIFERENCIA_MES " +
-
-																			" FROM SAM_COMP_REQUISIC CR " +
-																			" INNER JOIN SAM_REQUISIC R ON R.CVE_REQ=CR.CVE_REQ " +
-																			" WHERE CVE_PED IS NULL AND R.STATUS NOT IN (4) AND CR.PERIODO=? " +
-																			" GROUP BY CR.CVE_REQ,R.TIPO,R.STATUS,CR.PERIODO,R.FECHA_CIERRE,R.FECHA_CANCELADO,R.FECHA_FINIQUITADO HAVING SUM(CR.IMPORTE)>0", new Object[]{mesAct});
-		
+		List<Map<String, Object> > Requisiciones = getJdbcTemplate().queryForList("SELECT SUM(A.IMPORTE) AS COMPROMETIDO_MES, " +
+				"A.PERIODO,  " +
+				"B.ID_PROYECTO,  " +
+				"B.CLV_PARTID,  " +
+				"A.CVE_REQ,  " +
+				"B.TIPO, " +
+				"C.TIPO_DOC, " +
+				"C.MONTO AS OCUPADO_MES, " +
+				"(SUM(A.IMPORTE) - C.MONTO) AS DIFERENCIA_MES " +
+		"FROM SAM_COMP_REQUISIC AS A  " +
+		"	INNER JOIN SAM_REQUISIC AS B ON (B.CVE_REQ = A.CVE_REQ) " +
+		"	LEFT JOIN VT_COMPROMISOS AS C ON (C.CVE_DOC = A.CVE_REQ AND C.ID_PROYECTO = B.ID_PROYECTO AND C.CLV_PARTID = B.CLV_PARTID AND C.PERIODO = A.PERIODO) " +
+		"WHERE A.PERIODO = ?  " +
+		"	GROUP BY A.CVE_REQ, B.TIPO, C.TIPO_DOC, A.PERIODO, B.ID_PROYECTO, B.CLV_PARTID, C.MONTO " +
+		"	HAVING (SUM(A.IMPORTE))>0 AND C.MONTO >0  " +
+		"	AND (SUM(A.IMPORTE) - C.MONTO)>0", new Object[]{mesAct});
 		for(Map c: Requisiciones)
 		{
 			Long cve_req = Long.parseLong( c.get("CVE_REQ").toString());
-			BigDecimal totalComprometidoMes = ((BigDecimal) c.get("COMPROMETIDO_MES"));//IMPORTE COMPROMETIDO DEL PERIODO
-			BigDecimal totalOcupadoMes = ((BigDecimal) c.get("OCUPADO_MES"));//IMPORTE COMPROBADO DEL PERIODO
-			BigDecimal diferenciaMes = ((BigDecimal) c.get("DIFERENCIA_MES"));//IMPORTE POR COMPROBAR DEL PERIODO CERRADO
+			BigDecimal totalComprometidoMes = ((BigDecimal) c.get("COMPROMETIDO_MES"));
+			BigDecimal totalOcupadoMes = ((BigDecimal) c.get("OCUPADO_MES"));
+			BigDecimal diferenciaMes = ((BigDecimal) c.get("DIFERENCIA_MES"));
 			
-			
-			
-			//Respalda el importe comprometido originalmente por el documento..
+			//Deshabilita los importe anteriores
 			this.getJdbcTemplate().update("UPDATE SAM_COMP_REQUISIC SET PERIODO_ANT = PERIODO, IMPORTE_ANT =IMPORTE, IMPORTE =0 WHERE CVE_REQ =? AND PERIODO = ? AND TIPO =?", new Object[]{cve_req,mesAct, "COMPROMISO"});
-			
-			
-			//TOTALIZAR EN EL PERIODO NUEVO EL IMPORTE DEL PERIODO MAS EL IMPORTE NO COMPROBADO DEL MES ANTERIOR
-			BigDecimal compro_next = (BigDecimal) getJdbcTemplate().queryForObject("SELECT ISNULL(SUM(IMPORTE),0.00) FROM SAM_COMP_REQUISIC WHERE CVE_PED IS NULL AND CVE_REQ=? AND PERIODO=?", new Object[]{cve_req,mes},BigDecimal.class);
-			
-			//Integer periodo_siguiente = getJdbcTemplate().queryForInt("SELECT PERIODO FROM SAM_COMP_REQUISIC WHERE CVE_PED IS NULL AND CVE_REQ=? AND PERIODO=?", new Object[]{cve_req,mes});//Integer.class
-			
-			//La diferencia se enviara al siguiente mes
-			BigDecimal nuevo_compromiso = compro_next.add(diferenciaMes);
-			
-			double dispone = nuevo_compromiso.doubleValue(); // The double you want			
-			if (dispone>0.0)
-			{
-			//Inserta el total comprobado en el mes...
-				this.getJdbcTemplate().update("UPDATE SAM_COMP_REQUISIC SET IMPORTE=? WHERE CVE_REQ=? AND PERIODO=? AND TIPO =?", new Object[]{totalOcupadoMes,cve_req,mesAct,"COMPROMISO"});
-				//this.getJdbcTemplate().update("INSERT INTO SAM_COMP_REQUISIC(CVE_REQ, TIPO, IMPORTE, PERIODO) VALUES(?,?,?,?)", new Object[]{cve_req, "COMPROMISO", totalOcupadoMes, mesAct});
-			
+			//Inserta el total ocupado en el mes actual
+			this.getJdbcTemplate().update("INSERT INTO SAM_COMP_REQUISIC(CVE_REQ, TIPO, IMPORTE, PERIODO) VALUES(?,?,?,?)", new Object[]{cve_req, "COMPROMISO", totalOcupadoMes, mesAct});
 			//Inserta la diferencia en el siguiente mes
-				this.getJdbcTemplate().update("INSERT INTO SAM_COMP_REQUISIC(CVE_REQ, TIPO, IMPORTE, PERIODO) VALUES(?,?,?,?)", new Object[]{cve_req, "COMPROMISO", diferenciaMes, mes});
-			}
-			System.out.println(dispone);
+			this.getJdbcTemplate().update("INSERT INTO SAM_COMP_REQUISIC(CVE_REQ, TIPO, IMPORTE, PERIODO) VALUES(?,?,?,?)", new Object[]{cve_req, "COMPROMISO", diferenciaMes, mes});
 		}
 	}
 	
 	public void migrarContratos(int mes, int mesAct)
 	{
 		java.util.Date fecha = new Date();
+		int next_periodo =0;
     	List<Map> Contratos = getJdbcTemplate().queryForList("SELECT SUM(IMPORTE) AS COMPROMETIDO_MES, PERIODO, ID_PROYECTO, CLV_PARTID, CVE_CONTRATO FROM SAM_COMP_CONTRATO " + 
     														 "WHERE PERIODO =? GROUP BY CVE_CONTRATO, PERIODO, ID_PROYECTO, CLV_PARTID " + 
     														 "HAVING SUM(IMPORTE)>0 ", new Object[]{mesAct});
@@ -243,6 +214,7 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase {
     	{
     		//El totalComprometido quedara solo comprmetiendo en el mes actual
     		BigDecimal totalComprometido = ((BigDecimal) c.get("COMPROMETIDO_MES")) ;
+    		
     		//importeTotalMes Es toda la comprobacion de documentos que restan al totalComprometido
     		BigDecimal importeTotalMes = (BigDecimal) getJdbcTemplate().queryForObject("SELECT ISNULL(SUM(FD.IMPORTE),0.0) FROM SAM_FACTURA_DETALLE FD " +
     																				   "INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FD.CVE_FACTURA " +
@@ -252,15 +224,31 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase {
     		//La diferencia se enviara al siguiente mes
     		BigDecimal diferencia = totalComprometido.subtract(importeTotalMes); 
     		
-    		//Se reinician los importes que comprometen a Cero para generer uno por el total que compromete el periodo
-    		getJdbcTemplate().update("UPDATE SAM_COMP_CONTRATO SET IMPORTE = ? WHERE CVE_CONTRATO = ? AND PERIODO = ? AND ID_PROYECTO =? AND CLV_PARTID =?", new Object[]{0, c.get("CVE_CONTRATO"), mesAct, c.get("ID_PROYECTO"), c.get("CLV_PARTID")});
+    		next_periodo = (int) getJdbcTemplate().queryForObject("SELECT MAX(PERIODO) FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO = ? ", new Object[]{c.get("CVE_CONTRATO")},Integer.class);
     		
-    		//Se inserta el totalComprometido que quedara en el mes actual antes de cerrar
-    		getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, ID_PROYECTO, CLV_PARTID, PERIODO, IMPORTE) VALUES (?,?,?,?,?,?)", new Object[]{c.get("CVE_CONTRATO"), "COMPROMISO", c.get("ID_PROYECTO"), c.get("CLV_PARTID"), mesAct, importeTotalMes});
     		
-    		//Se inserta un nuevo registro de compromiso con la diferencia al siguiente mes
-    		getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, ID_PROYECTO, CLV_PARTID, PERIODO, IMPORTE) VALUES (?,?,?,?,?,?)", new Object[]{c.get("CVE_CONTRATO"), "COMPROMISO", c.get("ID_PROYECTO"), c.get("CLV_PARTID"), (mesAct+1), diferencia});
+    		if (mesAct+1 <= next_periodo){
+    			
+    			//Se reinician los importes que comprometen a Cero para generer uno por el total que compromete el periodo
+        		getJdbcTemplate().update("UPDATE SAM_COMP_CONTRATO SET IMPORTE = ? WHERE CVE_CONTRATO = ? AND PERIODO = ? AND ID_PROYECTO =? AND CLV_PARTID =?", new Object[]{importeTotalMes, c.get("CVE_CONTRATO"), mesAct, c.get("ID_PROYECTO"), c.get("CLV_PARTID")});
+        		
+        		//Comprometido del periodo siguiente
+        		BigDecimal importeMesSiguiente = (BigDecimal) getJdbcTemplate().queryForObject("SELECT SUM(IMPORTE)COMPROMETIDO_MES_SIGUIENTE FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO=? AND PERIODO=?  AND FD.ID_PROYECTO =? AND FD.CLV_PARTID=?", new Object[]{ c.get("CVE_CONTRATO"),mesAct+1, c.get("ID_PROYECTO"), c.get("CLV_PARTID")}, BigDecimal.class);
+        		//Suma el compromiso del mes siguiente mas la diferencia entre el comprometido y el devengado del periodo que se esta cerrando...
+        		BigDecimal Compromiso_modifi = importeMesSiguiente.add(diferencia);
+        		getJdbcTemplate().update("UPDATE SAM_COMP_CONTRATO SET IMPORTE = ? WHERE CVE_CONTRATO = ? AND PERIODO = ? AND ID_PROYECTO =? AND CLV_PARTID =?", new Object[]{Compromiso_modifi, c.get("CVE_CONTRATO"), mesAct+1, c.get("ID_PROYECTO"), c.get("CLV_PARTID")});
+        		
+    		}else{
+    			
+    			//Se inserta un nuevo registro de compromiso con la diferencia al siguiente mes
+        		getJdbcTemplate().update("INSERT INTO SAM_COMP_CONTRATO(CVE_CONTRATO, TIPO_MOV, ID_PROYECTO, CLV_PARTID, PERIODO, IMPORTE) VALUES (?,?,?,?,?,?)", new Object[]{c.get("CVE_CONTRATO"), "COMPROMISO", c.get("ID_PROYECTO"), c.get("CLV_PARTID"), (mesAct+1), diferencia});
+        		
+    		}
     		
+    		
+    		
+    		
+    	
     		
     		//FINIQUITAMOS LOS CONTRATOS QUE ESTAN TOTALMENTE DEVENGADOS...
     		BigDecimal por_devegar = (BigDecimal) getJdbcTemplate().queryForObject("SELECT [dbo].[getDevengadoXDocto] (44,?,?,?)",new Object[]{c.get("CVE_CONTRATO"), c.get("ID_PROYECTO"), c.get("CLV_PARTID")}, BigDecimal.class);

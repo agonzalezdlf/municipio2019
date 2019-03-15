@@ -113,13 +113,9 @@ public class ControladorListadoPedidos extends ControladorBase {
 	@RequestMapping(value = "/get_country_list", 
 			method = RequestMethod.GET, 
 			params="Accept=*/*")
-	public @ResponseBody List<String> getCountryList(@RequestParam("term") String ncomercia) {
-		
-				
-		List<String> countryList = gatewayBeneficiario.DummyDB(ncomercia);
-		
 	
-		//return countryList;
+	public @ResponseBody List<String> getCountryList(@RequestParam("term") String ncomercia) {
+		List<String> countryList = gatewayBeneficiario.DummyDB(ncomercia);
 		return countryList;
 	}
 

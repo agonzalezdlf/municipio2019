@@ -21,6 +21,7 @@ import mx.gob.municipio.centro.view.componentes.RMCantidadEnLetras;
 import mx.gob.municipio.centro.view.controller.sam.ordenesPagos.ControladorOrdenPago;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,12 +57,24 @@ public class ControladorReporteOrdenPago extends ControladorBase {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = {RequestMethod.POST,RequestMethod.GET})    
 	public ModelAndView  requestGetControlador( Map modelo, @RequestParam("cve_op")  Long  idOrden ) {	
+		
 		Map temp1 = new HashMap();
 		temp1.put("PROYECTO", "");
 		modelo = gatewayOrdenDePagos.getOrden(idOrden);
-		List <Map> t_mov = this.getJdbcTemplate().queryForList("SELECT DISTINCT  N_PROGRAMA FROM SAM_MOV_OP INNER JOIN CEDULA_TEC ON (CEDULA_TEC.ID_PROYECTO = SAM_MOV_OP.ID_PROYECTO) WHERE CVE_OP = ?",new Object[]{idOrden});
-		if(t_mov==null) t_mov.add(temp1);
-		modelo.putAll(this.getJdbcTemplate().queryForMap("SELECT TOP 1 '904' AS MUNICIPIO, "+(t_mov.size()> 1 ? "''":"(CAT_LOCALIDAD.CLV_LOCALIDAD) ") +" AS LOCALIDAD_1, "+(t_mov.size()> 1 ? "''":"(CAT_LOCALIDAD.LOCALIDAD) ")+" AS LOCALIDAD_2 FROM SAM_MOV_OP INNER JOIN CEDULA_TEC ON (CEDULA_TEC.ID_PROYECTO = SAM_MOV_OP.ID_PROYECTO) INNER JOIN CAT_LOCALIDAD ON (CAT_LOCALIDAD.CLV_LOCALIDAD = CEDULA_TEC.CLV_LOCALIDAD) WHERE CVE_OP = ?", new Object[]{idOrden}));
+		
+		
+		try {
+			
+			List <Map<String, Object>> t_mov = this.getJdbcTemplate().queryForList("SELECT DISTINCT  N_PROGRAMA FROM SAM_MOV_OP INNER JOIN CEDULA_TEC ON (CEDULA_TEC.ID_PROYECTO = SAM_MOV_OP.ID_PROYECTO) WHERE CVE_OP = ?",new Object[]{idOrden});
+			if(t_mov==null)t_mov.add(temp1);
+			modelo.putAll(this.getJdbcTemplate().queryForMap("SELECT TOP 1 '904' AS MUNICIPIO, "+(t_mov.size()> 1 ? "''":"(CAT_LOCALIDAD.CLV_LOCALIDAD) ") +" AS LOCALIDAD_1, "+(t_mov.size()> 1 ? "''":"(CAT_LOCALIDAD.LOCALIDAD) ")+" AS LOCALIDAD_2 FROM SAM_MOV_OP INNER JOIN CEDULA_TEC ON (CEDULA_TEC.ID_PROYECTO = SAM_MOV_OP.ID_PROYECTO) INNER JOIN CAT_LOCALIDAD ON (CAT_LOCALIDAD.CLV_LOCALIDAD = CEDULA_TEC.CLV_LOCALIDAD) WHERE CVE_OP = ?", new Object[]{idOrden}));
+		} 
+		catch (EmptyResultDataAccessException e) {
+			
+		   return new ModelAndView("forward:sam/index.action");
+		}
+		
+		
 		Md5PasswordEncoder codigo = new Md5PasswordEncoder();
 		log.info("MD5 > "+modelo.get("NUM_OP").toString()+modelo.get("ID_DEPENDENCIA").toString()+modelo.get("FECHA").toString()+modelo.get("CLV_BENEFI").toString()+modelo.get("ID_RECURSO").toString()+modelo.get("IMPORTE").toString());
 		String encriptado = codigo.encodePassword(modelo.get("NUM_OP").toString()+modelo.get("ID_DEPENDENCIA").toString()+modelo.get("FECHA").toString()+modelo.get("CLV_BENEFI").toString()+modelo.get("ID_RECURSO").toString()+modelo.get("IMPORTE").toString(), null );
@@ -126,10 +139,6 @@ public class ControladorReporteOrdenPago extends ControladorBase {
 		else
 			return new ModelAndView("formato_orden_pago",modelo);
 	}			
-	
-	/*private String convertirALetras(BigDecimal numero) {
-		return rmCantidadEnLetras.convertir(numero.doubleValue())[0];
-	}*/
 	
 	private String tieneVale(Long idOrden) {
 		String tieneVales="NO";

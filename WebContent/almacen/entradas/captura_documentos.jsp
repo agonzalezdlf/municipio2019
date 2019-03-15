@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>Entradas - Captura de documentos</title>
@@ -23,16 +23,17 @@
 <script type="text/javascript" src="../../dwr/interface/controladorEntradasDocumentosRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"> </script>
 <script type="text/javascript" src="../../dwr/util.js"> </script>
-<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-<script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
-<script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
 <script type="text/javascript" src="captura_documentos.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/js/otros/productos.js"></script>
 <link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
 <link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
 <script src="../../include/css/jquery.tiptip.js"></script>
-
+<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
+<!-- 
+<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
+<script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"></script>
+ -->
 
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
@@ -45,9 +46,9 @@
 <script type="text/javascript" src="../../include/js/jquery.tabs/jquery.history_remote.pack.js"></script>
 <script type="text/javascript" src="../../include/js/jquery.tabs/jquery.tabs.pack.js"></script>-->
 <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs.css" type="text/css" media="print, projection, screen"><!-- Additional IE/Win specific style sheet (Conditional Comments) -->
-<!--[if lte IE 7]>
-<link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs-ie.css" type="text/css" media="projection, screen">
-<![endif]-->
+
+
+
 </head>
 <body>
 <br />

@@ -172,6 +172,9 @@ a:active {
 			
 		 </div>
 </div>
+<div class="alert alert-info">
+	<strong>Total de registros encontrados: <c:out value='${cont}'/></strong>
+</div>
 </form>
 </body>
 </html>

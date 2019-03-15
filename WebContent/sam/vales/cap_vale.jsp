@@ -61,7 +61,7 @@
 	<div class="panel with-nav-tabs panel-primary">
 		<div class="panel-heading">
 	 		<ul class="nav nav-tabs responsive" id="vales">
-	 			<li class="nav-item active" id="maestro">
+	 			<li id="maestro" class="nav-item active" >
 	 				<a href="#fragment-pedidos" rol="tab" class="nav-link" data-toggle="tab">Información general</a>
 	 			</li>
                 <li id="detalle" class="nav-item disabled">

@@ -303,10 +303,10 @@ public class GatewayFacturas extends BaseGateway {
 	{
 		try
 		{
-			
-    		/*if(getPrivilegioEn(cve_pers, 132)){
-    			throw new RuntimeException("No cuenta por los privilegios suficientes para realiar esta operación");
-    		}*/
+			boolean cerrarFacturas = getPrivilegioEn(cve_pers, 132);
+			if(!cerrarFacturas){
+				throw new RuntimeException("No cuenta por los privilegios suficientes para realiar esta operación");
+			}
 			
 		this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
             @Override
@@ -325,6 +325,14 @@ public class GatewayFacturas extends BaseGateway {
 
             		//Detalles
             		List<Map> movimientos = getDetalles(cve_factura);
+            			
+            		int nomil = (int) getJdbcTemplate().queryForObject("SELECT COUNT(*)  FROM SAM_FACTURA_DETALLE FD INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FD.CVE_FACTURA "+
+            				" WHERE FD.CVE_FACTURA =? AND FD.CLV_PARTID NOT LIKE '1%' AND F.CVE_PED IS NULL AND F.CVE_CONTRATO IS NULL AND F.CVE_REQ IS NULL", new Object[]{cve_factura}, Integer.class);
+            		            	
+            		if (nomil>0){
+            			throw new RuntimeException("No existe un compromiso para devengar partida distinta del capitulo 1000");
+            		}
+            			
             			
             		//Valida el tipo de factura
             		if(factura.get("CVE_REQ")!=null) {tipoDocto = "CVE_REQ"; consulta = "'O.S', 'O.T', 'REQ'";}
@@ -392,7 +400,12 @@ public class GatewayFacturas extends BaseGateway {
 	            		else if(factura.get("ID_TIPO").toString().equals("6") && presupuestoDisponible.doubleValue()>= ((BigDecimal) movimiento.get("IMPORTE")).doubleValue())
 	            			presupuesto = true;
 	            		else if(factura.get("ID_TIPO").toString().equals("1") && presupuestoDisponible.doubleValue()>= ((BigDecimal) movimiento.get("IMPORTE")).doubleValue())
+	            		{
+	            			double presupuestoNomina = 0D;
+	            			presupuestoNomina= presupuestoDisponible.doubleValue()-((BigDecimal) movimiento.get("IMPORTE")).doubleValue();
+	            			System.out.println("El presupesto del proyecto es: " +presupuestoNomina +" Protecto: " + movimiento.get("ID_PROYECTO").toString()+" Disponible:"+presupuestoDisponible.doubleValue()+" Devengando: "+(BigDecimal) movimiento.get("IMPORTE"));
 	            			presupuesto = true;
+	            		}
 	            		else
 	            			presupuesto = false;
 	            		
@@ -454,16 +467,16 @@ public class GatewayFacturas extends BaseGateway {
 	    				}
 	    			}
 	    			
-//-------------------------------Validar si se finiquita el PEDIDO al cerrar el devengado......................12/05/17
-	    			//if(factura.get("CVE_PED")!=null) {
-	    				//BigDecimal presupuestoPedido = (BigDecimal) getJdbcTemplate().queryForObject("SELECT SUM(SAM_FACTURAS.TOTAL)TOTAL_PEDIDO FROM SAM_FACTURAS WHERE SAM_FACTURAS.STATUS IN (1,3) AND SAM_FACTURAS.CVE_PED=?", new Object[]{factura.get("CVE_PED")}, BigDecimal.class);
-	    				//if(Double.parseDouble(factura.get("TOTAL").toString())== presupuestoPedido.doubleValue())
-	    				//{
+	    			//Validar si se finiquita el PEDIDO al cerrar el devengado......................12/05/17
+	    			if(factura.get("CVE_PED")!=null) {
+	    				BigDecimal presupuestoPedido = (BigDecimal) getJdbcTemplate().queryForObject("SELECT SUM(MONTO) FROM VT_COMPROMISOS WHERE CONSULTA='COMPROMETIDO' AND TIPO_DOC ='PED' AND CVE_DOC = ?", new Object[]{factura.get("CVE_PED")}, BigDecimal.class);
+	    				if(Double.parseDouble(factura.get("TOTAL").toString())== presupuestoPedido.doubleValue())
+	    				{
 	    					//Finiquitar el contrato
-	    				//	Date fecha_finalizado = new Date();
-	    				//	getJdbcTemplate().update("UPDATE SAM_PEDIDOS_EX SET FECHA_FINIQUITADO =?, MES_FINALIZADO=?, DIA_FINALIZADO=? WHERE CVE_PED =?",new Object[]{fecha_finalizado, fecha_finalizado.getMonth()+1, fecha_finalizado.getDay(), factura.get("CVE_DOC")});
-	    				//}
-	    		//	}
+	    					Date fecha_finalizado = new Date();
+	    					getJdbcTemplate().update("UPDATE SAM_PEDIDOS_EX SET FECHA_FINIQUITADO =?, MES_FINALIZADO=?, DIA_FINALIZADO=? WHERE CVE_PED =?",new Object[]{fecha_finalizado, fecha_finalizado.getMonth()+1, fecha_finalizado.getDay(), factura.get("CVE_DOC")});
+	    				}
+	    			}
 	    			
 	    			
 	    			
@@ -1818,9 +1831,14 @@ public class GatewayFacturas extends BaseGateway {
 	{
 		try
 		{
-			int idCons = this.getJdbcTemplate().queryForInt("SELECT MAX(CONS_VALE)+1 FROM SAM_FACTURAS_VALES WHERE CVE_VALE = ?", new Object[]{cve_vale});
-			Date fecha = new Date();
 			int contv =0;
+			int idCons =0;
+			idCons = this.getJdbcTemplate().queryForInt("SELECT COUNT(CONS_VALE) FROM SAM_FACTURAS_VALES WHERE CVE_VALE = ?", new Object[]{cve_vale});
+			idCons++;
+			Date fecha = new Date();
+			
+			
+			
 			Double disponible = (Double) this.getJdbcTemplate().queryForObject("SELECT (CASE V.TIPO " + 
 																"WHEN 'AO' THEN (dbo.getDisponibleDocumento('VAL', V.CVE_VALE, M.ID_PROYECTO, M.CLV_PARTID)) " + 
 																"WHEN 'GC' THEN ((SELECT M.IMPORTE-ISNULL(SUM(CV.IMPORTE),0.00) FROM COMP_VALES CV WHERE M.CVE_VALE=CV.CVE_VALE AND M.ID_PROYECTO=CV.ID_PROYECTO AND M.CLV_PARTID=CV.CLV_PARTID) )" +
@@ -1835,63 +1853,64 @@ public class GatewayFacturas extends BaseGateway {
 			if (importe > disponible)
 				throw new RuntimeException("El importe de la comprobación no debe ser mayor al disponible del Vale actual");
 				
-			if (idMovVale ==0){
-				this.getJdbcTemplate().update("INSERT INTO SAM_FACTURAS_VALES(CVE_FACTURA, CVE_VALE, ID_PROYECTO, CLV_PARTID, IMPORTE, FECHA, CONS_VALE) VALUES(?,?,?,?,?,?,?)", new Object[]{
-					cve_factura,
-					cve_vale,
-					idProyecto,
-					clv_partid,
-					importe,
-					fecha,
-					idCons
-				});
-			
-				List <Map<String, Object>> detallesVales = getJdbcTemplate().queryForList("SELECT  F.NUM_FACTURA,V.TIPO,F.CVE_PERS,F.EJERCICIO,F.FECHA,FV.CVE_FACTURA,FV.CVE_VALE,FV.ID_PROYECTO,FV.CLV_PARTID,FV.IMPORTE IMPORTE,FV.ID_MOVIMIENTO, MV.IMPORTE-( " +
-    																  "SELECT ISNULL(SUM( FV.IMPORTE ),0.00) FROM SAM_FACTURAS_VALES FV INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FV.CVE_FACTURA WHERE FV.CVE_VALE=MV.CVE_VALE AND F.STATUS IN (1,3) " +
-    																  ")-(SELECT ISNULL(SUM(IMPORTE),0.00)  FROM COMP_VALES CV WHERE CV.CVE_VALE=MV.CVE_VALE AND TIPO='RL' ) IMPORTE_ANTERIOR FROM SAM_MOV_VALES MV " + 
-    																  "	INNER JOIN SAM_VALES_EX V ON V.CVE_VALE=MV.CVE_VALE INNER JOIN SAM_FACTURAS_VALES FV ON FV.CVE_VALE=V.CVE_VALE INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FV.CVE_FACTURA " +
-    																  " WHERE V.STATUS=4 AND FV.CVE_FACTURA=? AND FV.CONS_VALE=? ", new Object[]{cve_factura,idCons});
-    		for(Map<String, Object> row: detallesVales){
-    			Double IMP_ANTERIOR=0d;
-    			String imp;
-    			Integer existe =getJdbcTemplate().queryForInt("SELECT COUNT(*) CVE_DOC FROM VT_COMPROMISOS WHERE CVE_DOC=? AND TIPO_DOC='VAL'",new Object[]{cve_vale});
-    			   			
-    			if (existe==0){
-    				IMP_ANTERIOR=Double.parseDouble(row.get("IMPORTE_ANTERIOR").toString());
-    				System.out.println("EL IMPORTE anterior es: " +IMP_ANTERIOR );
-    			}
-    			else{
-    				IMP_ANTERIOR = (Double) getJdbcTemplate().queryForObject("SELECT MONTO FROM VT_COMPROMISOS WHERE CVE_DOC=? AND TIPO_DOC='VAL'", new Object[]{cve_vale}, Double.class);
-    			       			
-    			}
-    			imp=row.get("IMPORTE").toString();//COMPROBADO
-    			Double IMP_PENDIENTE =IMP_ANTERIOR- Double.parseDouble(imp);
-    			String formato="MM";
-    			SimpleDateFormat dateFormat = new SimpleDateFormat(formato);
-    			Integer iddvale=(Integer) row.get("ID_MOVIMIENTO");
-    			Integer mes= Integer.parseInt(dateFormat.format(new Date()));
-    			contv=getJdbcTemplate().queryForInt( "SELECT COUNT(CONS_VALE) FROM COMP_VALES WHERE CVE_VALE=? ", new Object[]{cve_vale});
-    			contv++;
-    			getJdbcTemplate().update("INSERT INTO COMP_VALES (CVE_VALE, CONS_VALE, CVE_OP, TIPO, ID_PROYECTO, CLV_PARTID, IMPORTE, IMP_ANTERIOR, IMP_PENDIENTE, FECHA,ID_MOVAL_FACTURA) " +
-    					"VALUES (?,?,?,?,?,?,?,?,?,?,?)", new Object[]{row.get("CVE_VALE"), idCons, cve_factura, "FA", row.get("ID_PROYECTO"), row.get("CLV_PARTID"), row.get("IMPORTE"), IMP_ANTERIOR,IMP_PENDIENTE, new Date(),iddvale});
-    			
-    			/*String folio=rellenarCeros(row.get("MOP.CVE_OP").toString(),6);
-    			//guarda en la bitacora*/
-    			//gatewayBitacora.guardarBitacora(GatewayBitacora.OP_MOV_AGREGO_VALES, ejercicio, cve_pers, idOrden, folio, "OP", null, null, null, "Cve_vale: "+vale+ " Cons: "+idCons, importe);    		    			
-    		
-    			int EJERCICIO = Integer.parseInt(row.get("EJERCICIO").toString()); 
-    			int CVE_PERS =Integer.parseInt(row.get("CVE_PERS").toString());
-    			Long CVE_DOC = (Long) Long.parseLong(row.get("CVE_FACTURA").toString());
-    			String NUM_DOC = row.get("NUM_FACTURA").toString();
-    			String FECHA_DOC =(row.get("FECHA").toString());
-    			System.out.println("fecha_docto: " + FECHA_DOC);
-    			gatewayBitacora.guardarBitacora(GatewayBitacora.OP_MOV_AGREGO_VALES, EJERCICIO , CVE_PERS, CVE_DOC , NUM_DOC, "FA",fecha,row.get("ID_PROYECTO").toString(),row.get("CLV_PARTID").toString() ,"Cve_vale: "+cve_vale+ " Cons: "+contv, importe);
-    										
-    			//int ID_MOVTO, int EJERCICIO, int CVE_PERS,  Long CVE_DOC, String NUM_DOC, String TIPO_DOC,  Date FECHA_DOC, String PROYECTO, String PARTIDA, String DESCRIPCION, Double MONTO
-    			//ID_MOVTO, EJERCICIO, CVE_PERS, CVE_DOC, NUM_DOC, TIPO_DOC, FECHA, FECHA_DOC, ID_PROYECTO, PARTIDA, DESCRIPCION, MONTO
-    			getJdbcTemplate().update("INSERT INTO CONCEP_VALE (CVE_VALE, CONS_VALE, ID_PROYECTO, CLV_PARTID,MES, IMPORTE, DESCONTADO) " +
-    					"VALUES (?,?,?,?,?,?,?)", new Object[]{row.get("CVE_VALE"), idCons, row.get("ID_PROYECTO"), row.get("CLV_PARTID"),mes, IMP_ANTERIOR, row.get("IMPORTE")});
-    		}}
+				if (idMovVale ==0){
+					this.getJdbcTemplate().update("INSERT INTO SAM_FACTURAS_VALES(CVE_FACTURA, CVE_VALE, ID_PROYECTO, CLV_PARTID, IMPORTE, FECHA, CONS_VALE) VALUES(?,?,?,?,?,?,?)", new Object[]{
+						cve_factura,
+						cve_vale,
+						idProyecto,
+						clv_partid,
+						importe,
+						fecha,
+						idCons
+					});
+				
+					List <Map<String, Object>> detallesVales = getJdbcTemplate().queryForList("SELECT  F.NUM_FACTURA,V.TIPO,F.CVE_PERS,F.EJERCICIO,F.FECHA,FV.CVE_FACTURA,FV.CVE_VALE,FV.ID_PROYECTO,FV.CLV_PARTID,FV.IMPORTE IMPORTE,FV.ID_MOVIMIENTO, MV.IMPORTE-( " +
+	    																  "SELECT ISNULL(SUM( FV.IMPORTE ),0.00) FROM SAM_FACTURAS_VALES FV INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FV.CVE_FACTURA WHERE FV.CVE_VALE=MV.CVE_VALE AND F.STATUS IN (1,3) " +
+	    																  ")-(SELECT ISNULL(SUM(IMPORTE),0.00)  FROM COMP_VALES CV WHERE CV.CVE_VALE=MV.CVE_VALE AND TIPO='RL' ) IMPORTE_ANTERIOR FROM SAM_MOV_VALES MV " + 
+	    																  "	INNER JOIN SAM_VALES_EX V ON V.CVE_VALE=MV.CVE_VALE INNER JOIN SAM_FACTURAS_VALES FV ON FV.CVE_VALE=V.CVE_VALE INNER JOIN SAM_FACTURAS F ON F.CVE_FACTURA=FV.CVE_FACTURA " +
+	    																  " WHERE V.STATUS=4 AND FV.CVE_FACTURA=? AND FV.CONS_VALE=? ", new Object[]{cve_factura,idCons});
+	    		for(Map<String, Object> row: detallesVales){
+	    			Double IMP_ANTERIOR=0d;
+	    			String imp;
+	    			Integer existe =getJdbcTemplate().queryForInt("SELECT COUNT(*) CVE_DOC FROM VT_COMPROMISOS WHERE CVE_DOC=? AND TIPO_DOC='VAL'",new Object[]{cve_vale});
+	    			   			
+	    			if (existe==0){
+	    				IMP_ANTERIOR=Double.parseDouble(row.get("IMPORTE_ANTERIOR").toString());
+	    				System.out.println("EL IMPORTE anterior es: " +IMP_ANTERIOR );
+	    			}
+	    			else{
+	    				IMP_ANTERIOR = (Double) getJdbcTemplate().queryForObject("SELECT MONTO FROM VT_COMPROMISOS WHERE CVE_DOC=? AND TIPO_DOC='VAL'", new Object[]{cve_vale}, Double.class);
+	    			       			
+	    			}
+	    			imp=row.get("IMPORTE").toString();//COMPROBADO
+	    			Double IMP_PENDIENTE =IMP_ANTERIOR- Double.parseDouble(imp);
+	    			String formato="MM";
+	    			SimpleDateFormat dateFormat = new SimpleDateFormat(formato);
+	    			Integer iddvale=(Integer) row.get("ID_MOVIMIENTO");
+	    			Integer mes= Integer.parseInt(dateFormat.format(new Date()));
+	    			contv=getJdbcTemplate().queryForInt( "SELECT COUNT(CONS_VALE) FROM COMP_VALES WHERE CVE_VALE=? ", new Object[]{cve_vale});
+	    			contv++;
+	    			getJdbcTemplate().update("INSERT INTO COMP_VALES (CVE_VALE, CONS_VALE, CVE_OP, TIPO, ID_PROYECTO, CLV_PARTID, IMPORTE, IMP_ANTERIOR, IMP_PENDIENTE, FECHA,ID_MOVAL_FACTURA) " +
+	    					"VALUES (?,?,?,?,?,?,?,?,?,?,?)", new Object[]{row.get("CVE_VALE"), idCons, cve_factura, "FA", row.get("ID_PROYECTO"), row.get("CLV_PARTID"), row.get("IMPORTE"), IMP_ANTERIOR,IMP_PENDIENTE, new Date(),iddvale});
+	    			
+	    			/*String folio=rellenarCeros(row.get("MOP.CVE_OP").toString(),6);
+	    			//guarda en la bitacora*/
+	    			//gatewayBitacora.guardarBitacora(GatewayBitacora.OP_MOV_AGREGO_VALES, ejercicio, cve_pers, idOrden, folio, "OP", null, null, null, "Cve_vale: "+vale+ " Cons: "+idCons, importe);    		    			
+	    		
+	    			int EJERCICIO = Integer.parseInt(row.get("EJERCICIO").toString()); 
+	    			int CVE_PERS =Integer.parseInt(row.get("CVE_PERS").toString());
+	    			Long CVE_DOC = (Long) Long.parseLong(row.get("CVE_FACTURA").toString());
+	    			String NUM_DOC = row.get("NUM_FACTURA").toString();
+	    			String FECHA_DOC =(row.get("FECHA").toString());
+	    			System.out.println("fecha_docto: " + FECHA_DOC);
+	    			gatewayBitacora.guardarBitacora(GatewayBitacora.OP_MOV_AGREGO_VALES, EJERCICIO , CVE_PERS, CVE_DOC , NUM_DOC, "FA",fecha,row.get("ID_PROYECTO").toString(),row.get("CLV_PARTID").toString() ,"Cve_vale: "+cve_vale+ " Cons: "+contv, importe);
+	    										
+	    			//int ID_MOVTO, int EJERCICIO, int CVE_PERS,  Long CVE_DOC, String NUM_DOC, String TIPO_DOC,  Date FECHA_DOC, String PROYECTO, String PARTIDA, String DESCRIPCION, Double MONTO
+	    			//ID_MOVTO, EJERCICIO, CVE_PERS, CVE_DOC, NUM_DOC, TIPO_DOC, FECHA, FECHA_DOC, ID_PROYECTO, PARTIDA, DESCRIPCION, MONTO
+	    			getJdbcTemplate().update("INSERT INTO CONCEP_VALE (CVE_VALE, CONS_VALE, ID_PROYECTO, CLV_PARTID,MES, IMPORTE, DESCONTADO) " +
+	    					"VALUES (?,?,?,?,?,?,?)", new Object[]{row.get("CVE_VALE"), idCons, row.get("ID_PROYECTO"), row.get("CLV_PARTID"),mes, IMP_ANTERIOR, row.get("IMPORTE")});
+	    		}
+	    	}
 			
 		
 		}

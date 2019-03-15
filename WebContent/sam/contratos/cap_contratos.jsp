@@ -217,7 +217,7 @@ a:active {
 			                        </div>
 			                    </div>
 			                </div>
-			                
+			                <div id="cto_obra">
 			                <!--Fecha inicial y final-->
 			                  <div class="row">
 			                    <div class="form-group">
@@ -239,7 +239,7 @@ a:active {
 									</div>
 			                    </div>
 			                </div>
-			                <!-- Tiempo de entrega -->
+			                <!-- Oficio de autorizacion -->
     	 	 		 		<div class="row">
 			                    <div class="form-group">
 			                        <div class="control-label col-sm-3 ">Oficio Autorización:</div>
@@ -256,6 +256,7 @@ a:active {
 			                            <input type="text" class="form-control" placeholder="Anticipo" name="txtanticipo" id="txtanticipo" onBlur="upperCase(this)" onkeypress="return keyNumbero(event); " value="<fmt:formatNumber value='${Contrato.ANTICIPO}'  pattern='#########0.00' />"/>
 									</div>
 			                    </div>
+			                </div>
 			                </div>
 			                <!-- Concepto -->
     	 	 		 		<div class="row">

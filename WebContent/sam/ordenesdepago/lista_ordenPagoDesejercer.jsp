@@ -10,13 +10,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
 <link rel="stylesheet" href="../../include/js/componentes_BACK/jalert_2018.css" type="text/css">
-
-
-<link type="text/css" href="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.css" rel="stylesheet" />	
+<link type="text/css" href="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css"/>	
 <script type="text/javascript" src="../../include/js/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="../../include/js/toolSam.js"></script>
 <script type="text/javascript" src="../../include/js/componentes_BACK/jalert_2018"></script>
-
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
 <script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
 <script type='text/javascript' src="../../dwr/interface/controladorListadoOrdenPagoDesejercerRemoto.js"></script>

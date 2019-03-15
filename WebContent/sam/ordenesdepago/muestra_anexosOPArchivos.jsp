@@ -73,7 +73,8 @@ $(document).ready(function(){
 	});
 	
   $('#BorraOs2').click(function(event){guardarAnexos();});
-    $('#cmdNuevoAnexo').click(function(event){limpiarAnexos();});
+  $('#cmdNuevoAnexo').click(function(event){limpiarAnexos();});
+  
 });
 
 function eliminarRetencion(cons){

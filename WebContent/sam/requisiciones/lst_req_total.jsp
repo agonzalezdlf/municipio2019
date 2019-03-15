@@ -14,15 +14,10 @@
 <link rel="stylesheet" href="../../include/css/bootstrap-select.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/sweetalert2.css" type="text/css">
-
-
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-select.js"></script>
-
-
 <script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
-
 <script type="text/javascript" src="../../include/js/jquery-ui-1.12.1.js"></script>
 <script type="text/javascript" src="../../dwr/interface/controladorListadoRequisicionesRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/interface/"> </script>
@@ -30,17 +25,32 @@
 <script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
-<script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
+<!-- <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script> -->
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="lst_req_total.js?x=<%=System.currentTimeMillis()%>"> </script>
 <link rel="stylesheet" href="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.css" type="text/css" />
 <link rel="stylesheet" href="../../include/js/autocomplete/jquery.autocomplete.css" type="text/css" />
-
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
 
 
 <style type="text/css">
+.bootstrap-datetimepicker-widget table td span {
+      width: 400px;
+}
+
+.swal2-overflow {
+  overflow-x: visible;
+  overflow-y: visible;
+  
+  
+}
+.swal2-overflow .swal2-content{
+  	width:150px;
+  	margin-left: auto;
+    margin-right: auto;
+}
 a:link {
 	text-decoration: none;
 }

@@ -36,6 +36,12 @@ $(document).ready(function() {
 <form action="" id="forma" method="post" >
 <input name="main" id="main" type="hidden" value="<c:out value="${main}"/>" />
 <input name="mainDesc" id="mainDesc" type="hidden" value="<c:out value="${mainDesc}"/>" />
+
+<!-- Demo del usuario con la session para revision 
+<c:if test="${pageContext.request.userPrincipal.name != null}">
+	<a href="javascript:document.getElementById('logout').submit()">Logout</a>
+</c:if>
+-->
 <div id="header_fondo">
 <div id="header_logo"><img src="../imagenes/head_administracion.jpg" width="450" height="80" id="logoIzquierdo"/></div>
 

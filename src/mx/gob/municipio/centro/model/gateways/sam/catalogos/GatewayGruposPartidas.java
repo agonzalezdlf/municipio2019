@@ -25,11 +25,12 @@ public class GatewayGruposPartidas extends BaseGateway {
 	}	
 	
 	public List getGrupoPartidas(Integer  grupo,Integer capitulo) {	   
-		   return this.getJdbcTemplate().queryForList("SELECT     SAM_GRUPO_PARTIDAS.ID_PARTIDAS_GRUPO, CAT_PARTID.CLV_PARTID, CAT_PARTID.PARTIDA "+
-				   	  " FROM         CAT_PARTID LEFT OUTER JOIN "+
-                      " SAM_GRUPO_PARTIDAS ON SAM_GRUPO_PARTIDAS.CLV_PARTID = CAT_PARTID.CLV_PARTID AND "+ 
-                      " SAM_GRUPO_PARTIDAS.ID_GRUPO_CONFIG = ? "+
-                      " WHERE     (CAT_PARTID.CLV_CAPITU = ?)  ORDER BY CAT_PARTID.CLV_PARTID ASC", new Object[]{grupo,capitulo});
+		   return this.getJdbcTemplate().queryForList("SELECT DISTINCT SGPAR.ID_PARTIDAS_GRUPO, CPAR.CLV_PARTID, CPAR.PARTIDA " +
+				   	  " FROM         CAT_PARTID CPAR " +
+				   	  " LEFT OUTER JOIN " +
+                      " SAM_GRUPO_PARTIDAS SGPAR ON SGPAR.CLV_PARTID = CPAR.CLV_PARTID AND " + 
+                      " SGPAR.ID_GRUPO_CONFIG = ? " +
+                      " WHERE     (CPAR.CLV_CAPITU = ?)  ORDER BY CPAR.CLV_PARTID ASC", new Object[]{grupo,capitulo});
 	}
 	
 }

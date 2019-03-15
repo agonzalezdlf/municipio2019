@@ -10,7 +10,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Listado de Pedidos</title>
-
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="lst_pedidos.js?x=<%=System.currentTimeMillis()%>"> </script>
@@ -21,6 +20,7 @@
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/css/boostrap-select/dist/css/bootstrap-select.css" type="text/css">
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 <link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
 <script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>

@@ -191,7 +191,7 @@
 		                        </div>
 		                      </div>
 		                    </div>
-		                     <!-- Estado -->
+		                    <!-- Estatus -->
 		                    <div class="row">
 		                      <div class="form-group">
 		                        <div class="control-label col-sm-3 ">*Estatus:</div>

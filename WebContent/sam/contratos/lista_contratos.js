@@ -1,23 +1,41 @@
 $(document).ready(function() {
-  var imagen="../../imagenes/cal.gif";	
-  var formatFecha="dd/mm/yy";	
-  $("#fechaInicial").datepicker({showOn: 'button', buttonImage:imagen , buttonImageOnly: true,dateFormat: formatFecha});  
-  $("#fechaFinal").datepicker({showOn: 'button', buttonImage: imagen, buttonImageOnly: true,dateFormat: formatFecha});   
+	
+   
   $('#cmdaperturar').click(function(event){aperturarContrato();}); 
   $('#cmdcancelar').click(function(event){cancelarContrato();});
   $('#cmdbuscar').click(function(event){getContratos();})
   $('[id=Cancelarcontra]').click(function(event){cancelarContrato();});
   
-  //getBeneficiarios('txtprestadorservicio','CLV_BENEFI','');
-	$('#ui-datepicker-div').hide();
+  // Filtrado de fechas por componente 
+  $('#fechaInicial').datetimepicker({
+	  format: 'DD/MM/YYYY'
+  });
+  $('#fechaFinal').datetimepicker({
+	  format: 'DD/MM/YYYY',
+	  useCurrent: false //Important! See issue #1075
+  });
+  $("#fechaInicial").on("dp.change", function (e) {
+	    $('#fechaFinal').data("DateTimePicker").minDate(e.date);
+  });
+  $("#fechaFinal").on("dp.change", function (e) {
+	   $('#fechaFinal').data("DateTimePicker").maxDate(e.date);
+  });
+  // Termina Filtrado de fechas por componente
+  
+  $('#cbostatus').multipleSelect({
+	placeholder: 'Seleccione un status'
+  });
+  
 });
 
 function getContratos(){
-	var checkStatus = [];
-     $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	 
-	 if (checkStatus.length==0 )   {jAlert('Es necesario seleccionar por lo menos un status de Contrato', 'Advertencia'); return false;}
-	 if ($('#fechaInicial').attr('value')=="" && $('#fechaFinal').attr('value')!="" || $('#fechaInicial').attr('value')!="" && $('#fechaFinal').attr('value')=="")  {jAlert('El rango de fechas no es válido'); return false;}
-	 var s = 'lista_contratos.action?idUnidad='+$('#cbodependencia').attr('value')+"&fechaInicial="+$('#fechaInicial').attr('value')+"&fechaFinal="+$('#fechaFinal').attr('value')+"&status="+checkStatus+"&tipo_gto="+$('#cbotipogasto').val();
+	 var checkStatus = [];
+	 $('#cbostatus').multipleSelect('getSelects')
+    $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	
+	 if (cbostatus.length==0 )  {swal('','Debe de seleccionar un estatus de Facturas', 'info'); return false;}
+	 $('#cbostatus').multipleSelect('getSelects');
+	 //if (checkStatus.length==0 )   {swal('','Es necesario seleccionar por lo menos un status de Contrato', 'warning'); return false;}
+	 var s = 'lista_contratos.action?idUnidad='+$('#cbodependencia').val()+"&fechaInicial="+$('#fechaInicial').val()+"&fechaFinal="+$('#fechaFinal').val()+"&status="+checkStatus+"&tipo_gto="+$('#cbotipogasto').val()+"&txtproyecto="+$('#txtproyecto').val();
 	$("#forma").submit();
 
 }
@@ -48,8 +66,18 @@ function getAnexosListaCON(anexo)
 }
 
 function editarCON(cve_contrato){
-	ShowDelay('Abriendo Contrato', '');
-	document.location = "cap_contratos.action?cve_contrato="+cve_contrato;
+	
+	swal({
+		title:'Abriendo contrato ',
+	   	showConfirmButton: false,
+	   	onOpen: function () {
+	   		swal.showLoading()
+	   	    setTimeout(function () {
+	   	    	document.location = "cap_contratos.action?cve_contrato="+cve_contrato;
+	   	    	swal.hideLoading()
+	   	    }, 5000)
+	    }
+	}).catch(swal.noop);
 }
 
 function getReporteCON(clave) {
@@ -64,36 +92,14 @@ function getReporteCON(clave) {
 function aperturarContrato(){
 	
 	swal('','Por actualizacion del sistema, con los lineamientos de la <strong>CONAC</strong> esta opcion queda inválida','info')
-	 var checkClaves = [];
-     /*$('input[name=chkcontratos]:checked').each(function() { checkClaves.push($(this).val());});	
-	 if (checkClaves.length>0){
-		jConfirm('¿Confirma que desea aperturar las Contratos seleccionados?','Confirmar', function(r){
-			if(r){
-					ShowDelay('Aperturando Contratos','');
-					 controladorListadoContratosRemoto.aperturarContratos(checkClaves, {
-						callback:function(items) { 
-										  CloseDelay('Contratos aperturados con éxito', 2000, function(){
-													 getContratos();
-											  });
-						  
-					 } 					   				
-					 ,
-					 errorHandler:function(errorString, exception) { 
-						jError(errorString, 'Error');          
-					 }
-				    });
-			}
-	   },async=false );
-	 
-	 } 
-	else 
-	    jAlert('Es necesario que seleccionar por lo menos un Contrato del listado', 'Advertencia');*/
+	
+    
 }
 
 
 function cancelarContrato(){
 	 var checkClaves = [];
-     $('input[name=chkcontratos]:checked').each(function() { checkClaves.push($(this).val());});	
+    $('input[name=chkcontratos]:checked').each(function() { checkClaves.push($(this).val());});	
 	 if (checkClaves.length>0){
 		 
 		 swal({
@@ -130,27 +136,8 @@ function cancelarContrato(){
 			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
 			  
 			})
-		 /*
-		jConfirm('¿Confirma que desea cancelar el Contrato?','Confirmar', function(r){
-			if(r){
-				ShowDelay('Cancelando contrato','');
-					 controladorListadoContratosRemoto.cancelarContrato(checkClaves, {
-						callback:function(items) { 	
-							  CloseDelay('Contrato cancelado con exito', 2000, function(){
-									getContratos();
-								});
-						   
-					 } 					   				
-					 ,
-					 errorHandler:function(errorString, exception) { 
-						jError(errorString, 'Error');          
-					 }
-				    });
-			}
-	   },async=false );	 */
-	   
-	   } 
+	} 
 	else 
-	    jAlert('Es necesario que seleccionar por lo menos un Contrato del listado', 'Advertencia');
+	    swal('','Es necesario que seleccionar por lo menos un Contrato del listado', 'warning');
 
 }

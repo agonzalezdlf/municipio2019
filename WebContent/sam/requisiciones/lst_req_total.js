@@ -537,7 +537,7 @@ function getRequisicion(claveReq)   {
 }
 
 function getConsultaRequisicion(claveReq)   {
-	_closeDelay();
+	//_closeDelay();
 	$('#claveRequisicion').attr('value',claveReq);
 	$('#forma').attr('target',"impresionConsulta");
 	$('#forma').attr('action',"../reportes/rpt_InformeRequisicion.action");

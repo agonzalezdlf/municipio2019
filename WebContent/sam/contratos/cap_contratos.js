@@ -1,5 +1,6 @@
 var cerrar = false; 
 $(document).ready(function() {
+	
 	var options = { 
         beforeSubmit:  showRequest,  
         success:       showResponse, 
@@ -80,7 +81,7 @@ $(document).ready(function() {
 	 $('#cbotipocontrato').change(function(event){ValidarTipoContrato();});
 	 ValidarTipoContrato();
 	 
-	
+	 $('#cto_obra').hide();
 });
 
 
@@ -331,15 +332,18 @@ function cierraContrato(){
 }
 
 function _validate(){
+	
 	if($('#cbUnidad').val()==0) {swal('','La Unidad Administrativa no es válida','warning'); return false;}
 	if($('#cbotipocontrato').val()==0){swal('','El tipo de contrato no es válido','warning'); return false;}
-	if($('#cbotipocontrato').val()==''){swal('','El tipo de contrato no es válido','warning'); return false;}
 	if($('#txtnumcontrato').val()=='') {swal('','El número de contrato no es válido','warning'); return false;}
 	if($('#tipoGasto').val()==0) {swal('','El tipo de gasto no es válido', 'warning'); return false;}
 	if($('#xBeneficiario').val()==0) {swal('','El nombre del Proveedor no es válido', 'warning'); return false;}
-	//if($('#xBeneficiario').val()=='' ||$('#CLV_BENEFI').val()=='0') {swal('','El nombre del Proveedor no es válido','warning'); return false;}
-	if($('#txtfechainicial').val()=='') {swal('','La fecha inicial no es válida','warning'); return false;} 
-	if($('#txtfechatermino').val()=='') {swal('','La fecha de termino no es válida','warning'); return false;}
+	
+	if ( $('#cbotipocontrato').val()==1 ){
+		if($('#txtfechainicial').val()=='') {swal('','La fecha inicial no es válida','warning'); return false;} 
+		if($('#txtfechatermino').val()=='') {swal('','La fecha de termino no es válida','warning'); return false;}
+		if($('#txtnumoficio').val()=='') {swal('','El oficio de autorización no es válido', 'warning'); return false;}
+	}
 	if($('#txtdescripcion').val()==''){swal('','La descripcion del contrato no es válida','warning'); return false;}
 	
 	return true;
@@ -350,11 +354,14 @@ function guardaContrato2(){
 	var valida = _validate();
 	var id_contrato = $('#CVE_CONTRATO').val();
 	if($('#CVE_DOC').val()==null) $('#CVE_DOC').val(0);
+	
 	alert('Parametros contrato: ' + id_contrato);// ,'dependencia: '+ $('#cbodependencia').val()+'numcontrato: '+$('#txtnumcontrato').val()+'fechainicial: '+$('#txtfechainicial').val()+'fechatermino '+$('#txtfechatermino').val());
 	alert('Parametros dependencia: ' + $('#cbUnidad').val());
 	alert('Parametros numcontrato: ' + $('#txtnumcontrato').val());
+	
 	//+'fechainicial: '+$('#txtfechainicial').val()+'fechatermino '+$('#txtfechatermino').val()
 	//id_contrato, $('#cbodependencia').val(), $('#txtnumcontrato').val(), $('#txtfechainicial').val(), $('#txtfechatermino').val(), $('#txtnumoficio').val(), $('#txttiempoentrega').val(), $('#cbotipocontrato').selectpicker('val'), $('#txtdescripcion').val(), $('#txtanticipo').val(), $('#tipoGasto').selectpicker('val'), $('#xBeneficiario').selectpicker('val'), $('#CVE_DOC').val(), 
+	
 	if (valida) {
 		
 		swal({
@@ -364,7 +371,6 @@ function guardaContrato2(){
 			  showCancelButton: true,
 			  confirmButtonText: 'Sí, gaurdar!',
 			  cancelButtonText: 'No, abortar!',
-			  timer: 4000,
 			  showLoaderOnConfirm: true,
 			  preConfirm: function(email) {
 				    return new Promise(function(resolve, reject) {
@@ -391,7 +397,7 @@ function guardaContrato2(){
 								} 					   				
 								,
 								errorHandler:function(errorString, exception) { 
-									swal('Oops...',"Fallo la operacion:<br>"+"<strong>"+errorString+"</strong>"+"<br>message:"+"<br>Consulte a su administrador",'error');          
+									swal('Oops 2...',"Fallo la operacion:<br>"+"<strong>"+errorString+"</strong>"+"<br>message:"+"<br>Consulte a su administrador",'error');          
 									//swal('Oops...',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');
 									
 									return false;
@@ -448,7 +454,7 @@ function guardaContrato(){
 					},
 						errorHandler:function(errorString, exception) { 
 							//jError('Fallo la operacion:<br>Error::'+errorString+'-message::'+exception.message+'-JavaClass::'+exception.javaClassName+'.<br><strong>Consulte a su administrador</strong>', 'Error al guardar Pedido');
-							swal('Oops...','Fallo la operacion:<br>Error:: ' + errorString + '-message:: ' + exception.message + '-JavaClass:: ' + exception.javaClassName + '.<br>Consulte a su administrador','Error al guardar Contrato','warning');
+							swal('Oops 1...','Fallo la operacion:<br>Error:: ' + errorString + '-message:: ' + exception.message + '-JavaClass:: ' + exception.javaClassName + '.<br>Consulte a su administrador','Error al guardar Contrato','warning');
 							return false;
 						}
 				});
@@ -464,8 +470,14 @@ function guardaContrato(){
 //Carga el documento segun el tipo de Compromiso a capturar..............27/06/2017................................
 function tipoContratos(){
 	
+	
 	var tContrato=$('#cbotipocontrato').selectpicker('val');
-		
+	
+	if (tContrato==1)
+		$('#cto_obra').show();
+	else
+		$('#cto_obra').hide();
+	
 	if($('#cbotipocontrato').val()==0){swal('','Es necesario seleccionar el tipo de contrato','warning'); return false;}
 	
 	/*Retorna si vale cero*/
@@ -480,17 +492,21 @@ function tipoContratos(){
 	
 	switch(tContrato){
 	
-		case "7"://OBRAS
+		case "7"://Adquisicion
 			$('#doctol').show();
-			
 		break;
+		
 		case "1"://OBRAS
 			$('#doctol').show();
 			
 		break;
-		case "13"://OBRAS
+		
+		case "13"://Vales
 			$('#doctol').show();
-			
+		break;
+		
+		case "3"://Vales
+			$('#doctol').show();
 		break;
 	}
 	
@@ -513,7 +529,7 @@ function muestraDocumento(){
 	
 	
 	if ($('#cbotipocontrato').val()==7){ //Adquisicion - Pedidos
-		
+		$('#doctol').show();
 		swal({
 				  title: 'Listado de Pedidos',
 				  text: 'Seleccione pedido a contratar',
@@ -527,7 +543,7 @@ function muestraDocumento(){
 	else if ($('#cbotipocontrato').val()==13) //VALE
 	{
 		$('#doctol').show();
-		//jWindow('<iframe width="750" height="350" name="ventanaVales" id="ventanaVales" frameborder="0" src="../../sam/consultas/muestraVales_tipo_contratos.action?idVale='+$('#CVE_DOC').attr('value')+'&idDependencia='+idDependencia+'&clv_benefi='+clv_benefi+'"></iframe>','Listado de Vales disponibles', '','Cerrar',1);
+		
 		swal({
 			  title: 'Listado de Vales',
 			  text: 'Seleccione vale a comprobar',
@@ -541,7 +557,7 @@ function muestraDocumento(){
 		
 	else
 		
-		//jWindow('<iframe width="800" height="400" name="DocumentoContrato" id="DocumentoContrato" frameborder="0" src="../../sam/consultas/muestra_os_contratos.action?num_req='+num_req+'&idDependencia='+idDependencia+'&clv_benefi='+clv_benefi+'"></iframe>','O.S. y REQ. Calendarizadas disponibles para contratos', '','Cerrar',1);
+		$('#doctol').show();
 		swal({
 			  title: 'Listado de O.S. y O.T.',
 			  text: 'Seleccione OS u OT a contratar',
@@ -558,7 +574,7 @@ function cargarOS(cve_req, num_doc, proveedor, clv_benefi){
 	$('#CVE_DOC').attr('value', cve_req);
 	$('#txtbeneficiario').attr('value', proveedor);
 	$('#CLV_BENEFI').attr('value', clv_benefi);
-	_closeDelay();
+	//_closeDelay();
 }
 
 function regresaPedido(cve_ped, num_ped, clv_benefi){
@@ -566,7 +582,7 @@ function regresaPedido(cve_ped, num_ped, clv_benefi){
 	$('#txtdocumento').attr('value', num_ped);
 	$('#CLV_BENEFI').attr('value', clv_benefi);
 	buscarBeneficiario($('#CLV_BENEFI').attr('value'));
-	_closeDelay();
+	//_closeDelay();
 }
 
 

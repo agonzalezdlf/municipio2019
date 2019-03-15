@@ -556,6 +556,7 @@ public class GatewayEntradasDocumentos extends BaseGatewayAlmacen {
 									for(int i=0; i<vectorInventario.size(); i++){
 										devolverArticulo(Long.parseLong(vectorInventario.get(i).toString()), Long.parseLong(vectorDetalle.get(i).toString()));
 									}
+									regresainventario((int) entrada.get("ID_DEPENDENCIA"));
 								}	
 						}
 	                } 
@@ -567,6 +568,21 @@ public class GatewayEntradasDocumentos extends BaseGatewayAlmacen {
 		}
 	}
 	
+	public void regresainventario(int dependencia){
+		String sql = "UPDATE INVENTARIO SET CANTIDAD = (( " +
+				" SELECT ISNULL(SUM(CANTIDAD),0) FROM DETALLES_ENTRADAS WHERE DETALLES_ENTRADAS.ID_ENTRADA IN (SELECT ENTRADAS.ID_ENTRADA FROM ENTRADAS WHERE ENTRADAS.ID_DEPENDENCIA = ?) " +
+				" AND DETALLES_ENTRADAS.STATUS=1 AND DETALLES_ENTRADAS.ID_ARTICULO = INVENTARIO.ID_ARTICULO " +
+												") " +
+											"	- " +
+												"( " +
+				" SELECT ISNULL(SUM(DT.CANTIDAD),0) FROM DETALLE_SALIDA  AS DT INNER JOIN SALIDAS AS S ON (S.ID_SALIDA = DT.ID_SALIDA AND S.STATUS=1) INNER JOIN ENTRADAS AS E ON (E.ID_ENTRADA = S.ID_ENTRADA) INNER JOIN DETALLES_ENTRADAS AS DE ON (DE.ID_DETALLE_ENTRADA = DT.ID_DETALLE_ENTRADA) " + 
+				" WHERE E.ID_DEPENDENCIA = ? AND DE.ID_ARTICULO = INVENTARIO.ID_ARTICULO " +
+											"	))" +
+			" WHERE ID_DEPENDENCIA = ? ";
+		
+		getJdbcTemplate().update(sql, new Object[]{dependencia,dependencia,dependencia});
+		
+	}
 	public void cancelarEntradas(final Long[] id_entradas){
 		try{
 			 this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
@@ -630,7 +646,14 @@ public class GatewayEntradasDocumentos extends BaseGatewayAlmacen {
 		if(!parametros.get("cbodependencia").toString().equals("0")) clausulas += " AND ENTRADAS.ID_DEPENDENCIA =:cbodependencia";
 		if(!parametros.get("id_almacen").toString().equals("0")) clausulas += " AND ENTRADAS.ID_ALMACEN =:id_almacen";
 		if(!parametros.get("id_tipo_documento").toString().equals("0")) clausulas += " AND ENTRADAS.ID_TIPO_DOCUMENTO =:id_tipo_documento";
-		if(!parametros.get("id_proveedor").toString().equals("0")) clausulas += " AND ENTRADAS.ID_PROVEEDOR ='" + parametros.get("id_proveedor").toString() + "' ";
+		
+		if(!parametros.get("id_proveedor").equals("")) 
+			clausulas += " AND ENTRADAS.ID_PROVEEDOR =:id_proveedor "; //+ parametros.get("id_proveedor").toString() + "' ";
+		
+		/*if(clv_benefi!=null&&!clv_benefi.equals("")) 
+			sql += " and A.CLV_BENEFI=:clv_benefi ";*/
+		
+		
 		if(!parametros.get("id_pedido").toString().equals("")) clausulas += " AND ENTRADAS.ID_PEDIDO =:id_pedido";
 		if(!parametros.get("fechaInicial").toString().equals("")&&!parametros.get("fechaFinal").toString().equals("")) clausulas += " AND convert(datetime,convert(varchar(10), ENTRADAS.FECHA ,103),103) BETWEEN :fechaInicial AND :fechaFinal";
 		if(!parametros.get("proyecto").toString().equals("")) clausulas += " AND ENTRADAS.PROYECTO =:proyecto";

@@ -28,8 +28,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 public class GatewayRequisicion  extends BaseGateway {
 	private static Logger log = Logger.getLogger(GatewayRequisicion.class.getName());
 	
-	public final static  int REQ_STATUS_NUEVO = 0;
-	public final static int REQ_STATUS_PENDIENTE = 1;
+	public final static int REQ_STATUS_NUEVO = 0;
+	public final static int REQ_STATUS_CERRADA = 1;
 	public final static int REQ_STATUS_EN_PROCESO = 2;
 	public final static int REQ_STATUS_A_REVISAR = 3;
 	public final static int REQ_STATUS_CANCELADA = 4;
@@ -45,7 +45,7 @@ public class GatewayRequisicion  extends BaseGateway {
 	public final static int REQ_TIPO_OS_CALENDARIZADA = 8;
 	
 	public final static int REQ_MOVTO_EDICION = 0;
-	public final static int REQ_MOVTO_SOLICITADO = 1;
+	public final static int REQ_MOVTO_CERRADO = 1;
 	public final static int REQ_MOVTO_CORRECCIONES = 2;
 	public final static int REQ_MOVTO_RECHAZADO = 3;
 	public final static int REQ_MOVTO_PEDIDO = 4;
@@ -53,7 +53,7 @@ public class GatewayRequisicion  extends BaseGateway {
 	public String error="";
 	boolean exito;
 	Long cveReq;
-	public static String REQ_ERROR_TIENE_PEDIDO = "La Requisicion/O.T./O.S. que intenta eliminar ya esta relacionado a un Pedido";
+	public static String REQ_ERROR_TIENE_PEDIDO = "La Requisicion que intenta cancelar ya esta relacionada a un Pedido";
 	
 	
 	@Autowired
@@ -73,46 +73,39 @@ public class GatewayRequisicion  extends BaseGateway {
 	public  Long actualizarRequisicion(final Long id_proyecto, final Long cve_req,final Long cve_contrato, final Long cve_vale, final  String num_req,final  String cve_unidad,final  Date f,final  int tipo, final String notas,
 			final int mes, final int statusReq, final int compromete, final int ejercicio , final int cve_pers,final  int anualizada,final  String proyecto,final  String partida,final  int id_grupo,final String cve_benefi,final   String area,final  String tipo_bien,final  String marca,final  String modelo,final  String placas,final  String num_inv,final  String color, 
 			final String usuario, final int cve_concurso){
-		 cveReq=cve_req;
-		 this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
-             @Override
-         protected void   doInTransactionWithoutResult(TransactionStatus status) {            	  	  
-			  int tipoAnualizada=anualizada;
-	            	 if(tipo==7||tipo==8) tipoAnualizada = 1; //Requisicion anualizada
+			
+				cveReq=cve_req;
+				this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
+						@Override
+						protected void   doInTransactionWithoutResult(TransactionStatus status) {            	  	  
+							int tipoAnualizada=anualizada;
+							if(tipo==7||tipo==8) tipoAnualizada = 1; //Requisicion anualizada
 			  
-			  if (cveReq == null){
-				  try {
-					cveReq= guardar(id_proyecto, num_req, cve_contrato, cve_vale, cve_unidad, f, tipo, notas, mes, statusReq,  ejercicio , cve_pers, tipoAnualizada, proyecto, partida, id_grupo);
-					 if(tipo!=1 && tipo!=7)
-						  insertarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				  
-				 
-			  }
-			  else{
-				  /*volver a verificar si existe OT/OS*/
-				  if(tipo!=1 && tipo!=7){
-					  System.out.print("La nueva clave de la requisicion es: " +cveReq);
-					  if(getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object[]{cveReq})==0)
-						  insertarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
-				  }
-				
-				actualizar(cveReq, num_req, cve_contrato, cve_vale, cve_unidad, f, tipo, notas, mes, statusReq,  ejercicio , cve_pers, id_proyecto, partida);
-				if(tipo!=1 && tipo!=7)
-					
-					
-					actualizarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
-				//Israel: Elimina si es diferente de OT
-				if(tipo==1 && tipo==7)
-					getJdbcTemplate().update("DELETE FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object [] {cve_req});
-			  	}
-			 } 
-        });    	
-     
-	  return  cveReq; 
+							if (cveReq == null){
+								try {
+									 cveReq= guardar(id_proyecto, num_req, cve_contrato, cve_vale, cve_unidad, f, tipo, notas, mes, statusReq,  ejercicio , cve_pers, tipoAnualizada, proyecto, partida, id_grupo);
+									 if(tipo!=1 && tipo!=7)
+										  insertarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}else{
+								/*volver a verificar si existe OT/OS*/
+								if(tipo!=1 && tipo!=7){
+									System.out.print("La nueva clave de la requisicion es: " +cveReq);
+									if(getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object[]{cveReq})==0)
+										insertarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
+								}
+									actualizar(cveReq, num_req, cve_contrato, cve_vale, cve_unidad, f, tipo, notas, mes, statusReq,  ejercicio , cve_pers, id_proyecto, partida);
+								if(tipo!=1 && tipo!=7)
+									actualizarOT(cveReq, cve_benefi,  area, tipo_bien, marca, modelo, placas, num_inv, color, usuario, cve_concurso, tipo);
+								//Israel: Elimina si es diferente de OT
+								if(tipo==1 && tipo==7)
+									getJdbcTemplate().update("DELETE FROM SAM_ORDEN_TRAB WHERE CVE_REQ = ?", new Object [] {cve_req});
+						  	}
+						} 
+				});    	
+     			return  cveReq; 
 	}
 	
 	public void actualizarOT(Long cve_req, String cve_benefi,  String area, String tipo_bien, String marca, String modelo, String placas, String num_inv, String color, String usuario, int cve_concurso, int tipoReq ){
@@ -138,7 +131,7 @@ public class GatewayRequisicion  extends BaseGateway {
 		if(!c){
 			
 			cve_req = getNumeroRequisicion(ejercicio)+1;
-			System.out.println("Demo de impresion" +cve_req);
+			
 			String SQL = "INSERT INTO SAM_REQUISIC (CVE_REQ, NUM_REQ, CVE_CONTRATO, CVE_VALE, EJERCICIO, ID_PROYECTO, CLV_PARTID, ID_DEPENDENCIA, FECHA, TIPO, OBSERVA, FECHA_CAP, FECHA_INGRESO, CVE_PERS, STATUS, COMPROMETE, PERIODO, ANUALIZADA, ID_GRUPO ) " +
 						 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			this.getJdbcTemplate().update(SQL, new Object[]{cve_req, num_req, (cve_contrato==0 ? null:cve_contrato),(cve_vale==0 ? null:cve_vale), ejercicio, id_proyecto, partida, cve_unidad, fecha, tipo, notas, fecha_cap, fecha_ingreso, cve_pers, status, 0,mes, anualizada, id_grupo});
@@ -154,7 +147,7 @@ public class GatewayRequisicion  extends BaseGateway {
 		String SQL = "UPDATE SAM_REQUISIC SET  NUM_REQ=?, CVE_CONTRATO =?, CVE_VALE=?, EJERCICIO=?,  ID_DEPENDENCIA=?, FECHA_CAP=?, CVE_PERS=?, TIPO=?, OBSERVA=?,  PERIODO=?, STATUS=?, ID_PROYECTO=?, CLV_PARTID = ? WHERE CVE_REQ=? ";
 		this.getJdbcTemplate().update(SQL, new Object[]{num_req, (cve_contrato==null ? null:(cve_contrato!=0) ? cve_contrato:null),(cve_vale==null ? null:(cve_vale!=0) ? cve_vale:null) ,ejercicio, cve_unidad, fecha, cve_pers, tipo, notas, mes, status, idproyecto, partida, cve_req});
 		//Guardar en la bitacora
-		Map requisicion = this.getJdbcTemplate().queryForMap("SELECT (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_REQUISIC.CVE_REQ ) AS IMPORTE, ID_PROYECTO FROM SAM_REQUISIC WHERE CVE_REQ = ? AND STATUS < = ?", new Object []{cve_req, this.REQ_MOVTO_SOLICITADO});
+		Map requisicion = this.getJdbcTemplate().queryForMap("SELECT (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_REQUISIC.CVE_REQ ) AS IMPORTE, ID_PROYECTO FROM SAM_REQUISIC WHERE CVE_REQ = ? AND STATUS < = ?", new Object []{cve_req, this.REQ_MOVTO_CERRADO});
 		if(requisicion.get("IMPORTE")==null) requisicion.put("IMPORTE", 0);
 		gatewayBitacora.guardarBitacora(gatewayBitacora.CAMBIOS_REQUISICION, ejercicio, cve_pers, cve_req, num_req, "REQ", fecha, idproyecto.toString(), partida, null, Double.parseDouble(requisicion.get("IMPORTE").toString()));
 	}
@@ -223,7 +216,7 @@ public class GatewayRequisicion  extends BaseGateway {
 				/*"select  r.CVE_REQ, r.NUM_REQ, r.PROYECTO, r.CLV_PARTID, "+  
 				" r.CLV_UNIADM,uni.NOMBRE UNIDAD_ADM, r.TIPO, TIPO_REQ = CASE r.TIPO WHEN 1 THEN 'REQ.' WHEN 2 THEN 'O.S.' WHEN 3 THEN 'O.T.' WHEN 4 THEN 'O.T.M.P.' WHEN 5 THEN 'O.S.BOMBAS' WHEN 6 THEN 'PAQUETE' WHEN 7 THEN 'REQ. ANUAL' END, r.PERIODO, r.STATUS ,  "+
 				" convert(varchar(10), r.fecha ,103)  FECHA , "+
-				" isnull ( (select sum (cantidad * precio_est ) from req_movtos where cve_req=r.cve_req and comprometido=1  and req_movtos.status in ("+this.REQ_MOVTO_SOLICITADO+") ),0) IMPORTE, "+ 
+				" isnull ( (select sum (cantidad * precio_est ) from req_movtos where cve_req=r.cve_req and comprometido=1  and req_movtos.status in ("+this.REQ_MOVTO_CERRADO+") ),0) IMPORTE, "+ 
 				" s.DESCRIPCION_ESTATUS  from requisic r , SAM_ESTATUS_REQ s  , UNIDAD_ADM UNI "+
 				" where r.ejercicio=:ejercicio and  r.STATUS =:estatus  and  r.TIPO IN(1,7) "+sql+"  and  r.STATUS=s.ID_ESTATUS  and UNI.ORG_ID=r.CLV_UNIADM "+
 				" order by  r.cve_req desc   "*/
@@ -508,7 +501,107 @@ public class GatewayRequisicion  extends BaseGateway {
             }
             
 	}
+	public boolean existeFactura(Long cve_req){
+		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_FACTURAS WHERE CVE_REQ =? AND STATUS IN (1,3)", new Object[]{cve_req})>0;
+	}
 	
+	public boolean existeContrato(Long cve_req){
+		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_CONTRATOS WHERE CVE_DOC =? AND ID_TIPO IN(1,2,3,6) AND STATUS IN (1,3)", new Object[]{cve_req})>0;
+	}
+	
+	/*Metodo privado que cancela la requisicion*/
+	private String _cancelarRequisicion(final Long cve_req, final int cve_pers){
+		//comprobar que la requisicion no tenga un pedido
+		error="";
+		try {                 
+            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
+                @Override
+                protected void   doInTransactionWithoutResult(TransactionStatus status) {
+                
+            	/*Valida aqui si el documento esta en el periodo actual para permitir aperturar*/
+                	
+                //Buscar si existe el Super Privilegio para Cancelar Requisiciones
+		      	boolean privilegio = getPrivilegioEn(cve_pers, 136);
+		      	
+		      	Map req = getRequisicion(cve_req);
+		      	Date fechaCierre = new Date();
+		  		fechaCierre = (Date) req.get("FECHA_CIERRE2");
+		  		Calendar c1 = Calendar.getInstance();
+		  		
+		  		/*
+		  		if(fechaCierre!=null&&privilegio==false)
+			  		if((c1.get(Calendar.MONTH)+1) != ((fechaCierre.getMonth())+1))
+			  		{
+
+			  			throw new RuntimeException("No se puede cancelar la Requisición "+req.get("NUM_REQ").toString()+", el periodo del documento es diferente al actual, consulte a su administrador");
+	    		  	}
+    		  	*/
+		  		
+                if(existeFactura(cve_req)){
+                	
+                	throw new RuntimeException("No se puede cancelar" +req.get("NUM_REQ").toString()+", el documento ya tiene una factura");      
+                }
+                	
+             	if(tienePedido(cve_req)) {
+				       error= REQ_ERROR_TIENE_PEDIDO +req.get("NUM_REQ").toString();
+				       log.info("La Requisicion tiene pedido, no se puede Cancelar");
+			       }
+		       else{
+		    	   /*comprobar que no esta agarrada de una Orden de pago*/
+		    	   Map requisicion = getJdbcTemplate().queryForMap("SELECT NUM_REQ, CVE_CONTRATO, ID_PROYECTO, CLV_PARTID, PERIODO, FECHA, TIPO, STATUS, EJERCICIO, (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_REQUISIC.CVE_REQ ) AS IMPORTE FROM SAM_REQUISIC WHERE CVE_REQ = ? ", new Object []{cve_req});
+		    	    
+		    	    
+		    	    boolean cancelarOtOs = getPrivilegioEn(cve_pers, 112);
+	            	//si no es requisicion entra
+	            	if(!requisicion.get("TIPO").equals("1")&&!requisicion.get("TIPO").equals("7")){
+	            		if(!cancelarOtOs)
+	            			throw new RuntimeException("No cuenta con privilegios suficientes para realizar esta operación (Cancelar OT/OS)");
+	            	}
+			
+		    	    //realiza esta accion cuando tiene un contrato
+	    	    	if(requisicion.get("CVE_CONTRATO")!=null){
+	    	    		String tipo_doc = "";
+						if (requisicion.get("TIPO").equals("1")) tipo_doc = "REQ";
+						if (requisicion.get("TIPO").equals("2")) tipo_doc = "OS";
+						if (requisicion.get("TIPO").equals("3")) tipo_doc = "OT";
+						if (requisicion.get("TIPO").equals("4")) tipo_doc = "OT";
+						if (requisicion.get("TIPO").equals("5")) tipo_doc = "OS";
+						if (requisicion.get("TIPO").equals("6")) tipo_doc = "OS";
+						if (requisicion.get("TIPO").equals("7")) tipo_doc = "REQ";
+						if (requisicion.get("TIPO").equals("8")) tipo_doc = "OS";
+	    	    		getJdbcTemplate().update("DELETE FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO = ? AND TIPO_DOC = ? AND TIPO_MOV =?", new Object[]{cve_req, tipo_doc,"LIBERACION"});
+	    	    	}
+	    	    	
+		        	descomprometerReq(cve_req, Integer.parseInt(requisicion.get("EJERCICIO").toString()), requisicion.get("ID_PROYECTO").toString(),requisicion.get("CLV_PARTID").toString());
+		        	
+		        	Date fecha_cancelacion = new Date();
+		        	if(requisicion.get("STATUS").toString().equals("0")){
+		        		getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CANCELADA, cve_req});
+		        	}
+		        	else
+		        		getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, FECHA_CANCELADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CANCELADA, fecha_cancelacion, cve_req});
+						getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS=? WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_RECHAZADO, cve_req});
+						//Guardar en bitacora
+						_guardarEnBitacoraReq(cve_req, gatewayBitacora.CANCELAR_REQUISICION, cve_pers);
+						log.info("Requisicion Cancelada");
+						error="";
+						
+						//SE AGREGA PROCEDIMIENTO ALMACENADO DE PEREDO PARA CONTABILIZAR CANCELADO EN REQUISICIONES 02/AGO/2013
+						//StoreProcedureRequisiciones sp = new StoreProcedureRequisiciones(getJdbcTemplate().getDataSource());
+						//Map<String,Object> result = sp.execute(cve_req, 0);
+					    //TERMINA PROCEDIMIENT0
+										
+		       	  }
+             } 
+          });
+          return error;
+           } catch (DataAccessException e) {            
+           	 log.info("Las requisiciones no se han podido cancelar");
+           	 error = e.getMessage();
+                throw new RuntimeException(e.getMessage(),e);                
+           }	
+           
+	}
 	
 	
 	/*Metodo para validar que la requisicion tenga un pedido*/
@@ -540,25 +633,7 @@ public class GatewayRequisicion  extends BaseGateway {
 					if(tipo_req!=1&&tipo_req!=7){
 						if(!cerrarOtOs)
 							throw new RuntimeException("No cuenta con privilegios suficientes para realizar esta operación (Cerrar OT/OS)");
-						if (tipo_req != 1 && tipo_req != 7){
-							//validar si la OT/OS tiene beneficiario
-							String beneficiario=requisicion.get("CLV_BENEFI").toString();
-							char[] validaNull = beneficiario.toCharArray();
-						    for (int x=0;x<validaNull.length;x++)
-						        System.out.println("[" + x + "] " + validaNull[x]);
-							//if (beneficiario.isEmpty()||beneficiario.length()<0||beneficiario==null)
-						    if ((validaNull[0]=='N') && (validaNull[1]=='U'))
-							//if(requisicion.get("CLV_BENEFI")==null && (tipo_req != 1 && tipo_req != 7))
-							{
-								throw new RuntimeException("No se puede cerrar el documento por que no se ha capturado un beneficiario.");
-							}
-							Log.debug("Este es la clave del beneficiario" + beneficiario);
-							/*if((tipo_req !=1 && tipo_req !=7)) 
-								if(req.get("CLV_BENEFI")== null)
-									throw new RuntimeException("No se puede cerrar el documento por que no se ha especificado un beneficiario válido");
-							*/
-							}
-					}//Termina el ciclo si no es requision
+					}
 					
 					Map req = getRequisicion(cve_req);
 					
@@ -636,18 +711,18 @@ public class GatewayRequisicion  extends BaseGateway {
 						Integer status_req = 0;
 						//cerrar normalmente
 						if(cont_ped==0)
-							status_req = REQ_STATUS_PENDIENTE;
+							status_req = REQ_STATUS_CERRADA;
 						else 
 							status_req = REQ_STATUS_EN_PROCESO;
 						
 						Date fecha_cierre = new Date();
 						getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?,FECHA_CIERRE=?,FECHA=?, COMPROMETE=1 WHERE CVE_REQ = ?", new Object[]{status_req,fecha_cierre,fecha_cierre, cve_req});
-						//getJdbcTemplate().update("UPDATE REQ_MOVTOS SET STATUS=?, COMPROMETIDO=1 WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_SOLICITADO, cve_req});
-						getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ?, COMPROMETIDO = ? WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_SOLICITADO, 1, cve_req});
+						//getJdbcTemplate().update("UPDATE REQ_MOVTOS SET STATUS=?, COMPROMETIDO=1 WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_CERRADO, cve_req});
+						getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ?, COMPROMETIDO = ? WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_CERRADO, 1, cve_req});
 						_guardarEnBitacoraReq(cve_req, gatewayBitacora.CERRAR_REQUISICION, idUsuario);
 						exito=true;
 						
-						//SE AGREGA PROCEDIMIENTO ALMACENADO DE PEREDO PARA CONTABILIZAR PEDIDOS 28/JUL/2013
+						//SE AGREGA PROCEDIMIENTO ALMACENADO DE PEREDO PARA CONTABILIZAR REQUISICIONES 28/JUL/2013
 						//StoreProcedureRequisiciones sp = new StoreProcedureRequisiciones(getJdbcTemplate().getDataSource());
 						//Map result = sp.execute(cve_req, 1);
 					   //TERMINA PROCEDIMIENT0
@@ -844,6 +919,7 @@ public class GatewayRequisicion  extends BaseGateway {
 	                	descomprometerReq(cve_req, Integer.parseInt(requisicion.get("EJERCICIO").toString()), requisicion.get("ID_PROYECTO").toString(),requisicion.get("CLV_PARTID").toString());
 	                	
 	                	getJdbcTemplate().update("DELETE FROM SAM_COMP_REQUISIC WHERE CVE_REQ=?",new Object []{cve_req});
+	                	
 	                	getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, FECHA_CIERRE=NULL, PERIODO =?, COMPROMETE=0 WHERE CVE_REQ = ?", new Object []{REQ_STATUS_NUEVO, gatewayMeses.getMesActivo(ejercicio), cve_req});
 	                	getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS=?, COMPROMETIDO=0 WHERE CVE_REQ = ? ",new Object[]{REQ_MOVTO_EDICION, cve_req});
 					//Guardar en bitacora
@@ -857,111 +933,7 @@ public class GatewayRequisicion  extends BaseGateway {
            }	
 	}
 	
-	public boolean existeFactura(Long cve_req){
-		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_FACTURAS WHERE CVE_REQ =? AND STATUS IN (1,3)", new Object[]{cve_req})>0;
-	}
 	
-	public boolean existeContrato(Long cve_req){
-		return this.getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM SAM_CONTRATOS WHERE CVE_DOC =? AND ID_TIPO IN(1,2,3,6) AND STATUS IN (1,3)", new Object[]{cve_req})>0;
-	}
-	
-	/*Metodo privado que cancela la requisicion*/
-	private String _cancelarRequisicion(final Long cve_req, final int cve_pers){
-		//comprobar que la requisicion no tenga un pedido
-		error="";
-		try {                 
-            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
-                @Override
-                protected void   doInTransactionWithoutResult(TransactionStatus status) {
-                
-            	/*Valida aqui si el documento esta en el periodo actual para permitir aperturar*/
-                	
-                //Buscar si existe el Super Privilegio para Cancelar Requisiciones
-		      	boolean privilegio = getPrivilegioEn(cve_pers, 136);
-		      	
-		      	Map req = getRequisicion(cve_req);
-		      	Date fechaCierre = new Date();
-		  		fechaCierre = (Date) req.get("FECHA_CIERRE2");
-		  		Calendar c1 = Calendar.getInstance();
-		  		
-		  		if(fechaCierre!=null&&privilegio==false)
-			  		if((c1.get(Calendar.MONTH)+1) != ((fechaCierre.getMonth())+1))
-			  		{
-
-			  			throw new RuntimeException("No se puede cancelar la Requisición "+req.get("NUM_REQ").toString()+", el periodo del documento es diferente al actual, consulte a su administrador");
-	    		  	}
-    		  		
-                if(existeFactura(cve_req)){
-                	throw new RuntimeException("No se puede cancelar, el documento ya tiene una factura");      
-                }
-                	
-             	if(tienePedido(cve_req)) {
-				       error= REQ_ERROR_TIENE_PEDIDO;
-				       log.info("La Requisicion tiene pedido, no se puede Cancelar");
-			       }
-		       else{
-		    	   /*comprobar que no esta agarrada de una Orden de pago*/
-		    	   Map requisicion = getJdbcTemplate().queryForMap("SELECT NUM_REQ, CVE_CONTRATO, ID_PROYECTO, CLV_PARTID, PERIODO, FECHA, TIPO, STATUS, EJERCICIO, (SELECT SUM(CANTIDAD*PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE SAM_REQ_MOVTOS.CVE_REQ = SAM_REQUISIC.CVE_REQ ) AS IMPORTE FROM SAM_REQUISIC WHERE CVE_REQ = ? ", new Object []{cve_req});
-		    	    Integer cont = getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM  SAM_ORD_PAGO WHERE CVE_REQ = ? AND STATUS NOT IN (- 1, - 2, 3, 4, 5) ", new Object[]{cve_req});
-		    	    
-		    	    boolean cancelarOtOs = getPrivilegioEn(cve_pers, 112);
-	            	//si no es requisicion entra
-	            	if(!requisicion.get("TIPO").equals("1")&&!requisicion.get("TIPO").equals("7")){
-	            		if(!cancelarOtOs)
-	            			throw new RuntimeException("No cuenta con privilegios suficientes para realizar esta operación (Cancelar OT/OS)");
-	            	}
-			
-		    	    
-		    	    if(cont>0)
-		    	    	throw new RuntimeException("La Requisicion "+requisicion.get("NUM_REQ").toString()+" no se puede cancelar por que esta relacionada a una Orden de Pago");
-		    	    else{
-		    	    	//realiza esta accion cuando tiene un contrato
-		    	    	if(requisicion.get("CVE_CONTRATO")!=null){
-		    	    		String tipo_doc = "";
-							if (requisicion.get("TIPO").equals("1")) tipo_doc = "REQ";
-							if (requisicion.get("TIPO").equals("2")) tipo_doc = "OS";
-							if (requisicion.get("TIPO").equals("3")) tipo_doc = "OT";
-							if (requisicion.get("TIPO").equals("4")) tipo_doc = "OT";
-							if (requisicion.get("TIPO").equals("5")) tipo_doc = "OS";
-							if (requisicion.get("TIPO").equals("6")) tipo_doc = "OS";
-							if (requisicion.get("TIPO").equals("7")) tipo_doc = "REQ";
-							if (requisicion.get("TIPO").equals("8")) tipo_doc = "OS";
-		    	    		getJdbcTemplate().update("DELETE FROM SAM_COMP_CONTRATO WHERE CVE_CONTRATO = ? AND TIPO_DOC = ? AND TIPO_MOV =?", new Object[]{cve_req, tipo_doc,"LIBERACION"});
-		    	    	}
-		    	    	
-			        	descomprometerReq(cve_req, Integer.parseInt(requisicion.get("EJERCICIO").toString()), requisicion.get("ID_PROYECTO").toString(),requisicion.get("CLV_PARTID").toString());
-			        	
-			        	Date fecha_cancelacion = new Date();
-			        	if(requisicion.get("STATUS").toString().equals("0")){
-			        		System.out.println("La clave de la requisicion a cancelar es: " +cve_req);
-			        		getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CANCELADA, cve_req});
-			        	}
-			        	else
-			        		getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, FECHA_CANCELADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CANCELADA, fecha_cancelacion, cve_req});
-						
-						getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS=? WHERE CVE_REQ = ?", new Object[]{REQ_MOVTO_RECHAZADO, cve_req});
-						//Guardar en bitacora
-						_guardarEnBitacoraReq(cve_req, gatewayBitacora.CANCELAR_REQUISICION, cve_pers);
-						log.info("Requisicion Cancelada");
-						error="";
-						
-						//SE AGREGA PROCEDIMIENTO ALMACENADO DE PEREDO PARA CONTABILIZAR CANCELADO EN REQUISICIONES 02/AGO/2013
-						//StoreProcedureRequisiciones sp = new StoreProcedureRequisiciones(getJdbcTemplate().getDataSource());
-						//Map result = sp.execute(cve_req, 0);
-					   //TERMINA PROCEDIMIENT0
-		    	    }
-					
-		       	  }
-                } 
-            });
-          return error;
-           } catch (DataAccessException e) {            
-           	 log.info("Las requisiciones no se han podido cancelar");
-           	 error = e.getMessage();
-                throw new RuntimeException(e.getMessage(),e);                
-           }	
-           
-	}
 	
 	
 	/*Metodo light para obtener la requisicion*/
@@ -1043,16 +1015,19 @@ public class GatewayRequisicion  extends BaseGateway {
 		
 		int mas = this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_REQ_MOVTOS WHERE STATUS IN (1) AND CVE_REQ = ?", new Object[]{cve_req});
 		
+		//Valida si existen lotes por pedir
 		if (mas == 0){
 			
-			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_FINIQUITADA, fecha_finiquitado, cve_req});
+			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_FINIQUITADA, 0, fecha_finiquitado, cve_req});
 			finiquitar = true;
-			
+		
+		//Valida si existen lotes por pedir y en pedidos	
 		if (surtido > 0 ){
-			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?,FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_EN_PROCESO, null, cve_req});
+			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_EN_PROCESO, 1, null, cve_req});
 			}
+		//Cambia a estatus de cerrada para realizar pedidos
 		}else
-				this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?,FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_PENDIENTE, null, cve_req});
+			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CERRADA, 1, null, cve_req});
 		return finiquitar;
 	}
 		
@@ -1064,8 +1039,8 @@ public class GatewayRequisicion  extends BaseGateway {
 		//obtener los lostes de la requisicion
 		List <Map<String,Object>> lotes = this.gatewayMovimientosRequisicion.getConceptos(cve_req);
 		
-		for(Map<String, Object> row: lotes){ //this.REQ_MOVTO_SOLICITADO=> status == 1
-			if( ((Short)row.get("STATUS")).intValue() ==this.REQ_MOVTO_SOLICITADO  ) {
+		for(Map<String, Object> row: lotes){ //this.REQ_MOVTO_CERRADO=> status == 1
+			if( ((Short)row.get("STATUS")).intValue() ==this.REQ_MOVTO_CERRADO  ) {
 				finiquitar = false;
 			}
 		}
@@ -1095,7 +1070,7 @@ public class GatewayRequisicion  extends BaseGateway {
 		if(cerrar==true&&mas>=1) 
 			this.getJdbcTemplate().update("UPDATE REQUISIC SET STATUS = ?, COMPROMETE =? WHERE CVE_REQ = ?", new Object []{this.REQ_STATUS_EN_PROCESO, 1, cve_req});
 		else {
-				this.getJdbcTemplate().update("UPDATE REQUISIC SET STATUS = ?, COMPROMETE =?  WHERE CVE_REQ = ?", new Object []{this.REQ_STATUS_PENDIENTE, 1, cve_req});
+				this.getJdbcTemplate().update("UPDATE REQUISIC SET STATUS = ?, COMPROMETE =?  WHERE CVE_REQ = ?", new Object []{this.REQ_STATUS_CERRADA, 1, cve_req});
 		}
 	}
 	
@@ -1144,7 +1119,7 @@ public double getPreCompromisoMensual (Long idRequisicion,int mes ){
 			this.getJdbcTemplate().update("INSERT INTO SAM_PED_MOVTOS(ID_REQ_MOVTO, CVE_PED, PED_CONS, DESCRIP, CANTIDAD, PRECIO_UNI, STATUS) VALUES(?,?,?,?,?,?,?)", 
 								new Object[]{id_movto, cve_ped, num_lote, lotes.get("NOTAS").toString(), lotes.get("CANTIDAD"), lotes.get("PRECIO_EST"), 0});
 			//cambiar los estatus de los lotes en la requisicion
-			this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ? WHERE ID_REQ_MOVTO = ?", new Object[]{this.REQ_MOVTO_SOLICITADO,id_movto});
+			this.getJdbcTemplate().update("UPDATE SAM_REQ_MOVTOS SET STATUS = ? WHERE ID_REQ_MOVTO = ?", new Object[]{this.REQ_MOVTO_CERRADO,id_movto});
 			//Guardar registro en bitacora
 			gatewayBitacora.guardarBitacora(gatewayBitacora.MOVIO_LOTE_PED, ejercicio, cve_pers, Long.parseLong(lotes.get("CVE_REQ").toString()), req.get("NUM_REQ").toString(), "REQ", (Date) req.get("FECHA"), req.get("ID_PROYECTO").toString(), req.get("CLV_PARTID").toString(), null, 0D);
 			return "";

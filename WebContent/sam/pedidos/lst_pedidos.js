@@ -256,12 +256,12 @@ function reactivarPedido(cve_ped){
 
 function editarPedido(cve_ped, status){
 	var estado ="";
-	swal({imageUrl: '../../imagenes/spinner.gif',text: 'Cargando.....',showConfirmButton: false});
+	swal({imageUrl: '../../imagenes/spinner.gif',text: 'Cargando.....',timer:500, showConfirmButton: false});
 	if(status==1) estado = "PENDIENTE";
 	if(status==3) estado = "CANCELADO";
 	if(status==5) estado = "SURTIDO"; 
 	if(status==0) document.location = 'capturarPedidos.action?cve_ped='+cve_ped;
-	else jAlert('El Pedido actualmente se encuentra '+estado+', usted no esta  autorizado para editar el pedido', 'Advertencia');
+	else swal('','El Pedido actualmente se encuentra '+estado+', usted no esta  autorizado para editar el pedido', 'warning');
 }
 
 function getReportePedido(clavePed) {

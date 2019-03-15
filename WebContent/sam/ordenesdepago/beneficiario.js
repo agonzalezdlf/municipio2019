@@ -21,7 +21,7 @@ $(document).ready(function() {
   	 
   	$('#fecha_altab').datetimepicker({
 		format: 'DD/MM/YYYY',
-		defaultDate: new Date()
+		//defaultDate: new Date()
 	});
   	$('#fecha_bajab').datetimepicker({
 		format: 'DD/MM/YYYY',
@@ -112,7 +112,8 @@ function restaFechas2 (f1,f2){
 }
 
 function guardar(){	
-	console.log('Entro a la funcion guardar');
+	
+	 var status=0;
      var error="";
 	 var clave= $('#idProveedor').val();			 			 
 	 var razonSocial=$('#razonSocial').val();
@@ -159,7 +160,9 @@ function guardar(){
 	 }
 	
 	 var vigencia=restaFechas2(fecha_altab,fecha_bajab);
-
+	
+	 if ($('#estatus').is(':checked'))	
+		   estatus='1';	
 	
 	swal({
 		  title: 'Es seguro?',
@@ -185,7 +188,7 @@ function guardar(){
 				    result.dismiss === swal.DismissReason.timer
 				  ) {
 				  
-					  controladorBeneficiarioRemoto.guardarBeneficiario(clave,razonSocial,responsable,responsable2,rfc, curp, telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,clabeb,fecha_altab,fecha_bajab,{
+					  controladorBeneficiarioRemoto.guardarBeneficiario(clave,razonSocial,responsable, responsable2, rfc, curp, telefono, tipo, calle, colonia, ciudad, estado, cp, idBanco, noCuenta, tipoCuenta, idBeneficiarioPadre, vigencia, status, clabeb, fecha_altab, fecha_bajab,{
 							 callback:function(items) {
 								 $('#idProveedor').val(items);
 								 window.parent.cambiarVariable(razonSocial);
@@ -230,7 +233,9 @@ function guardar(){
  		     pintaTabla( "beneficiarios", i+1 ,this.ID_PROVEEDOR,this.NCOMERCIA,this.RFC,domicilio,this.TIPOBENEFI,this.VIGENCIA);
  		     
         }); 					   						
-			
+            if (items.STATUS==1)
+          	  $('#estatus').prop('checked',true);
+            
 			if (items.length > 0 ){ 
 			  limpiar();
 			  if (items.length!=1)

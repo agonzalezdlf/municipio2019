@@ -50,7 +50,7 @@ public class ControladorReembolsosLiquidosVales extends ControladorBase {
 		modelo.put("nombreUnidad",this.getSesion().getUnidad());	
 		modelo.put("fechaActual",this.getfechaActualCadena());
 		if (clave!= null ) {			
-			 Map<String, String> vale = gatewayVales.getVale(clave);
+			 Map<String, Object> vale = gatewayVales.getVale(clave);
 			 if (vale!=null){				 
 			   modelo.put("vale",gatewayVales.getVale(clave));
 			   modelo.put("idUnidad",vale.get("CLV_UNIADM"));

@@ -179,7 +179,7 @@ public class ControladorPedidos extends ControladorBase {
 		            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
 		                @Override
 		                protected void   doInTransactionWithoutResult(TransactionStatus status) {	    
-		                	datos = gatewayPedidos.guardarEditarPedidos(cve_ped, cve_req, fecha_ped, contrato, cve_concurso, fecha_entrega, cve_beneficiario, getSesion().getIdUsuario(), condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento,ieps, getSesion().getEjercicio(), getSesion().getIdGrupo());
+		                	datos = gatewayPedidos.guardarEditarPedidos(cve_ped, cve_req, fecha_ped, contrato, cve_concurso, fecha_entrega, cve_beneficiario, getSesion().getIdUsuario(), condicion_pago, lugar_entrega, notas, id_req_movtos, cantidades, conceptos, precios_unit, iva, tipo_iva, descuento, getSesion().getEjercicio(), getSesion().getIdGrupo(),ieps);
 		                } 
 		             });
 				
@@ -299,12 +299,12 @@ public class ControladorPedidos extends ControladorBase {
 		}
 	
 	//--------------------------------   Cierre de pedidos   -----------------	
-		public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario){
+		public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final boolean pcalendarizado){
 			try {    
 	            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
 	                @Override
 	                protected void   doInTransactionWithoutResult(TransactionStatus status) {	
-	                	gatewayPedidos.cerrarPedido(cve_ped, tipo, iva, calendario, getSesion().getIdUsuario(), getSesion().getEjercicio());
+	                	gatewayPedidos.cerrarPedido(cve_ped, tipo, iva, calendario, getSesion().getIdUsuario(), getSesion().getEjercicio(),pcalendarizado);
 	                
 	                } 
 	             });
@@ -332,7 +332,7 @@ public class ControladorPedidos extends ControladorBase {
         return exito;
 	}
 	
-//-------------------------------------CANCELAR PEDIDOS-------------------------------------	
+//------------------------------------- CANCELAR PEDIDOS ------------------------------------------------------------------------------- CLASE QUE SE ESTA REVISANDO....	
 	public void cancelarPedido(final Long[] cve_ped){
 		  try {    
 	            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){

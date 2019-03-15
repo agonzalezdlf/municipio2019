@@ -20,6 +20,30 @@ $(document).ready(function(){
 });
 
 function crearFacturasOrdenPago(){
+	
+	swal({
+		  title: 'Confirma que desea crear las Facturas y Orden de Pago',
+		  text: 'Crear Factura y OP',
+		  type: 'info',
+		  showCancelButton: true,
+		  showLoaderOnConfirm: true,
+		  allowOutsideClick: false,
+		  preConfirm: function() {
+		    return new Promise(function(resolve, reject) {
+		    	// here should be AJAX request
+		      setTimeout(function() {
+		        resolve();
+		      }, 2000);
+		    });
+		  },
+		}).then(function (result) {
+			if (result.value) {
+		        	swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+		        }else
+		        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
+		  
+		})
+	/*
 	jConfirm('¿Confirma que desea crear las Facturas y Orden de Pago?','Crear Factura y OP', function(r){
 			 if(r){
 				 	ShowDelay('Creando documento(s)','');
@@ -33,7 +57,7 @@ function crearFacturasOrdenPago(){
 					}
 				});
 			}
-		});
+		});*/
 }
 
 function borrarDatos(){

@@ -39,13 +39,7 @@ $(document).ready(function(){
 		
 	});
 	
-	$('#div_benaficiarioFijo').hide();
 	
-	/*Carga el documento para edicion desde el listado de facturas*/
-	 if($('#CVE_FACTURA').val()==0){
-		 tipoFacturas();
-		 mostrarDetalles($('#CVE_FACTURA').val());//Carga todos los datos de las factura..
-	 } 
 	 
 	 $('#cmdcerrar').addClass("btn_disable");
 	 
@@ -83,14 +77,6 @@ $(document).ready(function(){
 		 cerrarDocumento();
 	 }); 
 		 
-	 //Muestra el documento a devengar segun sea su tipo; desde toolSam.js 
-	   /*$('#img_movimiento').on('click',function(event){
-		   
-		   muestraTiposDocumento();//Funcion llamada atravez toolsam
-		   //return false;
-		   event.preventDefault();
-	   });*/
-	 
 	 $('#img_movimiento').click(function(){
 		   muestraTiposDocumento();//Funcion llamada atravez toolsam
 		   return false;
@@ -115,23 +101,67 @@ $(document).ready(function(){
 	
 	/*Deshabilitar los divs*/
 	/*$('#tr_Programa').hide();
-	$('#tr_PresupuestoLibre').hide();
+	$('#tr_PresupuestoLibre').hide();*/
 	$('#ndocumento').hide();
-	$('#nentrada').hide();*/
-	
+	$('#nentrada').hide();
+	$('#div_benaficiarioFijo').hide();
 	
 	//Entra aqui cuando se esta editando una factura
-	if($('#CVE_FACTURA')!= null && $('#CVE_FACTURA')!=0)
+	if($('#CVE_FACTURA').val()!=0)
 	{
+		$("#TMovimientos").removeClass("disabled");
+		$("#TRetenciones").removeClass("disabled");
+		$("#TVales").removeClass("disabled");
 		mostrarDetallesArchivos();
 		llenarTablaDeRetenciones();
 		//tipoFacturasDeductivas();
 		llenarTablaDeVales();
 		mostrarDetalles();
+		if($('#cbotipodocumento').val()==4)
+		 {
+		 	cargarBeneficiarioyPresupuestoOSOT($('#CLV_BENEFI').val(), $('#CVE_DOC').val());
+			cargarDetallePresupuestalDoc($('#CVE_FACTURA').val());
+		 }
+		if($('#cbotipodocumento').val()==3)// Tipo Pedido
+		 {
+			cargarBeneficiarioyPresupuestoPedidos($('#CLV_BENEFI').val(), $('#CVE_DOC').val());
+			cargarDetallePresupuestalDoc($('#CVE_FACTURA').val());
+		 }
+		if($('#cbotipodocumento').val()==6)// Tipo Contrato
+		{
+			PresupuestoBeneficiarioContrato($('#CLV_BENEFI').val(), $('#CVE_DOC').val());
+			cargarDetallePresupuestalDoc($('#CVE_FACTURA').val());
+		}
 		
 	}
 	
+	/*
+	 if (idTipoFactura==3){
+		tipo_doc = "CVE_PED";
+		var clv_benefi = $('#CLV_BENEFI').val();
+		
+	}
+	if (idTipoFactura==4){
+		tipo_doc = "CVE_REQ";
+		var clv_benefi = $('#CLV_BENEFI').val();
+	}
+	if (idTipoFactura==6){
+		tipo_doc = "CVE_CONTRATO";
+		var clv_benefi = $('#CLV_BENEFI').val();
+	}
+	if (idTipoFactura==2){
+		tipo_doc = "CVE_CONTRATO";
+		var clv_benefi = $('#CLV_BENEFI').val();
+	} 
+	  
+	 */
 	
+	 
+	 $(".nav li.disabled a").click(function() {
+	     return false;
+	   });
+	
+	$('.nav-tabs a[href="#tab1primary"]').tab('show');//Carga mostrando el primer tabs
 });
 
 function onLoad(){
@@ -190,8 +220,6 @@ function tipoFacturas(){
 	var tipofactura = $('#cbotipodocumento').selectpicker('val');//Combo del tipo del documento
 	var tipo = $('#cbotipoFactura').selectpicker('val');
 	
-	$('#tr_NumDocumento').show();
-	$('#trEntrada').show();
 	$('#tr_TotalDocumento').show();
 	$('#div_benaficiario').hide();
 	$('#tr_PresupuestoLibre').show();
@@ -199,34 +227,39 @@ function tipoFacturas(){
 	$('#tr_ProgramaPartidaPresupuesto').hide();
 	$('#div_benaficiarioFijo').hide();
 	$('#div_beneficiario').show();
+	//cbo_ProyectoPartida
 	
 	/*Retorna si vale cero*/
 	if(tipofactura=='0') return false;
 	
 	/*Retorna si vale cero*/
 	if($('#TOTAL_CONCEPTOS').val()>'1'){
-		alert('Total de detalles: ' +$('#TOTAL_CONCEPTOS').val());
+		console.log('Total de detalles: ' +$('#TOTAL_CONCEPTOS').val());
 		$('#cbotipodocumento').prop('disabled', true);
 		
 		swal('','No se puede cambiar el tipo de documento, debe eliminar el detalle primero','error');
 		return false;
 	}
 	
-	
+	if (tipofactura != 1)
+		$('#input_ProgramaPartidaPresupuesto').hide();
+		$('#cbo_ProyectoPartida').show();
+		$('#div_benaficiarioFijo').show();
+		$('#ndocumento').show();
+		
 	switch(tipofactura){
 	
 		case '4': //Para OS u OT
-				
-				$('#cbo_ProyectoPartida').show();
-				$('#input_ProgramaPartidaPresupuesto').show();
+				$('#nentrada').hide();
+				//$('#cbo_ProyectoPartida').show();
+				//$('#input_ProgramaPartidaPresupuesto').show();
 				$('#ndocumento').show();
-				$('#nentrada').show();
 				break;
 		
 		case '3': /*Para PEDIDOS*/
 				
-				$('#cbo_ProyectoPartida').show();
-				$('#input_ProgramaPartidaPresupuesto').show();
+				//$('#cbo_ProyectoPartida').show();
+				//$('#input_ProgramaPartidaPresupuesto').show();
 				$('#ndocumento').show();
 				$('#nentrada').show();
 				break;
@@ -237,20 +270,27 @@ function tipoFacturas(){
 			
 		case '6': //Para CONTRATOS
 			
-			$('#cbo_ProyectoPartida').show();
-			$('#input_ProgramaPartidaPresupuesto').show();
+			//$('#cbo_ProyectoPartida').show();
+			//$('#input_ProgramaPartidaPresupuesto').hide();
 			$('#ndocumento').show();
-			$('#nentrada').show();
+			$('#nentrada').hide();
 			break;
+			
+		case '2': //Para Obras
+			
+			//$('#cbo_ProyectoPartida').show();
+			//$('#input_ProgramaPartidaPresupuesto').hide();
+			$('#ndocumento').show();
+			$('#nentrada').hide();
+			break;	
 			
 		case '1': //NOMINAS
 			
-			$('#div_benaficiarioFijo').show();
-			$('#div_beneficiario').show();
+			$('#div_benaficiarioFijo').hide();
 			$('#cbo_ProyectoPartida').show();
-			$('#input_ProgramaPartidaPresupuesto').show();
-			$('#ndocumento').show();
-			$('#nentrada').show();
+			$('#div_benaficiario').show();
+			$('#nentrada').hide();
+			$('#ndocumento').hide();
 			break;
 		//muestraContratosaDevengar
 	}
@@ -267,11 +307,11 @@ function tipoFacturasDeductivas()
 	//$('#tr_partida').show();
 	$('#div_benaficiario').show();
 	$('#tr_PresupuestoLibre').show();
-	$('#tr_ProyectoPartida').show();
+	$('#cbo_ProyectoPartida').show();
 	$('#tr_ProgramaPartidaPresupuesto').hide();
 	$('#div_benaficiarioFijo').show();
 	$('#div_beneficiario').show();
-	
+	//	
 	switch(tipo){
 		case "1"://NOMINA
 			
@@ -296,7 +336,7 @@ function tipoFacturasDeductivas()
 			$('#tabuladores').tabs('enable',3);
 			break;
 		case "3"://PEDIDO
-			alert('Entro a facturas deductivas tipo 3');
+			
 			$('#tabuladores').tabs('enable',1);
 			$('#tabuladores').tabs('enable',2);
 			$('#tabuladores').tabs('enable',3);
@@ -402,13 +442,12 @@ function muestraPresupuesto(){
 		$('#CLV_PARTID').val('0');
 		
 		
-	var idUnidad = $('#cbUnidad2').selectpicker('val');
-	alert('La unidad a filtrat es: ' +idUnidad);
+	var idUnidad = $('#cbUnidad2').val();
+	
 	if(idUnidad==null||idUnidad=="") idUnidad =0;
 	
 	if($('#cbomes').val()==0) {swal('','Seleccione un periodo presupuestal válido','warning'); return false;}
-
-	__listadoPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(), 0, idUnidad);
+		__listadoPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(), 0, idUnidad);
 }
 
  function eliminarVales(){
@@ -706,7 +745,7 @@ function muestraPresupuesto(){
      if ($('#cboproyectocuenta').val()!=0) {
     	 
     	 var x = document.getElementById("cboproyectocuenta").value;
-    	 document.getElementById("demo").innerHTML = "You selected: " + x;
+    	 document.getElementById("demo").innerHTML = "Proyecto: " + x;
     	 
     	 dwr.util.removeAllOptions("cboVales");
     	 
@@ -792,7 +831,7 @@ function guardarVale(){
  }
  
 function getProyectosPartidasVales(datos) {	
-	alert ('Entro al getProyectosPartidasVales');
+	
         lipiarVale();
 		dwr.util.addOptions('cboproyectocuenta',{ 0:'Seleccione'});
 		dwr.util.addOptions('cboproyectocuenta',datos,"ID_PROYECTO", "PROYECTOPARTIDA");
@@ -801,7 +840,7 @@ function getProyectosPartidasVales(datos) {
  function getProyectosPartidasDetalles(datos){
 	 	//dwr.util.removeAllOptions("cboproyectopartida");	
 		//dwr.util.addOptions('cboproyectopartida',{ 0:'Seleccione'});
-	 	alert ('Entro al getProyectosPartidasDetalles');
+	 	
 		dwr.util.addOptions('cboproyectopartida',datos,"ID_PROYECTO", "PROYECTOPARTIDA");
  }
 
@@ -869,22 +908,22 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 
 
  function editarRetencion (idRetencion,idTipoRetencion,importe) {
- 	$('#idRetencion').attr('value',idRetencion);
-	$('#retencion').val(idTipoRetencion);
+ 	$('#idRetencion').val(idRetencion);
+	$('#retencion').selectpicker('val',idTipoRetencion);
 	if (importe < 0 )
 	  importe=importe*-1;
-	$('#importeRetencion').attr('value',importe);
+	$('#importeRetencion').val(importe);
  } 
  
  
  function limpiarRetencion () {
- 	$('#idRetencion').val('');
+ 	$('#retencion').selectpicker('val',0);
 	$('#importeRetencion').val('');
  }
  
  function limpiarRetenciones(){
 	$('#idRetencion').val('');
-	$('#retencion').val(0);	
+	$('#retencion').selectpicker('val',0);
 	$('#importeRetencion').val('');
 	$('#retencion').focus();
 }
@@ -927,12 +966,13 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
     
     swal({
 		  title: 'Es seguro?',
-		  text: '¿Confirma que desea eliminar la retención?',
+		  text: '¿Confirma que desea guardar la retención?',
 		  type: 'warning',
 		  showCancelButton: true,
-		  confirmButtonText: 'Sí, Eliminar!',
+		  confirmButtonText: 'Sí, Guardar!',
 		  cancelButtonText: 'No, abortar!',
-		  timer: 4000,
+		  allowOutsideClick: false,
+		  //timer: 4000,
 		  showLoaderOnConfirm: true,
 		  preConfirm: function(email) {
 			    return new Promise(function(resolve, reject) {
@@ -944,7 +984,7 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 								setTimeout(function(){
 									llenarTablaDeRetenciones();
 									limpiarRetencion();	
-									swal("Retención guardada con éxito");
+									//swal("Retención guardada con éxito");
 								}, 2000);
 							} 					   				
 							,
@@ -956,10 +996,9 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 			      , 2000);
 			    });
 			  },
-			  allowOutsideClick: false
-			
 		}).then((result) => {
 			  if (result.value  ) {
+				  swal({title:'Retención guardada con éxito!!',showConfirmButton: false,timer:1000,type:"success"});
 			  } else if (result.dismiss === swal.DismissReason.cancel) {
 			 		swal('Cancelado','Proceso cancelado','error')
 			  }
@@ -980,7 +1019,7 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 			  showCancelButton: true,
 			  confirmButtonText: 'Sí, Eliminar!',
 			  cancelButtonText: 'No, abortar!',
-			  timer: 4000,
+			  allowOutsideClick: false,
 			  showLoaderOnConfirm: true,
 			  preConfirm: function(email) {
 				    return new Promise(function(resolve, reject) {
@@ -990,7 +1029,6 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 								callback:function(items) {
 									
 									setTimeout(function(){
-									    swal("Retencion(es) eliminada(s) con éxito");
 									    llenarTablaDeRetenciones();
 									  }, 2000);
 								} 					   				
@@ -1003,10 +1041,11 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
 				      , 2000);
 				    });
 				  },
-				  allowOutsideClick: false
+				  
 				
 			}).then((result) => {
 				  if (result.value  ) {
+					  swal({title:'Retencion(es) eliminada(s)!!',showConfirmButton: false,timer:1000,type:"success"});
 				  } else if (result.dismiss === swal.DismissReason.cancel) {
 				 		swal('Cancelado','Proceso cancelado','error')
 				  }
@@ -1337,53 +1376,6 @@ function cargarBeneficiarioyPresupuestoOSOT(clv_benefi, cve_req){
 		
 		_closeDelay();
 }
-/*
-function guardarFactura()
-{
-		var v = validarDetalles();
-		if(v) return false;
-	
-		var cve_factura = $('#CVE_FACTURA').val();
-		var cve_doc = $('#CVE_DOC').val();
-		var tipo_doc = $('#cbotipodocumento').val();
-		var idDependencia =  $('#cbodependencia').val();
-		var idTipoFactura = $('#cbotipoFactura').val();
-		var clv_benefi = $('#CLV_BENEFI').val();
-		var idEntrada = $('#ID_ENTRADA').val();
-		var idProyecto = 0;//$('#ID_PROYECTO').val();
-		var clv_partid = '';//$('#CLV_PARTID').val();
-		var num_fact = $('#txtnumfactura').val();
-		var iva = $('#txtiva').val(); // Corregir el IVA..
-		var subtotal = $('#txtsubtotal').val();
-		var total = $('#txttotal').val();
-		var observacion = $('#txtobservacion').val();
-		var fecha_doc = $('#txtfecha').val();
-		subtotal = subtotal.replace(',', "");
-		
-		jConfirm('¿Confirma que desea guardar la factura?','Guardar', function(r){
-			if(r){
-				
-				controladorFacturasRemoto.guardarFactura(cve_factura, tipo_doc, cve_doc, idTipoFactura, idDependencia, idProyecto, clv_partid, clv_benefi, idEntrada, num_fact, iva, subtotal, total,  observacion, fecha_doc, {
-					  callback:function(items){
-							$('#CVE_FACTURA').attr('value',items);
-							subirArchivo();
-							desabilitarControles();;	
-							$('#tabuladores').tabs('enable',1);
-							tipoFacturasDeductivas();
-							cargarDetallePresupuestalDoc($('#CVE_FACTURA').val());
-							$('#tr_file').show();
-							CloseDelay('Factura guardada con éxito');
-							
-					} 					   				
-					,
-					errorHandler:function(errorString, exception) { 
-						jError('La operacion de guardado no se ha podido completar correctamente: '+errorString,'Error');   
-						return false;
-					}
-				});
-			}																			   
-	});
-}*/
 
 /*funcion para validar los detalles de los conceptos*/
 function validarDetalles(){
@@ -1408,7 +1400,7 @@ function guardarFactura(){
 	var cve_factura = $('#CVE_FACTURA').val();
 	var cve_doc = $('#CVE_DOC').val();
 	var idTipoFactura = $('#cbotipodocumento').selectpicker('val');
-	var idDependencia =  $('#cbUnidad').selectpicker('val');
+	var idDependencia =  $('#cbUnidad').val();
 	var clv_benefi = $('#cboSearch').selectpicker('val');
 	var idEntrada = $('#ID_ENTRADA').val();
 	var idProyecto = 0;
@@ -1424,13 +1416,17 @@ function guardarFactura(){
 	if (idTipoFactura==3){
 		tipo_doc = "CVE_PED";
 		var clv_benefi = $('#CLV_BENEFI').val();
-		alert('Factura tipo Pedidos: ') + tipo_doc;
+		
 	}
 	if (idTipoFactura==4){
 		tipo_doc = "CVE_REQ";
 		var clv_benefi = $('#CLV_BENEFI').val();
 	}
 	if (idTipoFactura==6){
+		tipo_doc = "CVE_CONTRATO";
+		var clv_benefi = $('#CLV_BENEFI').val();
+	}
+	if (idTipoFactura==2){
 		tipo_doc = "CVE_CONTRATO";
 		var clv_benefi = $('#CLV_BENEFI').val();
 	}
@@ -1453,7 +1449,7 @@ function guardarFactura(){
 				    return new Promise(function(resolve, reject) {
 				      setTimeout(function() {
 				        if (email === 'taken@example.com') {
-				          reject('This email is already taken.');
+				          reject('Demo.');
 				        } else {
 				          resolve();
 				          controladorFacturasRemoto.guardarFactura(cve_factura, tipo_doc, cve_doc, idTipoFactura, idDependencia, idProyecto, clv_partid, clv_benefi, idEntrada, num_fact, iva, subtotal, total,  observacion, fecha_doc, {
@@ -1463,16 +1459,19 @@ function guardarFactura(){
 									subirArchivo();
 									desabilitarControles();;	
 									tipoFacturas();
+									$("#TMovimientos").removeClass("disabled");
+									$("#TRetenciones").removeClass("disabled");
+									$("#TVales").removeClass("disabled");
 									cargarDetallePresupuestalDoc($('#CVE_FACTURA').val());
 									//$('#tr_file').show();
 									setTimeout(function(){
-									    swal("Factura guardada con éxito!");
+									    swal({title:"Factura guardada con éxito!",timer:1000,showConfirmButton:false });
 									   
 									  }, 2000);
 								} 					   				
 								,
 								errorHandler:function(errorString, exception) { 
-									swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+									swal('Opss..Guardar',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
 								}
 							});  
 				        }
@@ -1497,7 +1496,6 @@ function guardarFactura(){
 
 function cargarDetallePresupuestalDoc(cve_factura)
 {
-	
 	controladorFacturasRemoto.cargarDetallePresupuestal(cve_factura, {
 					  callback:function(items)
 					  {
@@ -1509,7 +1507,7 @@ function cargarDetallePresupuestalDoc(cve_factura)
 					  } 					   				
 					,
 					errorHandler:function(errorString, exception) { 
-						swal('','La operacion de guardado no se ha podido completar correctamente: '+errorString,'error');   
+						swal('Opsss.. 10','La operacion de guardado no se ha podido completar correctamente: '+errorString,'error');   
 						return false;
 					}
 				});

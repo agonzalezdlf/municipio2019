@@ -165,8 +165,10 @@ public class GatewayVales  extends BaseGateway {
 		if (fInicial != null && fFinal != null ) 
 			sql += " and convert(datetime,convert(varchar(10), A.FECHA ,103),103) between :fechaInicial and :fechaFinal ";
 		
-		if(tipoGasto!=null)
-			if(!tipoGasto.equals("0"))
+		
+		if(tipoGasto!=null&&!tipoGasto.equals("")&&!tipoGasto.equals("0")) 
+		//if(tipoGasto!=null)
+			//if(!tipoGasto.equals("0"))
 				sql += " and A.ID_RECURSO=:tipoGasto ";
 		
 		if(clv_benefi!=null&&!clv_benefi.equals("")) 

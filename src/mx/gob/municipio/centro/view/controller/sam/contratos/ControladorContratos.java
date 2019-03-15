@@ -131,9 +131,8 @@ public class ControladorContratos extends ControladorBase {
 		this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
             @Override
             protected void   doInTransactionWithoutResult(TransactionStatus status) {
-				gatewayContratos.guardarConceptoContratoPeredo(idDetalle, cve_contrato, idProyecto, clv_partid, importe);
-				gatewayContratos.guardarConcepto(idDetalle, cve_contrato, idProyecto, clv_partid, mes, importe);
-            }
+				gatewayContratos.guardarConceptoContratoPeredo(idDetalle, cve_contrato, idProyecto, clv_partid, mes, importe );
+			}
 		 });
 	}
 	

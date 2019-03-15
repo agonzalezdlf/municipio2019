@@ -1,7 +1,9 @@
+var valfin="";
 $(document).ready(function() {
 	//$('.tiptip a.button, .tiptip button').tipTip();
   //var imagen="../../imagenes/cal.gif";	
-  var formatFecha="dd/mm/yy";	
+  var formatFecha="dd/mm/yy";
+  
   //$("#fechaInicial").datepicker({showOn: 'button', buttonImage:imagen , buttonImageOnly: true,dateFormat: formatFecha});  
   //$("#fechaFinal").datepicker({showOn: 'button', buttonImage: imagen, buttonImageOnly: true,dateFormat: formatFecha});    
   $('#ui-datepicker-div').hide();
@@ -62,42 +64,65 @@ $(document).ready(function() {
 		getListadoVales();
 	});
 	
+	$('#cbostatus').on('change',function(event){
+		getVale();
+		
+	});
 	
 });
 
 function getVale(){
+	
 	 var checkStatus = [];
      $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	 
 	 var error="";
-	 var titulo ="Error de validacion";
-	 if (checkStatus.length==0 )   error="Debe de seleccionar un Estatus de Vales <br>";
-	 if ($('#fechaInicial').attr('value')=="" && $('#fechaFinal').attr('value')!="" || $('#fechaInicial').attr('value')!="" && $('#fechaFinal').attr('value')=="")  error+="El rango de fechas no es valido<br>";
+	 var titulo ="Error de validacion <br>";
+	 if (checkStatus.length==0 & $('#cbostatus').val()==0 )  error="Debe de seleccionar un Estatus de Vales";
+	 //if ($('#fechaInicial').attr('value')=="" && $('#fechaFinal').attr('value')!="" || $('#fechaInicial').attr('value')!="" && $('#fechaFinal').attr('value')=="")  error+="El rango de fechas no es valido<br>";
 	if (error=="")
 		$("#forma").submit();
 	else
-	  jAlert(error,titulo);
+	  swal({type:'error',title:titulo,text:error,timer:3000,showConfirmButton: false});
 }
 
 function AperturarVale(){
 	var checkClaves = [];
      $('input[name=chkvales]:checked').each(function() { checkClaves.push($(this).val());});	
 	 if (checkClaves.length>0){
-		jConfirm('¿Confirma que desea aparturar los vales seleccionados?','Confirmar', function(r){
-			if(r){
-					 controladorListadoValesRemoto.aperturarVales(checkClaves, {
+		 
+		 swal({
+			  title: 'Apertura',
+			  text: 'Confirme que desea aperturar el vale?',
+			  type: 'info',
+			  showCancelButton: true,
+			  showLoaderOnConfirm: true,
+			  allowOutsideClick: false,
+			  preConfirm: function() {
+			    return new Promise(function(resolve, reject) {
+			    	controladorListadoValesRemoto.aperturarVales(checkClaves, {
 						callback:function(items) { 		
-						  CloseDelay('Vales aperturados con exito', 2000, function(){
+						  //CloseDelay('Vales aperturados con exito', 2000, function(){
 							  	$('#forma').submit();
-						});
+						//});
 					 } 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
 						jError(errorString, 'Error');          
 					 }
 				    });
-			}
-	   },async=false );
-	 } 
+			      setTimeout(function() {
+			        resolve();
+			      }, 2000);
+			    });
+			  },
+			}).then(function (result) {
+				if (result.value) {
+			        	swal({title:'Vales aperturados con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+			        }else
+			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
+			  
+			})
+	} 
 	else 
 	    jAlert('Es necesario que seleccione por lo menos un pedidos del listado', 'Advertencia');
 }
@@ -122,7 +147,7 @@ $('#forma').attr('action',"lista_vales.action");
 function getReporteValeAnexo(clave) {
 	controladorListadoValesRemoto.getArchivoAnexoVale(clave, {
 				callback:function(items) {
-					   var html = '<table class="listas" border="0" align="center" cellpadding="1" cellspacing="2" width="405" >'+
+					   var html = '<table class="table" border="0" align="center" cellpadding="1" cellspacing="2" width="405" >'+
 									'  <tr id="x1" onmouseover="color_over(\'x1\')" onmouseout="color_out(\'x1\')"> '+
 									'	<td width="33" height="27" align="center" style="cursor:pointer" onclick="getReporteVale('+clave+')"> '+
 									'	  <img src="../../imagenes/pdf.gif"/></td>' +
@@ -137,7 +162,7 @@ function getReporteValeAnexo(clave) {
 									+
 									'	</tr> ';
 								html+='</table>';
-						swal(html,'Opciones Reporte de Vales', '','Cerrar',1);
+						swal({title:'<h3>Opciones Reporte de Vales</h3>',html:html,confirmButtonText: 'Cerrar'});
 				} 					   				
 				,
 				errorHandler:function(errorString, exception) { 
@@ -159,19 +184,37 @@ function cancelarVale(){
 	var checkVales = [];
 	$('input[name=chkvales]:checked').each(function() {checkVales.push($(this).val());	 });
 	if (checkVales.length > 0 ) {	 
-		jConfirm('Al Cancelar un Vale no podra volver a recuperarlo ¿Confirma que desea realizar esta acción?','Confirmar', function(r){
-		if(r){
-			    controladorListadoValesRemoto.cancelarVale(checkVales, {
-				callback:function(items) {
-				   CloseDelay('Vales cancelados con exito', 2000,function(){ $('#forma').submit(); });
-				} 					   				
-				,
-				errorHandler:function(errorString, exception) { 
-				jError("Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");    
-				}
-				}); 
-		}
-		});
+		
+		 swal({
+			  title: '¿Confirma que desea realizar esta acción?',
+			  text: 'Al Cancelar un Vale no podra volver a recuperarlo?',
+			  type: 'info',
+			  showCancelButton: true,
+			  showLoaderOnConfirm: true,
+			  allowOutsideClick: false,
+			  preConfirm: function() {
+			    return new Promise(function(resolve, reject) {
+			    	controladorListadoValesRemoto.cancelarVale(checkVales, {
+						callback:function(items) {
+							$('#forma').submit();
+						} 					   				
+						,
+						errorHandler:function(errorString, exception) { 
+						jError("Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");    
+						}
+						}); 
+			      setTimeout(function() {
+			        resolve();
+			      }, 2000);
+			    });
+			  },
+			}).then(function (result) {
+				if (result.value) {
+			        	swal({title:'Vales cancelados con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+			        }else
+			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
+			  
+			})
 	} else 
 		jAlert("Es necesario seleccionar por lo menos un elemento del listad", "Advertencia");
  }

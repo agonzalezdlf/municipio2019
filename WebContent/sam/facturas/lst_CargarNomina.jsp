@@ -30,8 +30,9 @@
 <script src="../../include/css/jquery.tiptip.js"></script>
 <script type="text/javascript" src="lst_CargarNomina.js"> </script>
 
-<link rel="stylesheet" href="../../include/css/sweetalert2.css" type="text/css">
-<script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
 <style type="text/css">
 <!--

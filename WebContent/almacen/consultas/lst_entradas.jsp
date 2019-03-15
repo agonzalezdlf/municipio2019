@@ -18,7 +18,9 @@ ControladorListadoEntradasDocumentos
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap-select.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
-<link rel="stylesheet" href="../../include/css/sweetalert2.css" type="text/css">
+
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
+
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 
 
@@ -29,6 +31,7 @@ ControladorListadoEntradasDocumentos
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
+<script type="text/javascript" src="../../include/js/jquery.bootstrap-growl.min.js"></script>
 
 <!-- Demo del autocomplit -->
 <link rel="stylesheet"  href="../../include/js/jquery-ui/jquery-ui-1.12.1.min.css" type="text/css"/>
@@ -41,27 +44,9 @@ ControladorListadoEntradasDocumentos
 <script type="text/javascript" src="../../dwr/interface/controladorListadoEntradasDocumentosRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
 <script type="text/javascript" src="../../dwr/util.js"> </script>
-<script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
-
-
-
-
-<!-- 
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-<link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
-<link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
-<script src="../../include/css/jquery.tiptip.js"></script>
-<script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
-<script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-<script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
-<script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script>
-<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
-<link type="text/css" href="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.css" rel="stylesheet" />
-<link rel="stylesheet" href="../../include/js/autocomplete/jquery.autocomplete.css" type="text/css" />	
- -->
 
 <style type="text/css">
 <!--
@@ -284,12 +269,12 @@ a:active {
       <sec:authorize ifAllGranted="ROLE_Almacen_PRIVILEGIOS_APERTURAR_ENTRADAS">
         <td width="130" align="center"><div class="buttons tiptip">
               <div class="buttons tiptip">
-                <button name="cmdAperturar" id="cmdAperturar" type="button" class="button red middle"><span class="label" style="width:100px">Aperturar</span></button>
+                <button name="cmdAperturar" id="cmdAperturar" type="button" class="btn btn-warning"><span class="label" style="width:100px">Aperturar</span></button>
               </div></div>
         </td>
         </sec:authorize>
         <sec:authorize ifAllGranted="ROLE_Almacen_PRIVILEGIOS_CANCELAR_ENTRADAS">
-        	<td width="130"><button name="cmdcancelar" id="cmdcancelar" type="button" class="button red middle"><span class="label" style="width:100px">Cancelar</span> </button></td>
+        	<td width="130"><button name="cmdcancelar" id="cmdcancelar" type="button" class="btn btn-danger"><span class="label" style="width:100px">Cancelar</span> </button></td>
         </sec:authorize>
       </tr>
     </table>

@@ -18,13 +18,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import mx.gob.municipio.centro.model.gateways.sam.GatewayOrdenDePagos;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayUnidadAdm;
 import mx.gob.municipio.centro.view.bases.ControladorBase;
 
 @Controller
-@RequestMapping("/sam/ordenesdepago/lista_ordenPagoEjercer.action")
-
 public class ControladorListadoOrdenPagoEjercido extends ControladorBase {
 	public ControladorListadoOrdenPagoEjercido(){}
 	
@@ -35,39 +36,68 @@ public class ControladorListadoOrdenPagoEjercido extends ControladorBase {
 	GatewayOrdenDePagos gatewayOrdenDePagos;
 	
 	@SuppressWarnings("unchecked")	
-	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})  
-	public String  requestGetControlador( Map modelo, HttpServletRequest request ) {
-		int mes = request.getParameter("mes")==null ?1 : Integer.parseInt(request.getParameter("mes"));
+	@RequestMapping(value ="/sam/ordenesdepago/lista_ordenPagoEjercer.action", method = {RequestMethod.GET, RequestMethod.POST})  
+	public String  requestGetControlador( Map model, HttpServletRequest request ) {
+		
+		int mActual = getJdbcTemplate().queryForInt(" SELECT MES FROM MESES WHERE ESTATUS='ACTIVO' ");
+		int mes = request.getParameter("mes")==null ? mActual : Integer.parseInt(request.getParameter("mes"));
+		
 		int listado = 0;
-		modelo.put("ejercicio",this.getSesion().getEjercicio());
-		modelo.put("ejercidas", request.getParameter("ejercidas")==null ? "false": request.getParameter("ejercidas"));
-		modelo.put("por_ejercer", request.getParameter("por_ejercer")==null ? "false": request.getParameter("por_ejercer"));
-		modelo.put("mes", request.getParameter("mes")==null ? "1": request.getParameter("mes"));
-		modelo.put("fecha_ejercer", request.getParameter("fecha_ejercer")==null ? "false": request.getParameter("fecha_ejercer"));
-		modelo.put("fecha", request.getParameter("fecha"));
-		modelo.put("ordenesPagoEjercer", this.ordenesPagoEjercer(mes, listado));
+		int statusOP = request.getParameter("statusOP")==null ? 1 : Integer.parseInt(request.getParameter("statusOP"));
+		listado=statusOP;
+		model.put("mes", mes);
+		model.put("statusOP", statusOP);
+		model.put("ejercicio",this.getSesion().getEjercicio());
 		
-		if(modelo.get("por_ejercer").equals("false")&&modelo.get("ejercidas").equals("false")) modelo.put("por_ejercer", "true");
+		//modelo.put("ejercidas", request.getParameter("ejercidas")==null ? "false": request.getParameter("ejercidas"));//chk_ejercidas
+		//modelo.put("por_ejercer", request.getParameter("por_ejercer")==null ? "false": request.getParameter("por_ejercer"));//chk_por_ejercer
+		//modelo.put("fecha_ejercer", request.getParameter("fecha_ejercer")==null ? "false": request.getParameter("fecha_ejercer"));
 		
-		if(modelo.get("por_ejercer").equals("true")) listado = 1;
-		if(modelo.get("ejercidas").equals("true")) listado = 2; 
-		if(modelo.get("por_ejercer").equals("true")&&modelo.get("ejercidas").equals("true")) listado = 3; 
+		model.put("fecha", request.getParameter("fecha"));
+		model.put("ordenesPagoEjercer", this.ordenesPagoEjercer(mes, statusOP));
+		
+		//if(modelo.get("por_ejercer").equals("false")&&modelo.get("ejercidas").equals("false")) modelo.put("por_ejercer", "true");
+		
+		//if(modelo.get("por_ejercer").equals("true")) listado = 1;//Por ejercer
+		//if(modelo.get("ejercidas").equals("true")) listado = 2; //Ejercidas
+		
+		//if(modelo.get("por_ejercer").equals("true")&&modelo.get("ejercidas").equals("true")) listado = 3; //Todas
 				
-		modelo.put("lstOrdenesPagoEjercer", this.ordenesPagoEjercer(Integer.parseInt(modelo.get("mes").toString()), listado));
+		model.put("lstOrdenesPagoEjercer", this.ordenesPagoEjercer(Integer.parseInt(model.get("mes").toString()), statusOP));
 	    return "sam/ordenesdepago/lista_ordenPagoEjercer.jsp";
 	}
+		
+	@RequestMapping(value ="sam/ordenesdepago/lista_ordenPagoEjercer/addPerson", method = {RequestMethod.POST}) 
+	@ResponseBody
+	public String cambiarFechaRelacion2 (@RequestParam String fecha, @RequestParam Long idRelacion, @RequestParam int IdDependencia){
+		try {
+			Date f = this.formatoFecha(fecha);//formatoFecha (fecha);
+			System.out.println("Fecha enviada: " + f +"Dependencia: "+idRelacion);
+			if(IdDependencia!=0)
+				this.getJdbcTemplate().update("UPDATE SAM_OP_RELACION SET FECHA =?, ID_DEPENDENCIA_DEV = ? WHERE ID_RELACION = ?", new Object[]{f, IdDependencia, idRelacion});
+			else
+				this.getJdbcTemplate().update("UPDATE SAM_OP_RELACION SET FECHA =? WHERE ID_RELACION = ?", new Object[]{f, idRelacion});
 			
+			return "";
+		} catch (DataAccessException e) {
+			throw new RuntimeException(e.getMessage(),e);
+		}
+		
+		//int mes = request.getParameter("mes")==null ? mActual : Integer.parseInt(request.getParameter("mes"));
+		
+	}
+	
 	@ModelAttribute("unidadesAdmiva")
     public List<Map<String, Object>> getUnidades(){
     	return gatewayUnidadAdm.getUnidadAdmTodos();	
     }
 	
-	public List<Map<String, Object>> ordenesPagoEjercer(int mes, int listado){
-		return this.gatewayOrdenDePagos.getListadoOrdenesPagoEjercer(mes, listado, this.getSesion().getEjercicio());
+	public List<Map<String, Object>> ordenesPagoEjercer(int mes, int statusOP){
+		return this.gatewayOrdenDePagos.getListadoOrdenesPagoEjercer(mes, statusOP, this.getSesion().getEjercicio());
 	}
 	
 	//Metodo transaccional para ejercer un listado de ordenes de pago
-	public boolean ejercerOrdenPago(final List<Long> cve_op, final boolean bfecha, final String fecha_ejerce){
+	public boolean ejercerOrdenPago(final List<Long> cve_op, final String fecha_ejerce){
 		final Date fecha = this.formatoFecha(fecha_ejerce);
 		try {   
 			//recuperamos el usuario de la sesion
@@ -78,7 +108,7 @@ public class ControladorListadoOrdenPagoEjercido extends ControladorBase {
 	            protected void   doInTransactionWithoutResult(TransactionStatus status) {	    
 	            	for(Long cve : cve_op){
 	            		//Ejecuta el metodo ejercerOrdenPago en el gateway gatewayOrdenDePagos para ejercer la OP
-	            		gatewayOrdenDePagos.ejercerOrdenPago(cve, bfecha, fecha, ejercicio, cve_pers);
+	            		gatewayOrdenDePagos.ejercerOrdenPago(cve, fecha, ejercicio, cve_pers);
 	            	}
 	            } 
 	         });
@@ -246,7 +276,9 @@ public class ControladorListadoOrdenPagoEjercido extends ControladorBase {
 	
 	public String cambiarFechaRelacion(String fecha, Long idRelacion, int IdDependencia){
 		try{
-			Date f = formatoFecha (fecha);
+			
+			Date f = this.formatoFecha(fecha);//formatoFecha (fecha);
+			System.out.println("Fecha enviada: " + f +"Dependencia: "+idRelacion);
 			if(IdDependencia!=0)
 				this.getJdbcTemplate().update("UPDATE SAM_OP_RELACION SET FECHA =?, ID_DEPENDENCIA_DEV = ? WHERE ID_RELACION = ?", new Object[]{f, IdDependencia, idRelacion});
 			else

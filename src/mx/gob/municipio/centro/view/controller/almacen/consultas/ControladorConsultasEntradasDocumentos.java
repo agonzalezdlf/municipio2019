@@ -29,6 +29,7 @@ public class ControladorConsultasEntradasDocumentos extends ControladorBaseAlmac
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.GET) 
 	public String  requestGetControlador( Map modelo, HttpServletRequest request ) {
+		
 		modelo.put("id_entrada", (request.getParameter("id_entrada")==null ? 0: request.getParameter("id_entrada")));
 		modelo.put("ban", (request.getParameter("ban")==null ? null: request.getParameter("ban")));
 		modelo.put("documento", this.gatewayEntradasDocumentos.getEntradaDocumento(Long.parseLong(modelo.get("id_entrada").toString())));

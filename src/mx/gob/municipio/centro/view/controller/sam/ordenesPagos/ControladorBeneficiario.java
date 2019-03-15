@@ -100,8 +100,8 @@ public class ControladorBeneficiario extends ControladorBase  {
 		return gatewayBeneficiario.getBeneficiariosPorEjemplo(razonSocial);
 	}
 
-	public Long guardarBeneficiario(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,String clabeb, String fecha_altab,String fecha_bajab ){
-		return gatewayBeneficiario.actualizarPrincipal(clave,razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,clabeb,this.formatoFecha(fecha_altab),this.formatoFecha(fecha_bajab));
+	public Long guardarBeneficiario(Long clave,String razonSocial,String responsable,String responsable2,String rfc,String curp,String telefono,String tipo,String calle,String colonia,String ciudad,String estado,Integer cp,Integer idBanco,String noCuenta,String tipoCuenta,String idBeneficiarioPadre,String vigencia,Integer status,String clabeb, String fecha_altab,String fecha_bajab ){
+		return gatewayBeneficiario.actualizarPrincipal(clave,razonSocial,responsable,responsable2,rfc,curp,telefono,tipo,calle,colonia,ciudad,estado,cp,idBanco,noCuenta,tipoCuenta,idBeneficiarioPadre,vigencia,status,clabeb,this.formatoFecha(fecha_altab),this.formatoFecha(fecha_bajab));
 	}
 	
 	@ModelAttribute("bancos")

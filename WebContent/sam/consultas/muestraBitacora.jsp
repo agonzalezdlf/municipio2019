@@ -10,10 +10,10 @@
 <title>Bitacora de Movimientos</title>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 <link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css"/>
-<link rel="stylesheet" href="../../include/css/sweetalert2.min.css" type="text/css"/>
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css"/>
 <script type="text/javascript" src="../../include/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
-
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 <script type="text/javascript" src="../../include/js/toolSam.js"></script>
 
 <script language="javascript">
