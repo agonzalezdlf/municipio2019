@@ -498,12 +498,12 @@ public class ControladorOrdenPago extends ControladorBase  {
 	                		}
 	                	                		
 	                		//Buscar todas las retenciones de la factura
-	                		List<Map> CollectionRetenc = new ArrayList<Map>();
-	                		List<Map> Retenciones = getJdbcTemplate().queryForList("SELECT * FROM SAM_FACTURA_MOV_RETENC WHERE CVE_FACTURA = ?", new Object[]{detalle.get("CVE_FACTURA")});
+	                		List<Map<Object, String>> CollectionRetenc = new ArrayList<Map<Object, String>>();
+	                		List<Map<Object, String>> Retenciones = getJdbcTemplate().queryForList("SELECT * FROM SAM_FACTURA_MOV_RETENC WHERE CVE_FACTURA = ?", new Object[]{detalle.get("CVE_FACTURA")});
 	                		for (Map retencion : Retenciones)
 	                		{
 	                			//Buscar cada retencion de la factura en la tabla MOV_RETENC
-	                			List<Map> Temp = getJdbcTemplate().queryForList("SELECT * FROM MOV_RETENC WHERE CVE_OP = ? AND CLV_RETENC = ?", new Object[]{idOrden, retencion.get("CLV_RETENC")});
+	                			List<Map<Object, String>> Temp = getJdbcTemplate().queryForList("SELECT * FROM MOV_RETENC WHERE CVE_OP = ? AND CLV_RETENC = ?", new Object[]{idOrden, retencion.get("CLV_RETENC")});
 	                			CollectionRetenc.addAll(Temp);
 	                		}
 	                		//Eliminar las retenciones de MOV_RETENC
@@ -513,7 +513,7 @@ public class ControladorOrdenPago extends ControladorBase  {
 	                			Integer ejercicio =getJdbcTemplate().queryForInt("SELECT EJERCICIO FROM SAM_ORD_PAGO WHERE CVE_OP =?", new Object[]{idOrden});
 	                			Integer cve_pers = getSesion().getIdUsuario();
 	                			
-	                	 		getJdbcTemplate().update("DELETE FROM MOV_RETENC WHERE CVE_OP=? AND CLV_RETENC=?", new Object [] {idOrden,r.get("CLV_RETENC")});
+	                	 		getJdbcTemplate().update("DELETE FROM MOV_RETENC WHERE CVE_OP=? ", new Object [] {idOrden});
 	                	 		
 	                	 		String folio=rellenarCeros(idOrden.toString(),6);
 	                	 		

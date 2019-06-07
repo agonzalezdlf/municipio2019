@@ -37,8 +37,9 @@ $(document).ready(function() {
 	$('#txtpartida').keypress(function(event){return keyNumbero(event);});
 	$('#txtcantidad').keypress(function(event){return keyNumbero(event);});
 	$('#txtprecioestimado').keypress(function(event){return keyNumbero(event);});	
-	$('#txtproyecto').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomeses').val(),  'txtpresupuesto','txtdisponible','');});
-	$('#txtpartida').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(), $('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomeses').val(),  'txtpresupuesto','txtdisponible','');});
+	
+	$('#txtproyecto').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomeses').val(),  'txtpresupuesto','txtdisponible','');});
+	$('#txtpartida').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(), $('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomeses').val(),  'txtpresupuesto','txtdisponible','');});
 	
 	$('#img_presupuesto').click(function(event){muestraPresupuesto();});
 	$('#img_producto').click(function(event){
@@ -100,7 +101,6 @@ function lista_beneficiario(cve_benefi){
   
 
 function tipoRequisiciones(){
-	
 
 	var tiporequi = $('#cbotipo').val();
 		
@@ -109,7 +109,6 @@ function tipoRequisiciones(){
 	
 	if($('#TOTAL_CONCEPTOS').val()>'1') {
 		swal('','No se puede cambiar el tipo de documento, debe eliminar el detalle primero','error');
-		
 		return false;
 	}
 	

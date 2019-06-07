@@ -53,17 +53,27 @@ $(document).ready(function(){
 		
 		mostrarOrdenPago($('#cve_op').val());  
 	  }
-	 $('#BorraOs2').click(function(event){guardarAnexos();});
-
+	$('#btnGuardarAnexo').on('click', function(event){
+		guardarAnexos();
+	});
 		
+	$('#cmdNuevaRetencion').on('click', function(event){
+		limpiarRetenciones();
+	});
+	$('#cmdNuevoAnexo').on('click', function(event){
+		limpiarAnexos();
+	});
+	$('#imgEliminaAnexo').on('click', function(event){
+		eliminarDocumentos();
+	});
 	  //$('#importeRetencion').click(function (){
 		//  alert('La retencion debe ser capturada desde el devengado, favor de cancelar y volver a capturar el devengado');
 	  //});	
-	$('#cmdNuevaRetencion').click(function(event){limpiarRetenciones();});
-	$('#cmdNuevoAnexo').click(function(event){limpiarAnexos();});
+	
+	
 	$('#tabsOrdenesEnca').hide();
 	$('#img_vale').click(function(event){muestraVales();});
-	$('#tipoMovDoc').change(function(event){
+	$('#tipoMovDoc').on('change', function(event){
 		  if($(this).val()=='XML')
 		  	$('#div_archivo').html('<input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" accept="text/xml" />');
 		  else if($(this).val()!='VAR')
@@ -82,25 +92,68 @@ function guardarAnexos(){
 	if(file=="")
 		guardarDocumento();
 	else
-		{
-			$('#CveOrdenOP').val($('#cve_op').val());
-			$('#frmDoc').submit();
-		}
-		
+		guardarDocumentoandFiles();
+}
+
+function guardarDocumentoandFiles(){
+	
+	var tipo_docto=$('#tipoMovDoc').selectpicker('val');
+	var id_dcoto= $('#idDocumento').val();
+	var num_doc = $('#numeroDoc').val();
+	var notas = $('#notaDoc').val();
+	var idOrden=$('#id_orden').val();
+	
+	swal({
+		  title: 'Guardar anexo',
+		  type: 'info',
+		  showCancelButton: true,
+		  showLoaderOnConfirm: true,
+		  onOpen: function (){
+			  if ( num_doc=="" || tipo_docto=="")  { 
+				  swal({text:'Tipo de documento no válido o Número de documento no válido',timer:1500,showConfirmButton:false}).catch(swal.noop);
+          	  swal.disableConfirmButton();
+            } else {
+                swal.enableConfirmButton();
+            }
+        },
+		  preConfirm: function() {
+		    return new Promise(function(resolve, reject) {
+		    	$('#CveOrdenOP').val($('#cve_op').val());
+		    	subirArchivo();
+		      setTimeout(function() {
+		        resolve();
+		      }, 2000);
+		    });
+		  },
+		}).then((result) => {
+			
+			if (!result.value  ) {
+				
+				swal({
+				    title: 'Anexos guardados con éxito!',
+				    timer: 2000,
+				    showCancelButton: false,
+				    showConfirmButton: false
+				}).catch(swal.noop);
+				limpiarAnexos();
+			}
+			
+		});
 }
 
 function limpiarAnexos(){
 	$('#idDocumento').val('0');
-	$('#tipoMovDoc').val(0);	
+	$('#tipoMovDoc').selectpicker('val','');
+	$('#tipoMovDoc').selectpicker('refresh')
 	$('#numeroDoc').val('');
 	$('#notaDoc').val('');
 	$('#tipoMovDoc').focus();
 	$('#archivo').val("");
+	
 }
 //---------------------------------------------------------- Guarda los anexos de las ordenes de pago ------------------------------------------------------------------
 function subirArchivo(){
-	ShowDelay('Guardando anexo','');
-	$('#forma').submit();
+	$('#frmDoc').submit();
 }
 
 function showRequest(formData, jqForm, options) { 
@@ -110,52 +163,70 @@ function showRequest(formData, jqForm, options) {
 function showResponse(data)  { 
 	
 	if(data.mensaje){
-		CloseDelay("Anexo guardado con éxito");
 		llenarTablaDeDocumentos();
 		limpiarAnexos();
 		$('#archivo').val('');
 	}
 	else{
-		_closeDelay();
-		jError("No se ha podido cargar el archivo, consulte a su administrador", "Error");
+		swal("No se ha podido cargar el archivo, consulte a su administrador","error");
 	}
 } 
 
 
-//------------------------------- Viene de la llamada de la clase guardarAnexos para escribir los anexos de la orden de pago ---------------------------------------------
+/*------------------------------- Clase para guardar los anexos de la orden de pago ---------------------------------------------*/
 function guardarDocumento(){
-	 var error="";  
-   if ($('#tipoMovDoc').selectpicker('val')=="") { 
-	   swal({
-	      	  title: 'Error!',
-	      	  text: 'El tipo de documento no es válido',
-	      	  type: 'error',
-	      	  confirmButtonText: 'Cool'
-	      	});return false;}
-	     
-   if ($('#numeroDoc').val()=="") {
-	   swal({
-	      	  title: 'Error!',
-	      	  text: 'El número de documento no es válido',
-	      	  type: 'error',
-	      	  confirmButtonText: 'Cool'
-	      	});
-   return false;}
-
-	  var idOrden=$('#id_orden').val();
-						
-						//ShowDelay('Guardando anexo','');
-						controladorOrdenPagoRemoto.guardarDocumento($('#idDocumento').val(),$('#tipoMovDoc').selectpicker('val'),$('#numeroDoc').val(),$('#notaDoc').val(),idOrden,{
-						callback:function(items) { 	 
-							llenarTablaDeDocumentos();
-							lipiarDocumento();	    
-						 //CloseDelay("Anexos guardados con Ã©xito");	  
-						} 					   				
-						,
-						errorHandler:function(errorString, exception) { 
-							swal(errorString, 'Error');         
-						}
-	 }); 
+	
+	var tipo_docto=$('#tipoMovDoc').selectpicker('val');
+	var id_dcoto= $('#idDocumento').val();
+	var num_doc = $('#numeroDoc').val();
+	var notas = $('#notaDoc').val();
+	var idOrden=$('#id_orden').val();
+	console.log('Pasando por aqui 1');
+	swal({
+		  title: 'Guardando anexo',
+		  text: 'Submit to run ajax request',
+		  type: 'info',
+		  showCancelButton: true,
+		  showLoaderOnConfirm: true,
+		  onOpen: function (){
+			  if ( num_doc=="" || tipo_docto=="")  { 
+				  swal({text:'Tipo de documento no válido o Número de documento no válido',timer:1500,showConfirmButton:false}).catch(swal.noop);
+            	  swal.disableConfirmButton();
+              } else {
+                  swal.enableConfirmButton();
+              }
+          },
+		  preConfirm: function() {
+		    return new Promise(function(resolve, reject) {
+		    	 
+		    	controladorOrdenPagoRemoto.guardarDocumento(id_dcoto,tipo_docto,num_doc,notas,idOrden,{
+					callback:function(items) { 	 
+						llenarTablaDeDocumentos();
+						lipiarDocumento();	
+						console.log('Pasando por aqui 2');
+					},errorHandler:function(errorString, exception) { 
+						swal(errorString,'error');         
+					}
+		    	});
+		      setTimeout(function() {
+		        resolve();
+		      }, 2000);
+		    });
+		  },
+		}).then((result) => {
+			
+			if (!result.value  ) {
+				
+				swal({
+				    title: 'Anexos guardados con éxito!',
+				    timer: 2000,
+				    showCancelButton: false,
+				    showConfirmButton: false
+				}).catch(swal.noop);
+				limpiarAnexos();
+			}
+			
+		});
 }
 
 function regresar(){
@@ -389,7 +460,7 @@ function eliminarDetalle(){
 									   lipiarVale();
 									   llenarTablaDeDetallesOrdenes();	
 									   
-									   CloseDelay("Se eliminaron satisfactoriamente los detalles");
+									   //CloseDelay("Se eliminaron satisfactoriamente los detalles");
 								   }
 								   else
 									   swal('Oops...','No se han podido eliminar los movimientos de la Orden de Pago, es posible que sean erroneos','error'); 
@@ -459,7 +530,7 @@ function eliminarDocumentos(){
 					controladorOrdenPagoRemoto.eliminarDocumentos(checkDocumentos,idOrden, {
 					callback:function(items) { 	
 						llenarTablaDeDocumentos();	
-					   //CloseDelay("Anexos eliminados con Ã©xito");
+					    //swal("Anexos eliminados con Ã©xito");
 					} 					   				
 					,
 					errorHandler:function(errorString, exception) { 
@@ -470,8 +541,8 @@ function eliminarDocumentos(){
 			
 			}
 				swal({
-					  title: 'Confirmacion',
-					  text: 'El anexo se elimino correctamente!..',
+					  //title: 'Confirmacion',
+					  title: 'Eliminando anexos!..',
 					  timer: 3000,
 					  onOpen: function () {
 					    swal.showLoading()

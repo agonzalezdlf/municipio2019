@@ -33,9 +33,7 @@ function mostrarOpcionPDF(cve_op){//Muestra la opcion de reportes desde el lista
 }
 
 function muestraVales(){
-	
-	
-	
+		
 	var clv_benefi = $('#xClaveBen').selectpicker('val');
 	var tipo_gto = $('#tipoGasto').selectpicker('val');
 	var tipo_doc  = $('#cbotipo').val();
@@ -149,6 +147,7 @@ function muestraTiposDocumento(){
 	}
 	
 	if($('#cbotipodocumento').val()==6 || $('#cbotipodocumento').val()==2)//CONTRATO
+		
 	{
 		if(idDependencia==0||idDependencia=="") {swal('Es necesario seleccionar la Unidad Administrativa para listar los contratos'); return false;}
 		

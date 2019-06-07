@@ -11,11 +11,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <context:annotation-config/>
+    <context:annotation-config/>
   
     <security:http auto-config="true" access-denied-page="/accesoDenegado.action">        
     <security:form-login login-page="/index.action" default-target-url="/menu/index.action" always-use-default-target="true" authentication-failure-url="/index.action?message=1"/>
     <security:logout logout-success-url="/index.action" logout-url="/j_spring_security_logout" invalidate-session="true"  />            
+    
     <security:intercept-url pattern="/index.action*" filters="none"/>
     <security:intercept-url pattern="/index.html*" filters="none"/>    
     <security:intercept-url pattern="/imagenes/**" filters="none"/>
@@ -42,6 +43,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	<security:intercept-url pattern="/sam/utilerias/evaluacion_proyectos.*" access="ROLE_Sam_Administración_Avances_fisicos_de_proyectos"  />
 	<security:intercept-url pattern="/sam/utilerias/cambioPassword.*" access="ROLE_Sam_Administración_Cambio_de_contraseña"  />
 	<security:intercept-url pattern="/sam/utilerias/cambio_estatus_periodo.*" access="ROLE_Sam_Administración_Cambio_de_estatus_de_periodos"  />
+	<security:intercept-url pattern="/sam/utilerias/cambio_estatus_periodo.*" access="ROLE_Sam_Administración_Cambio_de_estatus_de_periodos" method="POST"  />
+	<security:intercept-url pattern="/sam/utilerias/cambio_estatus_periodo/demo.*" access="ROLE_Sam_Administración_Cambio_de_estatus_de_periodos" method="GET" />
+	<security:intercept-url pattern="/sam/utilerias/cambio_estatus_periodo/**" access="ROLE_Sam_Administración_Cambio_de_estatus_de_periodos" method="GET" />
 	<security:intercept-url pattern="/sam/utilerias/cambioUnidad.*" access="ROLE_Sam_Administración_Cambio_de_unidad_administrativa"  />
 	<security:intercept-url pattern="/sam/utilerias/sumenuAdmon.*" access="ROLE_Sam_Requisiciones_Listado_Requisiciones/OT/OS,ROLE_Sam_Pedidos_Listado_de_Pedidos,ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago"  />
 	<security:intercept-url pattern="/sam/utilerias/cambiarFirmas.*" access="ROLE_Sam_Requisiciones_Listado_Requisiciones/OT/OS,ROLE_Sam_Pedidos_Listado_de_Pedidos,ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago"  />
@@ -129,8 +133,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	<security:intercept-url pattern="/sam/facturas/archivos/**" filters="none"/>
 	<security:intercept-url pattern="/sam/facturas/_subirArchivo.*" access="ROLE_Sam_Facturas_Captura_de_factura"/>
 	<security:intercept-url pattern="/sam/facturas/lst_CargarNomina.*" access="ROLE_Sam_Facturas_Cargar_Nomina"/>
+	<security:intercept-url pattern="/sam/facturas/lst_reporteexcelNomina.*" access="ROLE_Sam_Facturas_Cargar_Nomina"/>
 	<security:intercept-url pattern="/sam/facturas/_subirArchivoNominaDeductivas.*" access="ROLE_Sam_Facturas_Cargar_Nomina"/>
-	
 	
 	<security:intercept-url pattern="/sam/consultas/muestra_archivos_proyectos.*" access="ROLE_Sam_Presupuesto_Presupuesto_Global"/>
 	<security:intercept-url pattern="/sam/consultas/_subirArchivoProyecto.*" access="ROLE_Sam_Presupuesto_Presupuesto_Global"/>

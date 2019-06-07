@@ -874,7 +874,7 @@ public class GatewayContratos extends BaseGateway {
 	}
 	
 	
-	public List<Map<String, Object>> getListaOSContratos(String num_req, int cve_pers, String cve_unidad, String clv_benefi){
+	public List<Map<String, Object>> getListaOSContratos(String num_req, int id_recurso, int cve_pers, String cve_unidad, String clv_benefi){
 		if(num_req==null) num_req = "";
 		if(clv_benefi==null) clv_benefi = "";
 		
@@ -899,9 +899,9 @@ public class GatewayContratos extends BaseGateway {
 				"LEFT JOIN CAT_PARTID AS CP ON (CP.CLV_PARTID = R.CLV_PARTID) "+
 				"LEFT JOIN CAT_RECURSO AS P ON (P.ID = C.ID_RECURSO) "+
 			"WHERE  "+
-				"R.ID_DEPENDENCIA = ? "+
+				"R.ID_DEPENDENCIA = ? AND ID_RECURSO= ? "+
 				"AND R.NUM_REQ LIKE '%"+num_req+"%' "+ (!clv_benefi.equals("") ? " AND O.CLV_BENEFI = '"+clv_benefi+"'": "") +
-				"AND R.STATUS IN (?)", new Object[]{cve_unidad, 1});
+				"AND R.STATUS IN (?)", new Object[]{cve_unidad,id_recurso,1});
 	}
 	
 	//Abraham Gonzalez para verificar 27-06-2017

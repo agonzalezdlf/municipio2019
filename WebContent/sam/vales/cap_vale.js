@@ -83,45 +83,32 @@ $(document).ready(function(){
    $('#cmdnuevoconcepto').on('click',function(event){
 	   limpiarDetalles();
    });
-   
+ 
    $('#cmdpresupuesto').on('click',function(event){
 	   muestraPresupuesto();
    });
 	
+   $('#detalle').addClass("disabledTab");
    
    if($('#cve_val').val()!=0){
-	
-	   //detalle
-	   $("#detalle").removeClass("disabled");
+	   	$('#detalle').removeClass("disabledTab");
 		mostrarDetallesArchivos();
 		mostrarDetalles();
 	}
-   //$("#add_argument_button").removeClass("disabled);
-   
-   $(".nav li.disabled a").click(function() {
-	     return false;
-	   });
-   
-   
-   
+     
 	$('#ui-datepicker-div').hide();
 	
 	$('#cmdcerrar').on('click',function(event){
 		cerrarVale();
 	   });
 	
-	$('.nav-tabs a[href="#fragment-pedidos"]').tab('show');//Carga mostrando el primer tabs
-	
 	$('#imgborradetalle').on('click',function(event){
 		eliminarDetalle();
 	}) 
-	$('#cmdnuevoconcepto').on('click',function(event){
-		limpiar();
-	}) 
 	
-    
-  $('#txtproyecto').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});	
-  $('#txtpartida').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});
+	    
+  $('#txtproyecto').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});	
+  $('#txtpartida').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});
   $('#img_quitar_contrato').click(function(event){removerContrato();});
  
   if ($('#txtproyecto').val()!="" || $('#txtpartida').val()!="" )
@@ -177,16 +164,12 @@ function mostrarDetalles(){
 						   callback:function(items) { 
 						   		jQuery.each(items,function(i){
 									$('#cmdcerrar').prop('disabled',false);
-									//$("#maestro").removeClass("active");
-									//$("#detalle").addClass("active");
-									//$('a[href="#fragment-movimientos"]').addClass('data-toggle');
-									//$('a[href="#fragment-movimientos"]').addClass('data-toggle');
-									 cont++;
-									 total+= this.IMPORTE; 
-									 $('#IMPORTE_TOTAL').val(total);
-									 pintaTablaConceptos('listaDetalles', this.ID_MOV_VALE, this.ID_DEPENDENCIA, this.DEPENDENCIA, this.ID_PROYECTO, this.CLV_PARTID, this.N_PROGRAMA, this.DESCRIPCION, this.IMPORTE);				   
-									 if(items.length==cont) 
-										 pintarTotalConceptos('listaDetalles', $('#IMPORTE_TOTAL').val(),cont); 
+									cont++;
+									total+= this.IMPORTE; 
+									$('#IMPORTE_TOTAL').val(total);
+									pintaTablaConceptos('listaDetalles', this.ID_MOV_VALE, this.ID_DEPENDENCIA, this.DEPENDENCIA, this.ID_PROYECTO, this.CLV_PARTID, this.N_PROGRAMA, this.DESCRIPCION, this.IMPORTE);				   
+									if(items.length==cont) 
+										pintarTotalConceptos('listaDetalles', $('#IMPORTE_TOTAL').val(),cont); 
 									 
 								});
 						   }
@@ -243,7 +226,6 @@ function limpiarDetalles(){
 	$('#txtimporteDet').val('');
 	$('#txtpresupuesto').val('');
 	$('#txtdisponible').val('');
-	
 }
 
 function eliminarDetalle(){
@@ -258,7 +240,6 @@ function eliminarDetalle(){
 			  showCancelButton: true,
 			  confirmButtonText: 'Sí, eliminar!',
 			  cancelButtonText: 'No, abortar!',
-			  timer: 4000,
 			  showLoaderOnConfirm: true,
 			  preConfirm: function(email) {
 				    return new Promise(function(resolve, reject) {
@@ -270,7 +251,7 @@ function eliminarDetalle(){
 				          controladorValesRemoto.eliminarDetalles(chkdetalle, $('#cve_val').val(),{
 								callback:function(items) {
 									setTimeout(function(){
-									    swal("Conceptos eliminados con éxito!");
+										swal({text:'Conceptos eliminados con éxito!',type:'success', timer:1500,showConfirmButton:false});//.catch(swal.noop);
 									    limpiarDetalles();
 										mostrarDetalles();
 									  }, 1000);
@@ -398,11 +379,7 @@ function cambioTipoVale(){
 	if ($("#tipoVale").val()=='FR')
 		$('#tipoBeneficiario').val(1);
 		
-	//if ($("#tipoVale").val()!="" )
-		
-		//$('#tipoGasto').selectpicker('val',ID_RECURSO);
-		//$('#cboBeneficiario').selectpickert('val',CLV_BENEFI);
-		
+			
 }
 
 
@@ -435,20 +412,20 @@ function limpiar(){
 
 
 function getReporteVale(clave) {
-$('#cve_val').val(clave);
-$('#forma').attr('action',"../reportes/formato_vale.action");
-$('#forma').attr('target',"impresion");
-$('#forma').submit();
-$('#forma').attr('target',"");
-$('#forma').attr('action',"lista_vales.action");
+	$('#cve_val').val(clave);
+	$('#forma').attr('action',"../reportes/formato_vale.action");
+	$('#forma').attr('target',"impresion");
+	$('#forma').submit();
+	$('#forma').attr('target',"");
+	$('#forma').attr('action',"lista_vales.action");
 }
 
 function subirArchivo(){
 	
 	if($('#archivo').val()==''||$('#cve_val').val()==null|| $('#cve_val').val()==0)
 		return false;
-	_closeDelay();
-	ShowDelay("Subiendo archivo al servidor");
+	//_closeDelay();
+	swal("Subiendo archivo al servidor");
 	$('#frmDoc').submit();
 	
 }
@@ -459,12 +436,12 @@ function showRequest(formData, jqForm, options) {
  
 function showResponse(data)  { 
  	if(data.mensaje){
-		CloseDelay("Archivo guardado con éxito");
+		swal({title:"Vale guardado con éxito",type: 'success', showConfirmButton:false});
 		mostrarDetallesArchivos();
 		$('#archivo').val('');
 	}
 	else{
-		_closeDelay();
+		//_closeDelay();
 		swal('',"No se ha podido cargar el archivo por algunas de las siguientes razones: <br>*Solo se permite un archivo por Vale<br>*El nombre del archivo es muy largo<br>*El nombre del archivo contiene caracteres no válidos<br>*Formato de archivo incorrecto, solo se aceptan *.PDF", 'error');
 	}
 } 
@@ -480,10 +457,11 @@ function mostrarDetallesArchivos(){
 					} 
 					,
 					errorHandler:function(errorString, exception) { 
-						jError(errorString,"Error");          
+						swal(errorString,'error');          
 					}
 	});
 }
+
 
 function pintaTablaDetallesArchivos(m){
 	 var htmlRemove = "<img src=\"../../imagenes/cross.png\" style='cursor: pointer;' alt=\"Eliminar\" width=\"16\" height=\"16\" border=\"0\" onClick=\"eliminarArchivo("+m.ID_ARCHIVO+")\" >";
@@ -493,6 +471,7 @@ function pintaTablaDetallesArchivos(m){
 						 Td('', centro , '', htmlRemove)
 				]);
 }
+
 
 //Quitar archivos adjuntos al vale..
 function eliminarArchivo(idArchivo){
@@ -548,16 +527,13 @@ function guardar(){
 		 if ($('#fechaFinal').val()=="") {swal({title: '',text: 'La Fecha final no es válida',type: 'warning',timer: 2000,width: 300,}); return false;}// {jAlert('', 'warning');return false;}
 		 if ((parseFloat($('#txtdisponible').val()) < parseFloat($('#importe').val()))&& $("#tipoVale").val()!='FR') {swal({title: '',text: 'El importe del Vale es mayor al presupuesto disponible',type: 'warning',timer: 2000,width: 300,}); return false;}// {jAlert('','warning');return false;}
 		 
-		 
-
 		 swal({
 			  title: 'Es seguro?',
-			  text: '¿Confirma que desea cerrar el vale?',
+			  text: '¿Confirma que desea guardar el vale?',
 			  type: 'warning',
 			  showCancelButton: true,
 			  confirmButtonText: 'Sí, gaurdar!',
 			  cancelButtonText: 'No, abortar!',
-			  timer: 4000,
 			  showLoaderOnConfirm: true,
 			  preConfirm: function(email) {
 				    return new Promise(function(resolve, reject) {
@@ -581,21 +557,20 @@ function guardar(){
 									 $('#documentacion').val(),
 									 $('#CVE_CONTRATO').val(), {
 								callback:function(items) {
-									
 									setTimeout(function(){
-									    
-									    swal({title: '',text: 'Vale guardado satisfactoriamente!',showConfirmButton: false,type: 'info',timer: 900,width: 300,});
+																			
+									    swal({title: 'Vale guardado satisfactoriamente!', showConfirmButton: false, type: 'success',timer:1500});
 									    $('#cve_val').val(items);
 										$('#div_vale').html(rellenaCeros(items.toString(), 6));
 										$('#cmdcerrar').prop('disabled','');		
 										mostrarDetalles();
 										subirArchivo();	 
-										$("#detalle").removeClass("disabled");
+										$('#detalle').removeClass("disabledTab");
 									  }, 1800);
+									console.log('Cuando no tiene archivos, llama esta clase: guardar');
 								} 					   				
 								,
 								errorHandler:function(errorString, exception) { 
-									//swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');
 									swal({text:'Fallo la operacion:<br>Error::'+errorString+'-message::'+exception.message+'-JavaClass::'+exception.javaClassName+'.<br><strong>Consulte a su administrador</strong>',timer:3000});   
 									return false;
 								}
@@ -613,64 +588,4 @@ function guardar(){
 				  }
 			});
 		 
-				
-	 
-		 
-		 /*
-		 swal({
-			 title: "Es seguro?",
-			    text: "Los cambios no podran revertirse!",
-			    type: "warning",
-			    showCancelButton: true,
-			  	confirmButtonClass: 'btn btn-success',
-				cancelButtonClass: 'btn btn-danger',
-			  	confirmButtonText: 'Si, guardar!',
-			  	cancelButtonText: 'No, cancelar!',
-			  	buttonsStyling: true,
-			    
-			}).then((result) => {
-			  if (result.value) {
-				  ShowDelay('Guardando vale','');
-					controladorValesRemoto.guardarVale( 
-							 $('#cve_val').val(), 
-							 $('#tipoGasto').selectpicker('val'),	
-							 $('#cbUnidad').val(),		 
-							 $('#fecha').val(),
-							 $('#tipoVale').val(),
-							 $('#cboBeneficiario').selectpicker('val'),
-							 $('#justificacion').val(),
-							 $('#cbomes').val(),
-							 $('#fechaInicial').val(),
-							 $('#fechaFinal').val(),
-							 $('#fechaMaxima').val(),
-							 $('#documentacion').val(),
-							 $('#CVE_CONTRATO').val(),
-						 	{
-						  callback:function(items) { 	    
-							  	$('#cve_val').val(items);
-								$('#div_vale').html(rellenaCeros(items.toString(), 6));
-								$('#cmdcerrar').prop('disabled','');		
-								mostrarDetalles();
-								subirArchivo();	 
-								$("#detalle").removeClass("disabled");
-								setTimeout(function() {
-						            swal({title: "Felicidades!",text: "Vale guardado satisfactoriamente", type: "success",confirmButtonText: "Ok"}, 
-						            		function(items) { if ($('#cve_val').val()==0) {
-					 							getReporteVale($('#cve_val').val());
-					 						} }, 1000)
-						        });
-								
-						  },
-						  errorHandler:function(errorString, exception) { 
-								swal({text:'Fallo la operacion:<br>Error::'+errorString+'-message::'+exception.message+'-JavaClass::'+exception.javaClassName+'.<br><strong>Consulte a su administrador</strong>',timer:3000});   
-								return false;
-						  }
-					});
-			    
-					//swal('Guardado!','Vale guardado satisfactoriamente.','success');
-			  // result.dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-			  } else if (result.dismiss === 'cancel') {
-				  swal('Cancelado','El proceso fue cancelado con exito!','error')
-			  }
-			})*/
 }

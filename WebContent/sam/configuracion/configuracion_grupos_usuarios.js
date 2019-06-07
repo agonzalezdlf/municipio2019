@@ -65,7 +65,9 @@ function guardar(){
 	if ( error=="") {	
 	//ShowDelay('Guardando grupo actual','');
     controladorAsignacionGruposUsuariosRemoto.guardarUsuariosGrupo($('#usuario').val(),lista,{
-			 callback:function(items) {			  			  
+    	
+			 callback:function(items) {	
+				 alert('Entro a esta clase');
 	  		 swal({title: '',text: 'Grupo actual asignado satisfactoriamente',timer: 3000})
 			 limpiar();
 			 pintarTablaDetalles();

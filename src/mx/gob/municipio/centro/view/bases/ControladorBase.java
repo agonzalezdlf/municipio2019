@@ -275,7 +275,7 @@ public class ControladorBase {
 		
 	}
 	
-	public Map<String, Object> GetMesActual()
+	public Map GetMesActual()
 	{
 		
 		String sql = "SELECT TOP 1 MES "+
@@ -286,7 +286,7 @@ public class ControladorBase {
 					  "    ,ESTATUSEVA "+
 					  "FROM MESES WHERE ESTATUS ='ACTIVO'";
 		
-		Map<String, Object> MesActual = this.getJdbcTemplate().queryForMap(sql);
+		Map MesActual = this.getJdbcTemplate().queryForMap(sql);
 		
 		return MesActual;
 	}

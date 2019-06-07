@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.2.2.RELEASE]]></pluginVersion>
+	<pluginVersion><![CDATA[3.8.4.201703310634-RELEASE]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -12,6 +12,9 @@
 		<config>WebContent/WEB-INF/securityContext.xml</config>
 		<config>WebContent/WEB-INF/views.xml</config>
 	</configs>
+	<autoconfigs>
+		<config>src/META-INF/applicationContext.xml</config>
+	</autoconfigs>
 	<configSets>
 	</configSets>
 </beansProjectDescription>

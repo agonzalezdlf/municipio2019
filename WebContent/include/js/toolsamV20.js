@@ -3,9 +3,7 @@ var derecha =  "text-align:right";
 var izquierda = "text-align:left";
 var periodoOSOT="";
 var fechaOSOT=""; 
-
 var row_color = "";
-
 var resultData=["Mumbai","Delhi","Chennai","Goa"]
 var myselect = $('<select>');
 $(document).ready(function() {
@@ -1008,8 +1006,8 @@ function cambiarGrupoFirmas(cve_doc, modulo){
 	
 }
 
-/********************************** Funcion que muestra los documentos segun su tipo para la captura de factura *************************/
-/************************************** Contratos, Pedidos y OS u OT ********************************************************************/
+/*************************** Funcion que muestra el documento a enlazar al devengado en la para la captura de factura *************************/
+/******************************************** Contratos, Pedidos y OS u OT ********************************************************************/
 function muestraTiposDocumento(){
 		
 	//alert('Esta es la dependencia: ' +$('#cbUnidad').val());
@@ -1102,6 +1100,77 @@ function muestraTiposDocumento(){
 }
 /************************************************************************************************************************************************/
 /********************************** Termina función que muestra los documentos segun su tipo para la captura de factura *************************/
+
+
+/********************************** Funcion que muestra el documento a enlazar a los contratos en la captura de contratos *************************/
+/************************************** Pedidos, Vales y OS u OT Actulizacion 16-04-19 ************************************************************/
+function muestraDocumento(){
+	$('#doctol').show();
+	var clv_benefi = $('#xBeneficiario').selectpicker('val');
+	if(clv_benefi=='') $('#CLV_BENEFI').selectpicker('val','');
+	
+	var num_req = $('#txtdocumento').val();
+	var idDependencia = $('#cbUnidad').val();
+	var id_recurso = $('#tipoGasto').selectpicker('val');
+	
+	if(idDependencia==0||idDependencia=="") {swal('','Es necesario seleccionar la Unidad Administrativa para listar los documentos','warning'); return false;}
+	if($('#cbotipocontrato').val()==0){swal('','Es necesario seleccionar el tipo de contrato','warning'); return false;}
+
+	/*Retorna si vale cero*/
+	if(cbotipocontrato=='0') return false;
+	
+	//Contrato desde un Pedido	
+	if ($('#cbotipocontrato').val()==7){
+		$('#doctol').show();
+		$('#div_benaficiarioFijo').hide();
+		swal({
+				  title: 'Listado de Pedidos',
+				  text: 'Seleccione pedido a contratar',
+				  html:
+					  '<iframe width="650" height="400" name="consultaPedido" id="consultaPedido" frameborder="0" src="../../sam/consultas/muestra_pedidos_contratos.action?idDependencia='+idDependencia+'"></iframe>',
+				  width: 800,
+				  padding: 10,
+				  animation: false,
+				  confirmButtonText: 'Cerrar'
+			})
+	}
+	//Contrato desde un vale
+	if ($('#cbotipocontrato').val()==13){
+		$('#doctol').show();
+		$('#div_benaficiarioFijo').hide();
+		swal({
+			  title: 'Listado de Vales',
+			  text: 'Seleccione vale a comprobar',
+			  html:
+				  '<iframe width="750" height="350" name="ventanaVales" id="ventanaVales" frameborder="0" src="../../sam/consultas/muestraVales_tipo_contratos.action?idVale='+$('#CVE_DOC').val()+'&idDependencia='+idDependencia+'"></iframe>',
+			  width: 800,
+			  padding: 10,
+			  animation: false,
+			  confirmButtonText: 'Cerrar'
+			})
+		
+	}																																											//id_vale,num_vale,clv_benefi, comprobado,por_comprobar
+	//Contrato desde una OS u OT		
+	if ($('#cbotipocontrato').val()==3){
+		
+		$('#doctol').show();
+		$('#div_benaficiarioFijo').hide();
+		swal({
+			  title: 'Listado de O.S. y O.T.',
+			  text: 'Seleccione OS u OT a contratar',
+			  html:
+				  '<iframe width="800" height="400" name="DocumentoContrato" id="DocumentoContrato" frameborder="0" src="../../sam/consultas/muestra_os_contratos.action?num_req='+num_req+'&idDependencia='+idDependencia+'&id_recurso='+id_recurso+'"></iframe>',
+			  width: 800,
+			  padding: 10,
+			  animation: false,
+			  confirmButtonText: 'Cerrar'
+			})
+			
+	}
+}
+/************************************************************************************************************************************************/
+/************************************ Termina Funcion que muestra el documento a enlazar a los contratos ****************************************/
+
 
 
 /*********************************************************************************************************************************************/

@@ -1089,12 +1089,13 @@ public double getPreCompromisoMensual (Long idRequisicion,int mes ){
 	return (Double)this.getJdbcTemplate().queryForObject("SELECT SUM(MONTO) FROM VT_COMPROMISOS WHERE TIPO_DOC = 'REQ' AND CVE_DOC = ? AND CONSULTA ='PRECOMPROMETIDO' AND PERIODO<=?",new Object[]{idRequisicion,mes},Double.class);
 	
 }
-	public double getCompromisoHastaMes (Long idRequisicion, int mes ){
+   //Rewvision el dia 08-05-2019 por pedido que no cerraba
+public double getCompromisoHastaMes (Long idRequisicion, int mes ){
 		
-		@SuppressWarnings("rawtypes")
-		Map Req = this.getRequisicion(idRequisicion);
-		return (Double)this.getJdbcTemplate().queryForObject("select sum(  CASE TIPO  WHEN 'COMPROMISO' THEN importe else (importe*-1)  END )  from  SAM_COMP_REQUISIC WHERE CVE_REQ=? AND PERIODO<=? ",new Object[]{idRequisicion,mes},Double.class);
-	}
+	//@SuppressWarnings("rawtypes")
+	//Map Req = this.getRequisicion(idRequisicion);
+	return (Double)this.getJdbcTemplate().queryForObject("select sum(  CASE TIPO  WHEN 'COMPROMISO' THEN importe else (importe*-1)  END )  from  SAM_COMP_REQUISIC WHERE CVE_REQ=? AND PERIODO>=? ",new Object[]{idRequisicion,mes},Double.class);
+}
 	
 	public double getCompromisoMes (Long idRequisicion, int mes ){
 		return (Double)this.getJdbcTemplate().queryForObject("select sum(  CASE TIPO  WHEN 'COMPROMISO' THEN importe else (importe*-1)  END )  from  SAM_COMP_REQUISIC WHERE CVE_REQ=? AND PERIODO=? ",new Object[]{idRequisicion,mes},Double.class);

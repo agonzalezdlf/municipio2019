@@ -32,7 +32,7 @@ public class ControladorListadoOrdenesDePago extends ControladorBase {
 	
 	
 	public final static  int VER_TODAS_LAS_UNIDADES = 25;
-//	final String STATUS_NUEVA="0"; 
+
 	@Autowired
 	private GatewayUnidadAdm gatewayUnidadAdm;
 	@Autowired
@@ -128,19 +128,22 @@ public class ControladorListadoOrdenesDePago extends ControladorBase {
     	return gatewayPlanArbit.getTipodeGasto();
     }
 		
-	/*
-	 public String getListUsuarios(int cve_pers){
- 		return this.gatewayOrdenDePagos.getListUsuarios(cve_pers);
- 	} 
-	 */
 	@ModelAttribute("beneficiarios")
 	public List<Map<String, Object>>getBeneficiarios(){
-		return (List<Map<String, Object>>) gatewayBeneficiario.getListaBeneficiarios();
+		return gatewayBeneficiario.getListaBeneficiarios();
 	}
 	
+	public List <Map<String, Object>>getListadoOrdenes(String unidad, String  estatus , String fechaInicial, String fechaFinal , String clv_benefi, Integer ejercicio, String tipoGasto, Integer idUsuario, String verUnidad, String tipo, String numop, boolean privilegio, String capitulo){
+		return this.gatewayOrdenDePagos.getListaDeOrdenesPorEjemplo(unidad, estatus , this.formatoFecha(fechaInicial), this.formatoFecha(fechaFinal) , clv_benefi, ejercicio, tipoGasto, idUsuario, verUnidad, tipo, numop,  privilegio, capitulo);
+	}	
+
+/*
 	public List <Map <String, Object>>getListadoOrdenes(String unidad, String  estatus , String fechaInicial, String fechaFinal , String clv_benefi, Integer ejercicio, String tipoGasto, Integer idUsuario, String verUnidad, String tipo, String numop, boolean privilegio, String capitulo){
 		return this.gatewayOrdenDePagos.getListaDeOrdenesPorEjemplo(unidad, estatus , this.formatoFecha(fechaInicial), this.formatoFecha(fechaFinal) , clv_benefi, ejercicio, tipoGasto, idUsuario, verUnidad, tipo, numop, privilegio, capitulo);
 	}	
+*/
+
+
 	@ModelAttribute("tipoDocumentosOp")
     public List getTipoDocumentosTodosOp() {
     	return gatewayTipoOrdenDePagos.getTipoOredenesPagosEstatusActivos();

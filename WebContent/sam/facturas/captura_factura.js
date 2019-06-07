@@ -12,6 +12,7 @@ var data;
 
 $(document).ready(function(){
 	
+	
 	var options = { 
         beforeSubmit:  showRequest,  
         success:       showResponse, 
@@ -77,18 +78,24 @@ $(document).ready(function(){
 		 cerrarDocumento();
 	 }); 
 		 
+	 $('#cmdnuevoconcepto').on('click',function(event){
+		 limpiarDetalles();
+	 }); 
+	 
 	 $('#img_movimiento').click(function(){
 		   muestraTiposDocumento();//Funcion llamada atravez toolsam
 		   return false;
 		   //event.preventDefault();
 	 });
 		   
-	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
-	 $('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
-	 	
-	 $('#cmdnuevoconcepto').click(function (event){limpiarDetalles();});
+	 //$('#cboproyectopartida').change(function (event) {obtenerProyectoPartida();});
+	 $('#cboproyectopartida').on('change',function(event){
+		 obtenerProyectoPartida();
+		});
+		 	
+	 
 	 $('#txtproyecto').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),'txtpresupuesto','txtdisponible','');});
-	 $('#txtpartida').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(), $('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),'txtpresupuesto','txtdisponible','');});
+	 $('#txtpartida').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(), $('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),'txtpresupuesto','txtdisponible','');});
 	 $('#img_presupuesto').click(function(event){muestraPresupuesto();});
 	 
 
@@ -163,6 +170,52 @@ $(document).ready(function(){
 	
 	$('.nav-tabs a[href="#tab1primary"]').tab('show');//Carga mostrando el primer tabs
 });
+
+function cambiarFile(){
+	
+    const input = document.getElementById('archivoXML');
+    if(input.files && input.files[0])
+        console.log("File Seleccionado : ", input.files[0]);
+    
+    $.ajax({
+    	url:input,
+    	dataType: "xml",
+    	success: function (data) {
+    		$("ul").children().remove();
+    		$data.find("cfdi:Comprobante").each( function(){
+    			var info = '<li>SubTotal: ' +$this.find("SubTotal").text()+'</li>'
+    			$("ul").append(info);
+    			alert('Este es el demo'+ info);
+    		})
+    	}
+    })
+}
+console.log("Sin Archivo Seleccionado " + document.getElementById('archivoXML').files[0]);
+
+function subirArchivo(){
+	if($('#archivo').val()==''||$('#CVE_FACTURA').val()==null|| $('#CVE_FACTURA').val()==0)
+		return false;
+	swal("Subiendo archivo al servidor");
+	$('#frmEntrada').submit();
+}
+
+function showRequest(formData, jqForm, options) { 
+    return true; 
+} 
+ 
+function showResponse(data)  { 
+ 	if(data.mensaje){
+		swal("Archivo guardado con éxito");
+		mostrarDetallesArchivos();
+		document.location = "captura_factura.action?CVE_FACTURA="+$('#CVE_FACTURA').val();
+		$('#archivo').prop('value','');
+	}
+	else{
+		//_closeDelay();
+		swal("","No se ha podido cargar el archivo por algunas de las siguientes razones: <br>*Solo se permite un archivo por factura<br>*El nombre del archivo es muy largo<br>*El nombre del archivo contiene caracteres no válidos<br>*Formato de archivo incorrecto","error");
+	}
+} 
+
 
 function onLoad(){
 	cont = document.getElementById("cont");
@@ -414,8 +467,8 @@ function obtenerProyectoPartida()
 	$('#txtproyecto').val(arreglo[1]);
 	$('#txtpartida').val(arreglo[2]);
 	
-	__getPresupuesto($('#ID_PROYECTO').val(),arreglo[1],arreglo[2], $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');
-	
+	__getPresupuesto($('#ID_PROYECTO').val(),arreglo[1],arreglo[2], $('#cbomes').val(),'txtpresupuesto','txtdisponible','');
+	//__getPresupuesto(idproyecto, proyecto, partida, mes,  ctrl_presupuesto, ctrl_disponible, tipoGasto)
 }
 
 /*Metodo para obtener el mes de la requsicion*/
@@ -504,6 +557,32 @@ function muestraPresupuesto(){
 	if($('#txtimporteDet').val()=='') {swal('','Es necesario especificar un importe', 'warning'); return false;}
 	 
 	swal({
+		  title: 'Agregando movimiento',
+		  onOpen: function () {
+
+		    swal.showLoading()
+		    controladorFacturasRemoto.agregarMovimiento($('#CVE_FACTURA').val(), $('#ID_PROYECTO').val(), $('#txtpartida').val(), $('#txtimporteDet').val(), $('#txtdetalle').val(), {
+								callback:function(items) {
+									
+									setTimeout(function(){
+									    swal({text:'Movimiento agregado con éxito',timer:800,showConfirmButton: false});
+									    llenarTablaDeVales();
+										limpiarDetalles();
+										mostrarDetalles();
+									  }, 2000);
+								} 					   				
+								,
+								errorHandler:function(errorString, exception) { 
+									swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+								}
+							});  //termina el llamado al controlador
+		    setTimeout(function () {
+		      swal({title:'Movimiento agregado con éxito',type: 'info',timer:800,showConfirmButton: false});
+		      swal.close()
+		    }, 2000)
+		  }
+		})
+	/*swal({
 			  title: 'Es seguro?',
 			  text: '¿Confirma que desea agregar el movimiento?',
 			  type: 'warning',
@@ -520,7 +599,7 @@ function muestraPresupuesto(){
 								callback:function(items) {
 									
 									setTimeout(function(){
-									    swal('','Movimiento agregado con éxito','');
+									    swal({text:'Movimiento agregado con éxito',timer:800,showConfirmButton: false});
 									    llenarTablaDeVales();
 										limpiarDetalles();
 										mostrarDetalles();
@@ -542,7 +621,7 @@ function muestraPresupuesto(){
 				  } else if (result.dismiss === swal.DismissReason.cancel) {
 				 		swal('Cancelado','Proceso cancelado','error')
 				  }
-			});
+			});*/
  }	     
     
 
@@ -844,7 +923,8 @@ function getProyectosPartidasVales(datos) {
 		dwr.util.addOptions('cboproyectopartida',datos,"ID_PROYECTO", "PROYECTOPARTIDA");
  }
 
- //Funcion que carga la información del Contrato a DEVENGAR.........
+ //Funcion que carga la información del Contrato a DEVENGAR llamada desde toolsamV20.js
+ //Enviado los parametros desde sam/consultas/muestra_contratos
 function getcontratoDocumento(num_contrato, cve_contrato, idRecurso, clv_benefi, proyecto, clv_partid, importe)
 {
 	$('#trEntrada').hide();
@@ -1055,31 +1135,6 @@ function PresupuestoBeneficiarioContrato(clv_benefi,cve_contrato)
     	swal('','Es necesario que seleccione un elemento de la lista', 'warning');
 }
 
-function subirArchivo(){
-	if($('#archivo').attr('value')==''||$('#CVE_FACTURA').val()==null|| $('#CVE_FACTURA').val()==0)
-		return false;
-	ShowDelay("Subiendo archivo al servidor");
-	$('#frmEntrada').submit();
-}
-
-function showRequest(formData, jqForm, options) { 
-    return true; 
-} 
- 
-function showResponse(data)  { 
- 	if(data.mensaje){
-		CloseDelay("Archivo guardado con éxito");
-		mostrarDetallesArchivos();
-		document.location = "captura_factura.action?CVE_FACTURA="+$('#CVE_FACTURA').val();
-		$('#archivo').attr('value','');
-	}
-	else{
-		_closeDelay();
-		jError("No se ha podido cargar el archivo por algunas de las siguientes razones: <br>*Solo se permite un archivo por factura<br>*El nombre del archivo es muy largo<br>*El nombre del archivo contiene caracteres no válidos<br>*Formato de archivo incorrecto", "Error");
-	}
-} 
-
-
 function mostrarDetallesArchivos(){
 	var cve_factura = $('#CVE_FACTURA').val();
 	quitRow("listasArchivo");
@@ -1091,7 +1146,7 @@ function mostrarDetallesArchivos(){
 					} 
 					,
 					errorHandler:function(errorString, exception) { 
-						jError(errorString,"Error");          
+						swal(errorString,"error");          
 					}
 	});
 }
@@ -1106,7 +1161,27 @@ function pintaTablaDetallesArchivos(m){
 }
 
 function eliminarArchivo(idArchivo){
+	
 	swal({
+	   	  title: 'Eliminando archivo de la factura!!!!',
+	   	  onOpen: function () {
+	   	    swal.showLoading()
+	   	    // AJAX request simulated with setTimeout
+	   	    controladorFacturasRemoto.eliminarArchivoFactura(idArchivo,{
+							callback:function(items) {
+									setTimeout(function(){
+										mostrarDetallesArchivos();
+								    	swal({title:"Archivos eliminado con éxito!",timer:800,showConfirmButton: false});
+								    }, 2000);
+							},
+							errorHandler:function(errorString, exception) { 
+								swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+							}
+			}); 
+	   	    setTimeout(function () {swal.close()}, 2000)
+	   	  }
+	})
+	/*swal({
 		  title: 'Es seguro?',
 		  text: '¿Confirma que desea eliminar el archivo?',
 		  type: 'warning',
@@ -1150,7 +1225,7 @@ function eliminarArchivo(idArchivo){
 		  } else if (result.dismiss === swal.DismissReason.cancel) {
 			  		swal('Cancelado','Proceso cancelado','error')
 		  }
-		});
+		});*/
 }
 
 

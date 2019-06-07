@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayContratos;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayFacturas;
 import mx.gob.municipio.centro.view.bases.ControladorBase;
+import mx.gob.municipio.centro.view.controller.sam.ordenesPagos.ControladorBeneficiario;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +34,8 @@ import com.google.gson.Gson;
 @RequestMapping("/sam/contratos/_subirArchivo.action")
 public class ControladorTarjetSubirArchivosContratos extends ControladorBase {
 
+	private static Logger log =  Logger.getLogger(ControladorTarjetSubirArchivosContratos.class.getName());
+	
 	@Autowired 
 	GatewayContratos gatewayContratos;
 	
@@ -39,12 +44,13 @@ public class ControladorTarjetSubirArchivosContratos extends ControladorBase {
 	/*Metodo para la carga de archivo*/
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = {RequestMethod.POST})  
-	public String requestPostControlador(Map modelo, HttpServletRequest request, HttpServletResponse response, @RequestParam("archivo") MultipartFile file) throws IOException  {
+	public String requestPostControlador(Map modelo, HttpServletRequest request, HttpServletResponse response, @RequestParam("archivo") MultipartFile file, @RequestParam("CVE_CONTRATO") Long cve_contrato) throws IOException  {
+		
 		Gson gson = new Gson();
 		Map m = new HashMap();
 		String json = "";
 		
-		Long cve_contrato = ((request.getParameter("CVE_CONTRATO")==null||request.getParameter("CVE_CONTRATO")=="") ? 0L : Long.parseLong(request.getParameter("CVE_CONTRATO").toString()));
+		//Long cve_contrato = ((request.getParameter("CVE_CONTRATO")==null||request.getParameter("CVE_CONTRATO")=="") ? 0L : Long.parseLong(request.getParameter("CVE_CONTRATO").toString()));
 		if(cve_contrato!=0){
 			int tcount = gatewayContratos.getCountArchivos(cve_contrato);
 			if (file !=null && file.getSize()> 0 && tcount<=0){
@@ -64,12 +70,14 @@ public class ControladorTarjetSubirArchivosContratos extends ControladorBase {
 			  	m.put("mensaje", true);
 			  	json = gson.toJson(m);
 			  	modelo.put("mensaje", json);
+			  	System.out.println(json);
 			}
 			else
 			{
 				m.put("mensaje", false);
 				json = gson.toJson(m);
 			  	modelo.put("mensaje", json);
+			  	System.out.println(json);
 			}
 		}
 		return "sam/contratos/_subirArchivo.jsp";

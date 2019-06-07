@@ -151,9 +151,9 @@ public class GatewayPedidos extends BaseGateway {
 		}
 		
 		/*guarda los datos*/
-		String SQL = "INSERT INTO SAM_PEDIDOS_EX (EJERCICIO, CLV_BENEFI, CVE_PERS, SUBTOTAL, IVA, TIPO_IVA, DESCUENTO, TOTAL, CONTRATO, ENTREGA, NOTAS, FECHA_CRE, FECHA_PED, STATUS, COMPROMETE, EJERCE, CVE_CONCURSO, FECHA_ENTREGA, CONDICION_PAGO, ID_GRUPO, CVE_REQ ) " +
-					 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		this.getJdbcTemplate().update(SQL, new Object[]{ ejercicio, cve_beneficiario, cve_pers, subtotal, iva, tipo_iva, descuento, total, contrato, lugar_entrega, notas, fecha_cap, fecha, this.PED_STATUS_NUEVO, 0, 0, cve_concurso, fecha_entrega, condicion_pago, id_grupo, cve_req });
+		String SQL = "INSERT INTO SAM_PEDIDOS_EX (EJERCICIO, CLV_BENEFI, CVE_PERS, SUBTOTAL, IVA, TIPO_IVA, DESCUENTO, TOTAL, CONTRATO, ENTREGA, NOTAS, FECHA_CRE, FECHA_PED, STATUS, COMPROMETE, EJERCE, CVE_CONCURSO, FECHA_ENTREGA, CONDICION_PAGO, ID_GRUPO, IEPS ,CVE_REQ ) " +
+					 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		this.getJdbcTemplate().update(SQL, new Object[]{ ejercicio, cve_beneficiario, cve_pers, subtotal, iva, tipo_iva, descuento, total, contrato, lugar_entrega, notas, fecha_cap, fecha, this.PED_STATUS_NUEVO, 0, 0, cve_concurso, fecha_entrega, condicion_pago, id_grupo,ieps, cve_req });
 		
 		
 		cve_ped = getNumeroPedido(ejercicio);

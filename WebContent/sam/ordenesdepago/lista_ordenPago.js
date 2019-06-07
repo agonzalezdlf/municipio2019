@@ -56,7 +56,7 @@ $(document).ready(function() {
 
 
 function mostrarCargarArchivosOrdenPago(cve_op, num_op){
-	alert('Entro aqui');
+	//jWindow('',', '','Cerrar',1);
 	swal({
 		  title: 'Anexos de Orden de pago',
 		  text: 'Archivos de Orden de Pago: '+num_op,
@@ -66,7 +66,6 @@ function mostrarCargarArchivosOrdenPago(cve_op, num_op){
 		  padding: 10,
 		  focusConfirm: true,
 		  confirmButtonText: 'Cerrar'
-			  
 		})
 }
 
@@ -88,15 +87,13 @@ function mostrarOpcionPDF(cve_op){
 				'	</tr> ' +
 				'</table>', 
 		  //showCloseButton: true,
-		  focusConfirm: true,
+		  focusConfirm: false,
 		  confirmButtonText: 'Cerrar'
-		  
 		})
 	
 }
 
 function getAnexosListaOP(cve_op){
-	//jWindow('<iframe width="750" height="350" name="ventanaArchivosOP" id="ventanaArchivosOP" frameborder="0" src="../../sam/consultas/muestra_anexosOP.action?cve_op='+cve_op+'"></iframe>','Listado de Anexos de OP: '+cve_op, '','Cerrar',1);
 	swal({
 		  title: 'Lista de Anexos de OP: '+cve_op,
 		  html:
@@ -111,7 +108,7 @@ function getAnexosListaOP(cve_op){
 function getListadoOrdenPago(){
 	var checkStatus = [];
      $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	 
-	 if (checkStatus.length==0 )   {swal('','Es necesario seleccionar al menos un status de Orden de Pago', 'warning'); return false;}
+	 if (checkStatus.length==0 )   {jAlert('Es necesario seleccionar al menos un status de Orden de Pago', 'Advertencia'); return false;}
 	 
 	$('#forma').attr('target',"impresionlistado");
 	$('#forma').attr('action',"../reportes/rpt_listado_op.action");
@@ -138,7 +135,7 @@ function getOrden(){
 			  // handling the promise rejection
 			  function (dismiss) {
 			    if (dismiss === 'timer') {
-			      //console.log('Tiempo caducado');
+			      console.log('Tiempo caducado')
 			    }
 			  }
 			)
@@ -160,7 +157,7 @@ function getOrden(){
 		
 		  function (dismiss) {
 		    if (dismiss === 'timer') {
-		      //console.log('Tiempo caducado')
+		      console.log('Tiempo caducado')
 		      var s = 'lista_ordenPago.action?idUnidad='+$('#cbodependencia').attr('value')+"&fechaInicial="+$('#fechaInicial').attr('value')+"&fechaFinal="+$('#fechaFinal').attr('value')+"&status="+checkStatus+"&tipo_gto="+$('#cbotipogasto').val();
 		      $("#forma").submit()
 		    }

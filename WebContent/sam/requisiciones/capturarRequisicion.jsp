@@ -187,8 +187,8 @@ var availableTags = JsonBenefi;
 												</select>
 												<div class="input-group-btn">
 													<button type="button" class="btn btn-info" id="cmdpresupuesto" name="cmdpresupuesto" onClick="muestraPresupuesto()">
-				      								<span class="glyphicon glyphicon-search"></span>
-				    							</button>
+				      									<span class="glyphicon glyphicon-search"></span>
+				    								</button>
 				    							</div>
 				    						</div>		
 										</div><!-- cierra el col-sm-2 del cbomeses -->

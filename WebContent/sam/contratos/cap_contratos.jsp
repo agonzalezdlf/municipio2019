@@ -3,10 +3,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
+<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
+<link rel="stylesheet" href="../../include/css/style-tabs.css" type="text/css"/>
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="../../include/js/jquery.form.js"></script>
@@ -14,6 +17,7 @@
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
     <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script>
+    <script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
     
     <script type="text/javascript" src="../../dwr/interface/ControladorContratosRemoto.js"> </script>
 	<script type="text/javascript" src="../../dwr/interface/controladorProyectoPartida.js"> </script>
@@ -22,10 +26,10 @@
     <script type="text/javascript" src="cap_contratos.js?x=<%=System.currentTimeMillis()%>"></script>
     <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
     <script type="text/javascript" src="../../include/js/fileinput.min.js"></script>
-    <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
-	<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
-	<link rel="stylesheet" href="../../include/css/style-tabs.css" type="text/css"/>
+    
+	
 	<link rel="stylesheet" href="../../include/css/fileinput.min.css" type="text/css"/>
+	
 	<link rel="stylesheet" href="../../include/css/boostrap-select/dist/css/bootstrap-select.css" type="text/css">
 	<script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script>
 	<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
@@ -33,67 +37,35 @@
 	<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
 	<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
 	<link rel="stylesheet" href="../../include/css/style-tabs.css" type="text/css"/>
-<!--  
-	<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-    <link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
-      <link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.min.css" type="text/css">
-      
-	<script type="text/javascript" src="../../include/js/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="../../include/js/jquery-impromptu.2.3.js"></script>
-    <script type="text/javascript" src="../../include/js/jquery.form.js"></script>
-    <script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
-    <script type="text/javascript" src="../../include/js/autocomplete/jquery.autocomplete.js"></script>
-    <script type="text/javascript" src="../../include/js/autocomplete/autompleteVarios.js"></script> 
-
-    <script type="text/javascript" src="../../include/js/jquery-ui-1.7.3.custom.min.js"></script>
-    
-   
-    
-    <script type="text/javascript" src="../../include/js/jquery.maxlength.js"></script>
-    <script type="text/javascript" src="../../include/js/jquery.bestupper.min.js"></script>
-
-    <script type="text/javascript" src="../../include/js/otros/productos.js"></script>
-    <script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
-    <link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
-    <script src="../../include/css/jquery.tiptip.js"></script>
-
-    <link rel="stylesheet" href="../../include/css/black-tie/jquery-ui-1.7.3.custom.css" type="text/css" />
-    <link rel="stylesheet" href="../../include/js/autocomplete/jquery.autocomplete.css" type="text/css" />
-    <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs.css" type="text/css" media="print, projection, screen">-->
-   	<!--
-   	<link rel="stylesheet" href="../../include/css/boostrap-select/dist/css/bootstrap-select.css" type="text/css">
-	<script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script> 
-	<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
-	<link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
-	<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
-   	 -->
 	
     <!-- Additional IE/Win specific style sheet (Conditional Comments) -->
     <!--[if lte IE 7]>
     <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs-ie.css" type="text/css" media="projection, screen">
     <![endif]-->
-    <style type="text/css"> 
-        @import url("../../include/css/calendar/calendar-win2k-cold-1.css"); 
+<style type="text/css"> 
+    @import url("../../include/css/calendar/calendar-win2k-cold-1.css"); 
     a:link {
-	color: #00F;
-	text-decoration: none;
-}
-a:visited {
-	text-decoration: none;
-	color: #603;
-}
-a:hover {
-	text-decoration: underline;
-}
-a:active {
-	text-decoration: none;
-}
-.disable{
-	opacity: .5;
-    cursor: not-allowed;
-}
-    </style>
+		color: #00F;
+		text-decoration: none;
+	}
+	a:visited {
+		text-decoration: none;
+		color: #603;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+	a:active {
+		text-decoration: none;
+	}
+	.disable{
+		opacity: .5;
+    	cursor: not-allowed;
+	}
+	.disabledTab{
+    	pointer-events: none;
+	}
+</style>
 <title>Contratos - Captura de Contrato</title>
 
 </head>
@@ -110,14 +82,16 @@ a:active {
 	<div class="col-sm-12" id="tabuladores">
 		<div class="panel with-nav-tabs panel-primary">
 			<div class="panel-heading">
-            	<ul class="nav nav-tabs">
-                	<li class="active"><a href="#tab1primary" data-toggle="tab">Información general</a></li>
-                    <li><a href="#tab2primary" data-toggle="tab">Conceptos</a></li>
+            	<ul class="nav nav-tabs responsive" id="contratos">
+                	<li id="maestro" class="nav-item active"><a href="#tab-contrato" rol="tab" class="nav-link" data-toggle="tab">Información general</a></li>
+                    <li id="detalle" class="nav-item"><a href="#tab-detalle" rol="tab" class="nav-link" data-toggle="tab" id="lotes">Conceptos</a></li>
                 </ul>
             </div>
+            
              <div class="panel-body">
+             	<!-- Tab panes -->
              	 <div class="tab-content">
-             	 	<div class="tab-pane fade in active" id="tab1primary">
+             	 	<div class="tab-pane fade in active" id="tab-contrato">
              	 		<strong>Nota:</strong> La información marcada con (*) es requerida. 
              	 		<input type="hidden" id="CVE_CONTRATO"  name="CVE_CONTRATO" value="<c:out value='${cve_contrato}'/>"/>
              	 		<!-- Informacion general-->
@@ -125,8 +99,8 @@ a:active {
              	 			<!-- Unidad administrativa-->
     	 	 		 		<div class="row">
     	 	 		 			<div class="form-group">
-									<div class="control-label col-sm-3 control-label">Unidad administrativa:</div>
-									<div class="form-group col-md-4">	
+									<div class="control-label col-sm-3">Unidad administrativa:</div>
+									<div class="form-group col-sm-4">	
 									    <sec:authorize ifNotGranted="ROLE_Sam_PRIVILEGIOS_VER_TODAS_LAS_UNIDADES">
 							      			<c:out value="${nombreUnidad}"/><input type="hidden" name="cbUnidad" id="cbUnidad" value='<c:out value="${idUnidad}"/>' />
 							      		</sec:authorize>
@@ -143,19 +117,19 @@ a:active {
 							        </div>
 							     </div>
     	 	 		 		</div>
-    	 	 		 		<!-- Tipo Contrato-->
+    	 	 		 		 <!-- Tipo de Gasto-->
 		                    <div class="row">
 		                      <div class="form-group">
-		                        <div class="control-label col-sm-3">*Tipo de Contrato:</div>
-		                        <div class="form-group col-sm-3">
-		                            <select name="cbotipocontrato" class="selectpicker form-control input-sm m-b" id="cbotipocontrato" style="width:195px">
+		                        <div class="control-label col-sm-3">*Tipo de gasto:</div>
+		                        <div class="form-group col-sm-4">
+		                            <select name="tipoGasto" class="selectpicker form-control input-sm m-b" data-live-search="true" id="tipoGasto" style="width:400px">
 				                      <option value="0">[Seleccione]</option>
-				                      <c:forEach items="${tipoContratos}" var="item">
-				                        <option value='<c:out value="${item.ID_TIPO}"/>' <c:if test='${item.ID_TIPO==Contrato.ID_TIPO}'> selected </c:if>>
-				                          <c:out value='${item.DESCRIPCION}'/>
-				                        </option>
-				                      </c:forEach>
-				                    </select>
+				                        <c:forEach items="${tipoGastos}" var="item" varStatus="status">
+				                          <option value="<c:out value='${item.ID}'/>" <c:if test='${item.ID==Contrato.ID_RECURSO}'> selected </c:if>>
+				                            <c:out value="${item.RECURSO}"/>
+				                          </option>
+				                        </c:forEach>
+				                      </select>
 		                        </div>
 		                      </div>
 		                    </div>
@@ -168,27 +142,30 @@ a:active {
 									</div>
 			                    </div>
 			                </div>
-		                    <!-- Tipo de Gasto-->
+    	 	 		 		<!-- Tipo Contrato-->
 		                    <div class="row">
 		                      <div class="form-group">
-		                        <div class="control-label col-sm-3">*Tipo de gasto:</div>
-		                        <div class="form-group col-sm-5">
-		                            <select name="tipoGasto" class="selectpicker form-control input-sm m-b" data-live-search="true" id="tipoGasto" style="width:400px">
+		                        <div class="control-label col-sm-3">*Tipo de Contrato:</div>
+		                        <div class="form-group col-sm-3">
+		                            <select name="cbotipocontrato" class="selectpicker form-control input-sm m-b" data-live-search="true" id="cbotipocontrato" style="width:195px">
 				                      <option value="0">[Seleccione]</option>
-				                        <c:forEach items="${tipoGastos}" var="item" varStatus="status">
-				                          <option value="<c:out value='${item.ID}'/>" <c:if test='${item.ID==Contrato.ID_RECURSO}'> selected </c:if>>
-				                            <c:out value="${item.RECURSO}"/>
-				                          </option>
-				                        </c:forEach>
-				                      </select>
+				                      <c:forEach items="${tipoContratos}" var="item">
+				                        <option value='<c:out value="${item.ID_TIPO}"/>' <c:if test='${item.ID_TIPO==Contrato.ID_TIPO}'> selected </c:if>>
+				                          <c:out value='${item.DESCRIPCION}'/>
+				                        </option>
+				                      </c:forEach>
+				                    </select>
 		                        </div>
 		                      </div>
 		                    </div>
+		                    
+		                   
 		                   <!--Beneficiario -->
 			               <div class="row">
 		                   <div class="form-group">
 		                    	<div class="control-label col-sm-3 ">Prestador del servicio:</div>
-		                    	<div id="div_beneficiario" align="left">${Contrato.NCOMERCIA}</div>
+		                    	<div id="div_beneficiario" align="left" >${Contrato.NCOMERCIA}</div>
+		                    	<div id="beneficiarioxdocto" align="left" style="padding-top:7px;" value=""></div>
 		                        <div class="form-group col-sm-3" id="div_benaficiarioFijo">
 		                        <select name="xBeneficiario" class="selectpicker form-control input-sm m-b" data-live-search="true" id="xBeneficiario" style="width:100%">
 			                              <option value="0">[Seleccione]</option>
@@ -209,7 +186,7 @@ a:active {
 			                            <div class="input-group">
 											<input type="text" class="form-control" placeholder="Documento" name="txtdocumento" id="txtdocumento" onBlur="upperCase(this)" value="${Contrato.NUM_DOC}" >
 											<div class="input-group-btn">
-												<button class="btn btn-info" id="img_producto" name="img_producto" onClick="muestraDocumento()"><i class="glyphicon glyphicon-search"></i></button>
+												<button class="btn btn-info" id="img_docto" name="img_docto" ><i class="glyphicon glyphicon-search"></i></button>
 											    <button class="btn btn-danger" type="button"><i class="glyphicon glyphicon-remove" id="img_detele" ></i></button>
 											    <input name="CVE_DOC" type="hidden"  id="CVE_DOC" size="8" maxlength="6" readonly="true" value="${Contrato.CVE_DOC}" />
 											</div>
@@ -272,7 +249,7 @@ a:active {
 				            	<div class="form-group">
 				                	<div class="control-label col-sm-3 ">&nbsp;Archivo:</div>
 				                    	<div class="form-group col-sm-2">
-				                    		<input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" />
+				                    		<input type="file" class="input-file" id="archivo" name="archivo" accept=".pdf" style="width:445px" />
 										</div>
 								</div>
 						   </div>
@@ -300,9 +277,9 @@ a:active {
 				            	<div class="form-group">
 				                	<div class="control-label col-sm-3 "></div>
 				                    	<div class="col-sm-2">
-				                    		<input name="cmdnuevo" id="cmdnuevo" type="button" class="btn btn-primary" value="Nuevo">
-            								<input name="cmdcerrar" id="cmdcerrar" disabled="disabled" type="button" class="btn btn-danger" disabled="disabled" value="Cerrar">
-            								<input name="cmdguardar" id="cmdguardar" type="button" class="btn btn-success" value="Guardar">
+				                    		<input name="cmdnuevo" id="cmdnuevo" title="Limpia valores para continuar con nuevo Contrato." type="button" class="btn btn-primary" value="Nuevo">
+            								<input name="cmdcerrar" id="cmdcerrar" title="Cerrar Contrato para comprometer el recurso." disabled="disabled" type="button" class="btn btn-danger" value="Cerrar">
+            								<input name="cmdguardar" id="cmdguardar" title="Guarda los datos del Contrato para agregar proyecto y partida." type="button" class="btn btn-success" value="Guardar">
 										</div>
 								</div>
 								
@@ -310,7 +287,7 @@ a:active {
              	 		</div>
              	 		<!--Cierra Informacion general-->
              	 	</div>
-             	 	<div class="tab-pane fade" id="tab2primary">
+             	 	<div class="tab-pane fade" id="tab-detalle">
 	             	 	<form class="form-horizontal">
 	             	 		<!-- Unidad administrativa-->
     	 	 		 		<div class="row">
@@ -363,10 +340,9 @@ a:active {
 										<div class="input-group-btn">
 											<input placeholder="Partida" type="text" id="txtpartida" name="txtpartida" class="form-control sm" maxlength="5"  onKeyPress=" return keyNumbero( event );"/>
 											<input type="hidden" id="CLV_PARTID" value="0"/>
-											<button type="button" class="btn btn-info" id="cmdpresupuesto" onClick="muestraPresupuesto()" name="cmdpresupuesto">
-		      								<span class="glyphicon glyphicon-search"></span>
-		      								
-		    							</button>
+											<button type="button" class="btn btn-info" id="cmdpresupuesto" name="cmdpresupuesto">
+				      							<span class="glyphicon glyphicon-search"></span>
+				    						</button>
 		    							</div>
 									</div>
 									</div>
@@ -401,8 +377,8 @@ a:active {
 		                    <div class="form-group">
 		                        <div class="control-label col-sm-3 "></div>
 		                      		<div class="form-group col-sm-2">
-		                      			<input name="cmdagregar" id="cmdagregar" title="Limpia valores para continuar con nuevo Vale." type="button" class="btn btn-success" value="Agregar">
-										<input name="cmdnuevoconcepto" id="cmdnuevoconcepto" type="button" class="btn btn-primary" value="Nuevo">
+		                      			<input name="cmdagregar" id="cmdagregar" title="Guarda el importe del periodo, para su compromiso" type="button" class="btn btn-success" value="Agregar">
+										<input name="cmdnuevoconcepto" title="Limpia valores para continuar con nuevo concepto" id="cmdnuevoconcepto" type="button" class="btn btn-primary" value="Nuevo">
 									</div>
 								</div>
 		                  </div>

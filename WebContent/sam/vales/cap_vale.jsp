@@ -47,7 +47,11 @@
 
 <script type="text/javascript" src="../../include/js/presupuesto/presupuesto.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="cap_vale.js?x=<%=System.currentTimeMillis()%>"></script>
-
+<style>
+	.disabledTab{
+    	pointer-events: none;
+	}
+</style>
 </head>
 <body  >
 <table width="100%" align="center"><tr><td><h1>Vales - Captura de Vales</h1></td></tr></table>
@@ -62,21 +66,19 @@
 		<div class="panel-heading">
 	 		<ul class="nav nav-tabs responsive" id="vales">
 	 			<li id="maestro" class="nav-item active" >
-	 				<a href="#fragment-pedidos" rol="tab" class="nav-link" data-toggle="tab">Información general</a>
+	 				<a href="#tab-vales" rol="tab" class="nav-link" data-toggle="tab">Información general</a>
 	 			</li>
-                <li id="detalle" class="nav-item disabled">
-                	<a href="#fragment-movimientos" class="nav-link" rol="tab" data-toggle="tab" id="lotes">Movimientos</a>
+                <li id="detalle" class="nav-item">
+                	<a href="#tab-movimientos" class="nav-link" rol="tab" data-toggle="tab" id="lotes">Movimientos</a>
                 </li>
          	</ul>
 		</div><!--close panel con navtabas-->
 		<div class="panel-body">
 		 	<div class="tab-content">
 		 		<!--fragment-requisicion-->
-		 	 	<div class="tab-pane fade in active" id="fragment-pedidos">
+		 	 	<div class="tab-pane fade in active" id="tab-vales">
 		 	 			<form class="form-horizontal">
-		 	 					
-				 	 		 	
-				 	 		 	<!--Perdiodo de ejecución -->
+		 	 				  <!--Perdiodo de ejecución -->
 			                  <div class="row">
 			                    <div class="form-group">
 			                    	<div class="control-label col-sm-3">Vale:</div>
@@ -186,15 +188,6 @@
 									</div>	  
 								</div>
 			                  </div>   
-			                   <div class="row">
-			                    <div class="form-group">
-			                     	<div class="control-label col-sm-3 ">Prestador del servicio:</div>
-			                        <div class="form-group col-sm-5">
-			                        	<input name="w-input-search" type="text" class="form-control sm" id="w-input-search"  value='<c:out value="${vale.CVE_BENEFI}"/>' maxlength="400" onBlur="upperCase(this)">
-										<input type="hidden" id="CVE_BENEFI" value="0" />
-									</div>	  
-								</div>
-			                  </div>   
 			                  <!--Justificacion -->
 			                  <div class="row">
 			                    <div class="form-group">
@@ -242,7 +235,7 @@
 			                    <div class="form-group">
 			                     	<div class="control-label col-sm-3 ">Archivo:</div>
 			                     	<div class="col-sm-2">
-			                     		<input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" />
+			                     		<input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" accept="application/pdf"/>
 			                     	</div>
 			                    </div>
 			                  </div>
@@ -262,13 +255,11 @@
 							              </tr>
 							            </thead>
 							          <tbody>
-							            </tbody>
+							          </tbody>
 							          </table>
 							        
 							        </td>
 							    </tr>
-							   
-							    
 							    <tr >
 							      <td height="13" colspan="6" align="center">
 							        <c:if test="${regresar=='SI'}"></c:if>      </td>
@@ -281,9 +272,9 @@
 			                    <div class="form-group">
 			                        <div class="control-label col-sm-3 ">&nbsp;</div>
 			                      		<div class="col-sm-2">
-			                      		<input name="cmdcerrar" id="cmdcerrar"  disabled="disabled" type="button" class="btn btn-cerrar" value="Cerrar">
-										<input name="cmdnuevo" id="cmdnuevo" type="button" value="Nuevo"  class="btn btn-primary">
-										<input name="xGrabar" id="xGrabar" type="button" class="btn btn-success" value="Guardar">
+			                      		<input name="cmdcerrar" id="cmdcerrar"  disabled="disabled" type="button" class="btn btn-cerrar" value="Cerrar" title="Cerrar documento para poder enviar a la Dirección de Programación para su tramite.">
+										<input name="cmdnuevo" id="cmdnuevo" type="button" value="Nuevo"  class="btn btn-primary" title="Limpiar la información para captura de un nuevo documento.">
+										<input name="xGrabar" id="xGrabar" type="button" class="btn btn-success" value="Guardar" title="Guardar documento para poder agragar movimientos al Vale.">
 									</div>
 								</div>
 			                  </div>  
@@ -291,7 +282,7 @@
 			        </form><!--form-horizontal-->
 		 	 	</div>
 				<!--fragment-conceptos-->
-				<div class="tab-pane fade" id="fragment-movimientos">
+				<div class="tab-pane fade" id="tab-movimientos">
 					
 					<form class="form-horizontal">
 	 	 			<!--Unidad administrativa Presupuesto de la Unidad-->
@@ -371,7 +362,7 @@
 				                     	<div class="control-label col-sm-3 "></div>
 				                     		<div class="col-sm-2">
 			                      				<input name="cmdagregar" id="cmdagregar" type="button" class="btn btn-success" value="Agregar" style="width:80px"/>
-                    							<input name="cmdnuevoconcepto" id="cmdnuevoconcepto" onClick="limpiar()" style="width:80px" type="button" class="btn btn-primary" value="Nuevo"/>
+                    							<input name="cmdnuevoconcepto" id="cmdnuevoconcepto" style="width:80px" type="button" class="btn btn-primary" value="Nuevo"/>
 											</div>  	
 				           				</div>
 									</div>			           	

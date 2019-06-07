@@ -93,7 +93,7 @@ a:active {
     	 	 		 		<div class="row">
     	 	 		 			<div class="form-group">
 									<div class="col-sm-2 col-md-offset-1 control-label">Unidad administrativa:</div>
-									<div class="col-md-4">	
+									<div class="col-md-4"  style="margin-bottom: 20px;">	
 									    <sec:authorize ifNotGranted="ROLE_Sam_PRIVILEGIOS_VER_TODAS_LAS_UNIDADES">
 							      			<c:out value="${nombreUnidad}"/><input type="hidden" name="cbUnidad" id="cbUnidad" value='<c:out value="${idUnidad}"/>' />
 							      		</sec:authorize>
@@ -107,7 +107,7 @@ a:active {
 							          		</select>
 							        	</sec:authorize>
 							        </div>
-							        <div class="form-group col-sm-6">&nbsp;</div>
+							        
      							</div>
     	 	 		 		</div>
     	 	 		 		
@@ -116,8 +116,8 @@ a:active {
 		                      <div class="form-group">
 		                        <div class="control-label col-sm-3">*A partir de presupuesto:</div>
 		                        <div class="col-sm-3 form-group">
-		                            <select name="cbotipodocumento" class="selectpicker form-control input-sm m-b" id="cbotipodocumento" style="width:100%">
-		                             	 <option value="0">[Seleccione]</option>
+		                            <select name="cbotipodocumento" class="selectpicker form-control input-sm m-b" title="Tipo de factura" id="cbotipodocumento" style="width:100%">
+		                             	 <option value="0"> Seleccione </option>
           								 <c:forEach items="${tipoDocumentosFAC}" var="item" varStatus="status"> 
           								 	<option value='<c:out value="${item.ID_TIPO_FAC}"/>' 
 							                <c:if test='${item.ID_TIPO_FAC==factura.ID_TIPO}'> selected </c:if>>
@@ -168,7 +168,7 @@ a:active {
 				            	<div class="form-group">
 				                	<div class="control-label col-sm-3 ">Total documento:</div>
 				                    	<div class="col-sm-2">
-											<div id="div_total_entrada" align="left">$<fmt:formatNumber value="${factura.TOTAL_DOC}"  pattern="#,###,###,##0.00" /></div>
+											<div id="div_total_entrada" style="margin-top: 7px;" >$<fmt:formatNumber value="${factura.TOTAL_DOC}" pattern="#,###,###,##0.00" /></div>
 										</div>
 								</div>
 				           </div>
@@ -177,7 +177,7 @@ a:active {
 		                   <div class="row">
 		                   <div class="form-group">
 		                    	<div class="control-label col-sm-3 ">Prestador del servicio:</div>
-		                    		<div id="div_benaficiarioFijo" align="left">${factura.NCOMERCIA}</div>
+		                    		<div id="div_benaficiarioFijo" style="margin-left: 540px;" >${factura.NCOMERCIA}</div>
 		                    		
 		                        	<div class="form-group col-sm-3" id="div_benaficiario">
 		                        		<select class="selectpicker form-control input-sm" data-live-search="true" style="width:100%" id="cboSearch" name="cboSearch" title="Seleccione un Beneficiario...">
@@ -235,11 +235,21 @@ a:active {
 				            	<div class="form-group">
 				                	<div class="control-label col-sm-3 ">&nbsp;Archivo:</div>
 				                    	<div class="col-sm-2">
-				                    		<input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" />
+				                    		<input type="file" class="input-file" id="archivo" name="archivo" accept="application/pdf" style="width:445px" />
 										</div>
 								</div>
 						   </div>
-				           <div class="row">
+						   <!--XML-->
+				           <div class="row" style="padding-bottom:15px;padding-top: 10px;">
+				            	<div class="form-group">
+				                	<div class="control-label col-sm-3 ">&nbsp;Archivo:</div>
+				                    	<div class="col-sm-2">
+				                    		<input type="file" id="archivoXML" name="archivoXML" onchange="return cambiarFile();" accept="application/xml" style="width:445px"/>
+											<div id="contenido-archivo"></div>
+										</div>
+								</div>
+						   </div>
+						   <div class="row">
 				           		<div class="form-group" style="padding-bottom:15px;padding-top: 10px;">
 									<div class="col-sm-6 col-sm-offset-3" >
 										<table width="80%" class="listasDetalles table table-hover" id="listasArchivo">
@@ -262,9 +272,9 @@ a:active {
 				            	<div class="form-group">
 				                	<div class="control-label col-sm-3 "></div>
 				                    	<div class="col-sm-2">
-				                    		<input name="cmdnuevo" id="cmdnuevo" type="button" class="btn btn-primary" value="Nuevo">
-            								<input name="cmdcerrar" id="cmdcerrar" type="button" class="btn btn-danger" disabled="disabled"    value="Cerrar">
-            								<input name="cmdguardar" id="cmdguardar" type="button" class="btn btn-success" value="Guardar">
+				                    		<input name="cmdnuevo" id="cmdnuevo" title="Limpia valores para continuar con nuevo Devengado" type="button" class="btn btn-primary" value="Nuevo">
+            								<input name="cmdcerrar" id="cmdcerrar" title="Cerrar documento para crear el momento del Devengado" type="button" class="btn btn-danger" disabled="disabled"    value="Cerrar">
+            								<input name="cmdguardar" id="cmdguardar" title="Guardar documento para poder agragar movimientos al Devengado." type="button" class="btn btn-success" value="Guardar">
 										</div>
 								</div>
 								
@@ -393,7 +403,7 @@ a:active {
 				                        <div class="control-label col-sm-3 "></div>
 				                      		<div class="col-sm-2">
 												<input name="cmdagregar" id="cmdagregar" title="Limpia valores para continuar con nuevo Vale." type="button" class="btn btn-success" value="Agregar">
-												<input name="cmdnuevoconcepto" id="cmdnuevoconcepto" onClick="limpiar()" title="Limpia valores para continuar con nuevo Vale." type="button" class="btn btn-primary" value="Nuevo">
+												<input name="cmdnuevoconcepto" id="cmdnuevoconcepto" title="Limpia valores para continuar con nuevo movimiento." type="button" class="btn btn-primary" value="Nuevo">
 											</div>
 										</div>
 				                  </div>
@@ -459,8 +469,11 @@ a:active {
 				                	<div class="form-group">
 				                    	<div class="control-label col-sm-3 ">*Retencion:</div>
 				                      	<div class="col-sm-2">
-											<select name="retencion" class="selectpicker form-control input-sm m-b" data-live-search="true" title="Seleccione retención..." id="retencion" style="width:500px">
+											<select name="retencion" class="selectpicker form-control input-sm m-b" data-live-search="true" title="Tipo retención" id="retencion" style="width:500px">
+									          <!-- <option selected value="0"> Seleccione </option> -->
+									          <option value="0"> Seleccione </option>
 									          <c:forEach items="${tipoRetenciones}" var="item" varStatus="status">
+									          	
 									            <option value="<c:out value='${item.CLV_RETENC}'/>">
 									              <c:out value="${item.RETENCION}"/>
 									              </option>

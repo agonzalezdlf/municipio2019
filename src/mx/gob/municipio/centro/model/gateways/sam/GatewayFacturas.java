@@ -860,7 +860,10 @@ public class GatewayFacturas extends BaseGateway {
 	            		            		
 	            		/*Verificar si tienen orden de pago e impedir si asi fuera*/
 	            		if(tieneOrdenPago(id)){
-	            			Map m = getJdbcTemplate().queryForMap("SELECT NUM_FACTURA,CVE_OP FROM SAM_FACTURAS WHERE CVE_FACTURA =?", new Object[]{id});
+	            			
+	            			
+	            			Map m = getJdbcTemplate().queryForMap("SELECT F.NUM_FACTURA, F.CVE_OP FROM SAM_FACTURAS AS F LEFT JOIN SAM_ORD_PAGO AS OP ON (OP.CVE_OP = F.CVE_OP) "+ 
+	            												  " WHERE F.CVE_FACTURA = ? AND F.STATUS IN (1) AND OP.STATUS IN (0,1)", new Object[]{id});
 	            			throw new RuntimeException("Imposible cancelar la factura "+m.get("NUM_FACTURA").toString()+", está relacionada con la Orden de Pago No. " + m.get("CVE_OP").toString());
 	            		}
 	            		
@@ -1392,6 +1395,8 @@ public class GatewayFacturas extends BaseGateway {
                 	}
                 	
                 	presupuesto = null;
+                	//Validar si termina la generacion de documentos para vaciar la tabla de nominas
+                	borrarDatosNomina();
                 }
 			});
 		}
@@ -1812,7 +1817,7 @@ public class GatewayFacturas extends BaseGateway {
 		                } 
 	          });
 			  presupuesto = null;
-	                
+			  borrarDatosNomina();      
 		} catch (DataAccessException e) {                     
 	      throw new RuntimeException(e.getMessage(),e);
 	    }	   
@@ -1999,11 +2004,11 @@ public class GatewayFacturas extends BaseGateway {
 		int mesActivo = gatewayMeses.getMesActivo(ejercicio);
 		
 		if(factura.get("CVE_REQ")!=null)
-			return getJdbcTemplate().queryForList("SELECT R.ID_PROYECTO, R.CLV_PARTID, P.N_PROGRAMA FROM SAM_REQUISIC AS R INNER JOIN VPROYECTO AS P ON (P.ID_PROYECTO = R.ID_PROYECTO) WHERE R.CVE_REQ =?", new Object[]{factura.get("CVE_REQ")});
+			return getJdbcTemplate().queryForList("SELECT * FROM VT_COMPROMISOS WHERE TIPO_DOC IN ('O.S','O.T') AND CVE_DOC=? AND PERIODO =?", new Object[]{factura.get("CVE_REQ"), mesActivo});
 		else if(factura.get("CVE_PED")!=null)  
-			return getJdbcTemplate().queryForList("SELECT R.ID_PROYECTO, R.CLV_PARTID, V.N_PROGRAMA FROM SAM_PEDIDOS_EX AS P INNER JOIN SAM_REQUISIC AS R ON (R.CVE_REQ = P.CVE_REQ) INNER JOIN VPROYECTO AS V ON (V.ID_PROYECTO = R.ID_PROYECTO) WHERE P.CVE_PED =?", new Object[]{factura.get("CVE_PED")});
+			return getJdbcTemplate().queryForList("SELECT * FROM VT_COMPROMISOS WHERE TIPO_DOC ='PED' AND CVE_DOC=? AND PERIODO =? ", new Object[]{factura.get("CVE_PED"), mesActivo});
 		else if(factura.get("CVE_CONTRATO")!=null) 
-			return getJdbcTemplate().queryForList("SELECT * FROM VT_COMPROMISOS WHERE TIPO_DOC ='CON' AND CVE_DOC=? AND PERIODO =?", new Object[]{factura.get("CVE_CONTRATO"), mesActivo});
+			return getJdbcTemplate().queryForList("SELECT * FROM VT_COMPROMISOS WHERE TIPO_DOC ='CON' AND CVE_DOC=? AND PERIODO =? ", new Object[]{factura.get("CVE_CONTRATO"), mesActivo});
 		else
 			return null;
 	}

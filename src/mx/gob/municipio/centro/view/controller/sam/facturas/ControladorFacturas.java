@@ -4,6 +4,7 @@ package mx.gob.municipio.centro.view.controller.sam.facturas;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/sam/facturas/captura_factura.action")
 public class ControladorFacturas extends ControladorBase {
 
+	private static Logger log = 
+	        Logger.getLogger(ControladorFacturas.class.getName());
+	
 	public ControladorFacturas(){}
 	
 	@Autowired

@@ -15,6 +15,10 @@ public class GatewayMeses extends BaseGateway {
 	public GatewayMeses(){
 		
 	}
+	//Demo para el JSON y AJAX
+	public List<Map<String, Object>> getTodosMesesEjercicioNombres(String Mes){		
+		  return this.getJdbcTemplate().queryForList("select * from MESES where  ESTATUS ='ACTIVO' and ejercicio=?",new Object []{Mes});		
+		}
 	
 	public List<Map<String, Object>> getTodosMesesEjercicio(Integer ejercicio){		
 	  return this.getJdbcTemplate().queryForList("select * from MESES where ejercicio=?",new Object []{ejercicio});		

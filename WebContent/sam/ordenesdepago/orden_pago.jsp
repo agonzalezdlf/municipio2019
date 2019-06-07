@@ -362,7 +362,7 @@ a:active {
             	 	<div class="row">
             	 		<div class="form-group">
 		            		<div class="control-label col-sm-3 ">*Retencion:</div>
-		                    <div class="form-group col-sm-6">
+		                    <div class="form-group col-sm-3">
 		                    	<select name="retencion" class="selectpicker form-control input-sm m-b" data-live-search="true" id="retencion" style="width:100%">
 		                            <c:forEach items="${tipoRetenciones}" var="item" varStatus="status">
 					                	<option value='<c:out value="${item.CLV_RETENC}"/>'
@@ -380,7 +380,7 @@ a:active {
 	                    <div class="form-group">
 	                        <div class="control-label col-sm-3 ">*Importe:</div>
 	                        <div class="form-group col-sm-3">
-	                            <input name="importeRetencion"  type="text" class="form-control" id="importeRetencion" readonly onkeypress=" return keyNumbero( event );">
+	                            <input name="importeRetencion"  type="text" class="form-control" id="importeRetencion" title="Seleccione" readonly onkeypress=" return keyNumbero( event );">
 	                        </div>
 	                        <div class="form-group col-sm-7">&nbsp;</div>
 	                    </div>
@@ -419,8 +419,8 @@ a:active {
             	 	<div class="row">
             	 		<div class="form-group">
 		            		<div class="control-label col-sm-3 ">*Tipo de movimiento:</div>
-		                    <div class="form-group col-sm-6">
-		                    	<select name="tipoMovDoc" class="selectpicker form-control input-sm m-b" data-live-search="true" id="tipoMovDoc" style="width:100%">
+		                    <div class="form-group col-sm-3">
+		                    	<select name="tipoMovDoc" class="selectpicker form-control input-sm m-b" title="Seleccione" data-live-search="true" id="tipoMovDoc" style="width:100%">
 		                            <c:forEach items="${tipoDocumentos}" var="item" varStatus="status">
 				                    <option value='<c:out value="${item.T_DOCTO}"/>'
 				                    <c:if test='${item.T_DOCTO==tipoMovDoc}'>selected</c:if>><c:out value="${item.DESCR}"/>
@@ -456,7 +456,7 @@ a:active {
             	 	<div class="row">
             	 		<div class="form-group">
 		            		<div class="control-label col-sm-3 ">*Archivo:</div>
-		                    <div class="form-group col-sm-6">
+		                    <div class="form-group col-sm-6" id="div_archivo">
                                 <input type="file" class="input-file" id="archivo" name="archivo" style="width:445px" accept="application/pdf"/>
                              
 					        </div>
@@ -467,9 +467,9 @@ a:active {
             	 	<div class="row">
             	 		<div class="form-group">
 		            		<div class="control-label col-sm-3 "></div>
-		                    <div class="form-group col-sm-6">
-                                <input type="button" class="btn btn-primary" name="cmdNuevoAnexo" id="cmdNuevoAnexo" onClick="" value="Nuevo Anexo">  
-                        		<input name="BorraOs2" class="btn btn-success" id="BorraOs2" type="button" value="Guardar Anexo">  
+		                    <div class="form-group col-sm-2">
+                                <input type="button" class="btn btn-primary" name="cmdNuevoAnexo" id="cmdNuevoAnexo" value="Nuevo Anexo">  
+                        		<input type="button" class="btn btn-success" name="btnGuardarAnexo"  id="btnGuardarAnexo" value="Guardar Anexo">  
 					        </div>
 		                    <div class="form-group col-sm-3">&nbsp;</div>
 		                </div>    
@@ -478,7 +478,7 @@ a:active {
                     	<table width="100%" border="0"  align="center" cellpadding="0" cellspacing="0" class="listasDetalles table table-hover" id="listasDocumentos">
 				            <thead>
 				              <tr >
-				                <th width="3%" height="20"  align="center"><img src="../../imagenes/cross.png" alt="" width="16" height="16" onClick="eliminarDocumentos()" style="cursor:pointer"></th>
+				                <th width="3%" height="20"  align="center"><img src="../../imagenes/cross.png" alt="" width="16" height="16" id="imgEliminaAnexo" name="imgEliminaAnexo" onClick="eliminarDocumentos()" style="cursor:pointer"></th>
 				                <th width="11%"  align="center">Tipo Movimiento</th>
 				                <th width="10%" align="center">Número</th>
 				                <th width="40%"  align="center">Nota</th>

@@ -20,22 +20,34 @@
 <script type="text/javascript" src="lista_ordenPago.js?x=<%=System.currentTimeMillis()%>"> </script>
 
 <script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
-
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/interface/controladorOrdenPagoRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
-
 <!-- <script type="text/javascript" src="../../include/js/toolSam.js?x=<%=System.currentTimeMillis()%>"></script> -->
-<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 
+<script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 
+<!--
+//Demo se actualizo...
+<script type="text/javascript" src="../../include/js/componentes/jquery.alerts.js"></script>
+<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
+<link rel="stylesheet" href="../../include/js/componentes/jquery.alerts.css" type="text/css">
+<script src="../../include/css/jquery.tiptip.js"></script>
+<link rel="stylesheet" href="../../include/css/css/css3-buttons.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../include/css/tiptip.css" type="text/css"  media="screen">
+<script type="text/javascript" src="../../include/js/jquery.tabs/jquery-1.1.3.1.pack.js"></script>
+<script type="text/javascript" src="../../include/js/jquery.tabs/jquery.history_remote.pack.js"></script>
+<script type="text/javascript" src="../../include/js/jquery.tabs/jquery.tabs.pack.js"></script>-->
 <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs.css" type="text/css" media="print, projection, screen">
-
+<!-- Additional IE/Win specific style sheet (Conditional Comments) -->
+<!--[if lte IE 7]>
+<link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs-ie.css" type="text/css" media="projection, screen">
+<![endif]-->
 <style type="text/css">
 a:link {
 	text-decoration: none;
@@ -49,6 +61,13 @@ a:hover {
 a:active {
 	text-decoration: none;
 }s
+
+p {
+color:#cccccc;
+line-height:22px;
+padding: 0 0 10px;
+margin: 20px 0 20px 0;
+}
 </style>
 <body >
 
@@ -147,7 +166,7 @@ a:active {
 	          <div class="col-md-2">
 	   				<input name="txtnumop" type="text"  id="txtnumop" maxlength="50"  placeholder="Núm. Orden" class="form-control input-sm" value="<c:out value='${txtnumop}'/>">
 	     	  </div>
-	     	   	<!--<label for="txtpedido" class="col-md-1 control-label">Núm. Pedido:</label>  -->
+	     	  <!--<label for="txtpedido" class="col-md-1 control-label">Núm. Pedido:</label>  -->
 	     	  <div class="col-md-2">
 	     	  		<input name="txtpedido" class="form-control input-sm" type="text" id="txtpedido" placeholder="Núm. Pedido" maxlength="50"  value="<c:out value='${txtpedido}'/>">
 	     	  </div>	

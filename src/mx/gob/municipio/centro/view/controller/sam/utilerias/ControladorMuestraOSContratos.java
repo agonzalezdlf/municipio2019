@@ -40,10 +40,11 @@ public class ControladorMuestraOSContratos extends ControladorBase {
 	public String  requestGetControlador( Map modelo, HttpServletRequest request) {
 		String num_req = request.getParameter("num_req");
 		String clv_benefi = request.getParameter("clv_benefi");
+		int id_recurso = Integer.parseInt(request.getParameter("id_recurso"));
 		modelo.put("unidadesAdmiva",  this.getUnidades());
 		String id_unidad = (request.getParameter("idDependencia")==null) ? "": request.getParameter("idDependencia").toString();
 		modelo.put("idUnidad", id_unidad);
-		modelo.put("documentos", gatewayContratos.getListaOSContratos(num_req, this.getSesion().getIdUsuario(), id_unidad, clv_benefi));
+		modelo.put("documentos", gatewayContratos.getListaOSContratos(num_req, id_recurso, this.getSesion().getIdUsuario(), id_unidad, clv_benefi));
 	    return "sam/consultas/muestra_os_contratos.jsp";
 	}
 

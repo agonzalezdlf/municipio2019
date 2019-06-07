@@ -5,7 +5,7 @@ function __getPresupuesto(idproyecto, proyecto, partida, mes,  ctrl_presupuesto,
 	if(typeof(proyecto)=='undefined') proyecto = 0;
 	//alert("entra uno")$('#selector').val().length
 	//alert(proyecto);
-	if(proyecto!=''&&partida!=''&&proyecto.length<=4&&partida.length==5){
+	if(proyecto!=''||partida!=''&&proyecto.length<=4||partida.length==5){
 		
 			__limpiarPresupuestoSaldo(ctrl_presupuesto, ctrl_disponible);
 			/*Obtiene el presupuesto de manera normal*/
@@ -133,7 +133,4 @@ function __regresaPresupuesto(ID, proyecto, partida, pre_actual, disponible){
 	$('#CLV_PARTID').val(partida);
 	$('#ID_PROYECTO').val(ID);
 	swal.close();
-	//$(".swal2-container.swal2-fade.swal2-shown").remove();//Cierra la ventana modal.
-	//$.alerts._hide();
-	//costumFunction();
 }

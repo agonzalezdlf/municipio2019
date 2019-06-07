@@ -111,12 +111,13 @@ function cancelarContrato(){
 			  allowOutsideClick: false,
 			  preConfirm: function() {
 			    return new Promise(function(resolve, reject) {
-			    	ShowDelay('Cancelando contrato','');
+			    	//ShowDelay('Cancelando contrato','');
 					 controladorListadoContratosRemoto.cancelarContrato(checkClaves, {
 						callback:function(items) { 	
-							  CloseDelay('Contrato cancelado con exito', 2000, function(){
+							getContratos();
+							  /*CloseDelay('Contrato cancelado con exito', 2000, function(){
 									getContratos();
-								});
+								});*/
 						   
 					 } 					   				
 					 ,
@@ -131,7 +132,7 @@ function cancelarContrato(){
 			  },
 			}).then(function (result) {
 				if (result.value) {
-			        	swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+			        	swal({title:'Contrato cancelado con exito!!',showConfirmButton: false,timer:1000,type:"success"});
 			        }else
 			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
 			  

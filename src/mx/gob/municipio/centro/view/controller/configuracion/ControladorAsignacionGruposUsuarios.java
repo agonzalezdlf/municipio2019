@@ -51,7 +51,7 @@ public class ControladorAsignacionGruposUsuarios  extends ControladorBase {
 	}
 	
 	 @ModelAttribute("tipoGrupos")
-	    public List<Map> getTipoGrupos(){
+	    public List<Map<Object, String>> getTipoGrupos(){
 	    	return 	gatewayGrupos.getTipoGrupos();
 	    }
 	 /*Atributo Modelo para retornar las unidades administrativas como map*/
@@ -61,8 +61,8 @@ public class ControladorAsignacionGruposUsuarios  extends ControladorBase {
 	}
 	 
 	
-	 public  void guardarUsuariosGrupo(Integer idUsuario, List<Map> grupos){
-		 for (Map grupo:grupos) {			 
+	 public  void guardarUsuariosGrupo(Integer idUsuario, List<Map<Object, String>> grupos){
+		 for (Map<Object, String> grupo:grupos) {			 
 			 Integer idGrupo=Integer.parseInt((String)grupo.get("idGrupo"));
 			 Integer idGrupoUsuario=((String)grupo.get("idGrupoUser")).equals("")? null:Integer.parseInt((String)grupo.get("idGrupoUser"));
 			 int seleccionado=((String)grupo.get("checado")).equals("false") ?  0: 1;

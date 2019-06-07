@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import mx.gob.municipio.centro.view.bases.ControladorBase;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.providers.*;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 
@@ -52,4 +53,21 @@ public class ControladorIndex extends ControladorBase {
                 throw new RuntimeException(e.getMessage(),e);
            }
 	    }
+	    
+	/*    public void cargarDatosSesion(String usuario,int idUsuario,String  unidad,String  Host,String  ip,int ejercicio,Integer idUnidad ,String  claveUnidad ) {	    	
+	            getSesion().setEjercicio(ejercicio);
+	            getSesion().setUnidad(unidad);
+	            getSesion().setUsuario(usuario);              
+	            getSesion().setIp(ip);
+	            getSesion().setHost(Host);
+	            getSesion().setIdUsuario(idUsuario);
+	            getSesion().setClaveUnidad(claveUnidad);
+	            getSesion().setIdUnidad(idUnidad);
+	            getSesion().setIdGrupo(getGrupo(idUsuario));
+	    }
+	     
+	    public Integer getGrupo(int idUsuario) {
+	    return this.getJdbcTemplate().queryForInt("select ID_GRUPO_CONFIG from SAM_GRUPO_CONFIG_USUARIO where ASIGNADO =1 AND ID_USUARIO=?", new Object []{idUsuario});	 
+	     }*/
+	    
 }

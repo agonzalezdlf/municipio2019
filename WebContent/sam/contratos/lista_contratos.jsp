@@ -140,7 +140,9 @@ a:active {
 	  				<input name="txtcontrato" type="text"  id="txtcontrato" maxlength="50"  placeholder="Núm. Contrato" class="form-control input-sm" value="<c:out value='${txtcontrato}'/>">
 	    	  	</div>
 	    	  	
-	    	  	
+	    	  	<div class="col-md-2">
+          			<input type="checkbox" name="verUnidad" id="verUnidad" value="1"  <c:if test='${verUnidad==1}'>  checked </c:if>>Incluir documentos de la Unidad
+          		</div>
 	    	  	
 	    	</div> 
 	        <!-- RANGO DE FECHAS DE FILTRADO -->

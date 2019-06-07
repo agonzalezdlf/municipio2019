@@ -34,6 +34,7 @@ public class GatewayReportePresupestoDisp extends BaseGateway{
 		cal.setTime(fecha);
 		int ejercicio = cal.get(Calendar.YEAR);
 		int mesActual = gatewayMeses.getMesActivo(ejercicio);
+		
 		/*String sql = " SELECT VP.ID_RECURSO,VP.RECURSO,VP.ID_DEPENDENCIA,VP.DEPENDENCIA,VT_AUTOEVALUACION.ID_PROYECTO,  VT_AUTOEVALUACION.DECRIPCION, VT_AUTOEVALUACION.CLV_PARTID, PARTIDA, VT_AUTOEVALUACION.CLV_CAPITU, " +
 					 " SUM(INICIAL) AS INICIAL, " +
 					 " SUM(PRESUPUESTO) AS PRESUPUESTO, " +
