@@ -10,16 +10,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-    
 
-<link rel="stylesheet" href="../../include/css/sweetalert2.min.css" type="text/css"/>
+<link rel="stylesheet" href="../../include/js/sweetalert2/7.0/sweetalert2.css" type="text/css"/>
 <link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
 <link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css"/>
-<link rel="stylesheet" href="../../include/css/bootstrap-select.css" type="text/css">
 <script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="lista_ordenPago.js?x=<%=System.currentTimeMillis()%>"> </script>
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js?x=<%=System.currentTimeMillis()%>"></script> 
+<script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js?x=<%=System.currentTimeMillis()%>"></script> 
+<!-- 
+	<link rel="stylesheet" href="../../include/css/sweetalert2.min.css" type="text/css"/>
+	<script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script> 
+-->
 
-<script type="text/javascript" src="../../include/js/sweetalert2.min.js"></script>
 <script type="text/javascript" src="../../dwr/interface/autocompleteDiversosRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/interface/controladorOrdenPagoRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
@@ -29,8 +32,9 @@
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
-<script type="text/javascript" src="../../include/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
+<link rel="stylesheet" href="../../include/css/boostrap-select/dist/css/bootstrap-select.css" type="text/css">
+<script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script>
 
 <!--
 //Demo se actualizo...
@@ -49,6 +53,17 @@
 <link rel="stylesheet" href="../../include/js/jquery.tabs/jquery.tabs-ie.css" type="text/css" media="projection, screen">
 <![endif]-->
 <style type="text/css">
+.swal2-overflow {
+  overflow-x: visible;
+  overflow-y: visible;
+  
+  
+}
+.swal2-overflow .swal2-content{
+  	width:150px;
+  	margin-left: auto;
+    margin-right: auto;
+}
 a:link {
 	text-decoration: none;
 }
@@ -122,7 +137,7 @@ margin: 20px 0 20px 0;
           		[<input type="checkbox" name="status" id="status"  value="7" <c:if test="${fn:contains(status,'7')}" >checked</c:if>>&nbsp;Pagada]
           </div>
           <div>
-           	<input name="btnBuscar" id="btnBuscar" type="button" class="btn btn-buscar" value="Buscar"/>
+           	<input name="btnBuscar" id="btnBuscar" type="button" class="btn btn-buscar" value="Buscar" style="width:100px"/>
   	      </div>
       	</div> <!-- Tipo de gasto -->
       	<div class="form-group"><!-- Beneficiario -->
@@ -136,8 +151,10 @@ margin: 20px 0 20px 0;
              	</select>
       		<input type="hidden" id="CVE_BENEFI" name="CVE_BENEFI" value="<c:out value='${CVE_BENEFI}'/>" />
           </div>
-          <div class="col-md-offset-2 col-md-1">
-          		<input name="cmdpdf" id="cmdpdf" title="Mostrar listado en formato PDF" type="button" class="btn btn-imprimir" value="Imprimir PDF"/>
+          <div class="col-md-offset-1 col-md-1">
+          		<input name="cmdpdf" id="cmdpdf" title="Mostrar listado en formato PDF" type="button" class="btn btn-imprimir" value="Imprimir PDF" style="
+    margin-left:142px;
+"/>
           </div>
       	</div> <!-- Beneficiario -->
       
@@ -264,7 +281,7 @@ margin: 20px 0 20px 0;
     <td colspan="9" align="left" height="40" style="background-color:#FFF"><table width="269" border="0" cellspacing="0" cellpadding="0">
       <tr>
             <td width="130" bgcolor="#FFFFFF"><div class="buttons tiptip">
-               <input type="button" name="cmdaperturar" id="cmdaperturar2" value="Aperturar" data-toggle="tooltip" title="Apertura para editar los documentos seleccionados" class="btn btn-warning">
+               <input type="button" name="cmdaperturar" id="cmdaperturar" value="Aperturar" data-toggle="tooltip" title="Apertura para editar los documentos seleccionados" class="btn btn-warning">
             </div></td>
           <sec:authorize ifAllGranted="ROLE_Sam_PRIVILEGIOS_CANCELAR_REQUISICIONES">
             <td width="139" bgcolor="#FFFFFF"><div class="buttons tiptip">

@@ -10,11 +10,10 @@ public class GatewayRubros extends BaseGateway{
 	public GatewayRubros(){
 		
 	}
-	
-	
-public List<Map<String, Object>> getRubros(){
 		
-		return this.getJdbcTemplate().queryForList("SELECT DESCRIPCION FROM SAM_CAT_RUBROS");
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getRubros(){
+		return this.getJdbcTemplate().queryForList("SELECT ID_RUBRO,CLV_RUBRO,DESCRIPCION FROM SAM_CAT_RUBROS");
 	} 
 }
 

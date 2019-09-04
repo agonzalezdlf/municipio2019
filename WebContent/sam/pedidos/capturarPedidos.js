@@ -10,7 +10,7 @@ $(document).ready(function() {
 	
 	$('#txtfecha').datetimepicker({
 		format: 'DD/MM/YYYY',
-		defaultDate: new Date()
+		//defaultDate: new Date()
 	});
 	
 	$('#checkall').on('click', function(){setCheckAll('chkconcepto');});
@@ -280,7 +280,8 @@ function cerrarPedido(){
 			
 		  if (result.value) {
 			  
-			  if ($('#ped_cal').is(':checked')){
+			  if ($('#pcalendarizado').is(':checked')){
+				  console.log('Si es pedido calendarizaco: '+$('#pcalendarizado').val());
 				  getPresupuesto();
 				 
 			  }else{
@@ -300,10 +301,12 @@ function cerrarPedido(){
 
 	/*Metodo interno para el cierra del pedido*/
 	function _cerrarPedido(cve_ped, iva){
-		
-		controladorPedidos.cerrarPedido(cve_ped, $('#TIPO_REQ').val(), iva, checkPresupuesto,$('#ped_cal').val(),{
+		var esCalendarizdo=$('#pcalendarizado').val();
+		var check = $('#pcalendarizado').is(':checked');
+		console.log('Pedido calendatizado: ' + $("#pcalendarizado").val()+ ' | Demo2: '+esCalendarizdo+ ' | Demo3: '+check);
+		controladorPedidos.cerrarPedido(cve_ped, $('#TIPO_REQ').val(), iva, checkPresupuesto,check,{
 			callback:function(items){
-				
+					
 					swal({
 						title: 'Cerrado!',
 						text: 'Tu pedido se cerro con éxito! ',
@@ -342,6 +345,7 @@ function cerrarPedido(){
 //************************************************************************************************************************
 
 //*************************** METODOS PARA EL PEDIDO CALENDARIZADO
+	//Clase que muestra la tabla de los periodos e importes comprometidos.... 
 	function getPresupuesto(){
 		
 		
@@ -355,9 +359,10 @@ function cerrarPedido(){
 			  text: 'Disponibilidad Presupuestal<br/> Presupuesto disponible',
 			  //type: 'info',
 			  html: html,
-			  showCloseButton: true,
+			  //showCloseButton: true,
 			  showCancelButton: true,
 			  focusConfirm: false,
+			  allowOutsideClick: true,
 			  confirmButtonText: 'Sí, confirmar!',
 			  cancelButtonText: 'No, cancelar!',
 			  confirmButtonClass: 'btn btn-success',
@@ -447,7 +452,7 @@ function getPresupuestoSelec(){
     	//console.log('Importe capturado que se le asigna a vimporte: '+parseFloat($("INPUT[name="+$(this).val()+"_importe]").val()));
     	    	
  	    suma=suma+vimporte;
- 	    //console.log('Este es el valor de sumar vimporte: '+ vimporte);
+ 	    console.log('Este es el valor de sumar vimporte: '+ vimporte);
  	    
 		if (vimporte > 0){			
 		   var map = {
@@ -457,9 +462,11 @@ function getPresupuestoSelec(){
 		   		   console.log('Importe: ' +vimporte );//Introduce el importe 
 		}
 	});
-    
-    console.log('El total de la variable suma es: ' + suma);
-	if (redondeo(suma) < redondeo(parseFloat($("#importeReq").val()))){		
+    //VALIDAR PARA CERRAR PEDIDOS EN 0 CUANDO ES CALENDARIZADO--------------------------------------------------------------- * ATENCION PARA REVISON CON UN PEDIDO SIN PRESUPUESTO VALIDARLO.
+    //console.log('El total de la variable suma es: ' + suma);
+	if (redondeo(suma) <= redondeo(parseFloat($("#importeReq").val()))){		
+		console.log('El total del redondeo suma: ' + redondeo(suma));
+		console.log('El redondeo suma: ' + redondeo(parseFloat($("#importeReq").val())));
 		 _cerrarPedido($('#CVE_PED').val(), $('#txtiva').val());
 	 }
 	   else{

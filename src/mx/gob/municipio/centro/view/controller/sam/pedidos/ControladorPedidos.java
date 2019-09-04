@@ -86,34 +86,21 @@ public class ControladorPedidos extends ControladorBase {
 		modelo.put("observa", requisicion.get("OBSERVA"));
 		modelo.put("clv_benefi",gatewayBeneficiario.getBeneficiariosTodos(0));
 		
-		if(requisicion.get("TIPO").toString().equals("7"))
-		{
+		if(requisicion.get("TIPO").toString().equals("7")){
 			modelo.put("presupuesto", this.getJdbcTemplate().queryForList("SELECT ID_PROYECTO, N_PROGRAMA, '"+requisicion.get("CLV_PARTID").toString()+"' AS CLV_PARTID, ISNULL(dbo.getAutorizado(?,?,?,?),0) AS AUTORIZADO, (SELECT ISNULL(SUM(MONTO),0) P FROM VT_COMPROMISOS WHERE CVE_DOC=? AND TIPO_DOC='REQ') AS PRECOMPROMETIDO ,  ISNULL(dbo.getComprometido(?,?,?),0) AS COMPROMETIDO,  ISNULL(dbo.getEjercido(?,?,?),0) AS EJERCIDO,  ISNULL(dbo.getDisponible(?,?,?),0) AS DISPONIBLE  FROM CEDULA_TEC AS CT WHERE CT.ID_PROYECTO = ? ", new Object[]{ mesActivo, mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  requisicion.get("CVE_REQ"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  requisicion.get("ID_PROYECTO")}));
-			
-		}
-		else
-		{
+		}else{
 			modelo.put("presupuesto", this.getJdbcTemplate().queryForList("SELECT ID_PROYECTO, N_PROGRAMA, '"+requisicion.get("CLV_PARTID").toString()+"' AS CLV_PARTID,  ISNULL(dbo.getAutorizado(?,?,?,?),0) AS AUTORIZADO, ISNULL(dbo.getPrecomprometido(?,?,?),0) AS PRECOMPROMETIDO, ISNULL(dbo.getComprometido(?,?,?),0) AS COMPROMETIDO, ISNULL(dbo.getEjercido(?,?,?),0) AS EJERCIDO, ISNULL(dbo.getDisponible(?,?,?),0) AS DISPONIBLE FROM CEDULA_TEC AS CT WHERE CT.ID_PROYECTO = ? ", new Object[]{mesActivo, mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"),  mesActivo, requisicion.get("ID_PROYECTO"), requisicion.get("CLV_PARTID"), requisicion.get("ID_PROYECTO")}));//gatewayProyectoPartida.getPresupuesto(Long.parseLong(requisicion.get("ID_PROYECTO").toString()), "", requisicion.get("CLV_PARTID").toString(), mesActivo, this.getSesion().getIdUsuario(), 0,0) );
-			
 		}
-		
-		
+				
 		if( cvePedido==null && cveRequisicion!=null )
 			//si es requi calendarizada mostrar lotes validados de diferente manera
-			if(requisicion.get("TIPO").toString().equals("7"))
-			{
-				
+			if(requisicion.get("TIPO").toString().equals("7")){
 				modelo.put("mov", gatewayMovimientosRequisicion.getConceptos3(cveRequisicion));
-			}
-			else
-			{
-				
+			}else{
 				modelo.put("mov", gatewayMovimientosRequisicion.getConceptos2(cveRequisicion));
 			}
 		else{
 			cveRequisicion =gatewayPedidos.getNumRequisicion(cvePedido);
-			
-			
 			modelo.put("cve_req",cveRequisicion  );			
 			modelo.put("mov", gatewayPedidos.getConceptos(cvePedido));
 		}		
@@ -292,19 +279,19 @@ public class ControladorPedidos extends ControladorBase {
 			Double importe= ((BigDecimal)requisicion.get("IMPORTE")).doubleValue();//Importe del documento
 			String rnumero= requisicion.get("NUM_REQ").toString();
 			Map requisic = new HashMap();
-			requisic = gatewayProyectoPartidas.getPresupuestoProyectoPartida( proyecto, partida);
+			requisic = gatewayProyectoPartidas.getPresupuestoProyectoPartidaPC( proyecto, partida,cve_req );
 			requisic.put("importe", importe);
 			requisic.put("rnumero", rnumero);
 			return   requisic;
 		}
 	
 	//--------------------------------   Cierre de pedidos   -----------------	
-		public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final boolean pcalendarizado){
+		public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final boolean check){
 			try {    
 	            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
 	                @Override
 	                protected void   doInTransactionWithoutResult(TransactionStatus status) {	
-	                	gatewayPedidos.cerrarPedido(cve_ped, tipo, iva, calendario, getSesion().getIdUsuario(), getSesion().getEjercicio(),pcalendarizado);
+	                	gatewayPedidos.cerrarPedido(cve_ped, tipo, iva, calendario, getSesion().getIdUsuario(), getSesion().getEjercicio(),check);
 	                
 	                } 
 	             });

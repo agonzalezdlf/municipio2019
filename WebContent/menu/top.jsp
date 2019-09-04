@@ -59,12 +59,14 @@ $(document).ready(function() {
 var menuItems = [
     ["Inicio","javascript:cambioMain('<c:out value="${main}"/>','<c:out value="${mainDesc}"/>')","inicio.png" , "", "Inicio", "mainFrame", "0","0" , , ],
      <c:set var="anterior" value=""  />
-	 <c:forEach items="${menus}" var="item" varStatus="status"> 
-	 <c:if test='${item.MOD_DESCRIPCION != anterior }'>
+	 
+    <c:forEach items="${menus}" var="item" varStatus="status"> 
+	 	<c:if test='${item.MOD_DESCRIPCION != anterior }'>
             ["<c:out value="${item.MOD_DESCRIPCION}"/>","","<c:out value="${item.IMAGEN}"/>" , , , , "0", , , ],
-	</c:if>	
-	<c:set var="anterior" value="${item.MOD_DESCRIPCION}"  />
-	 ["|<c:out value="${item.PRIVILEGIO}"/>","<c:out value="${item.URL}"/>",,,"<c:out value="${item.PRIVILEGIO}"/>","mainFrame","1",,,],	
+		</c:if>
+            
+		<c:set var="anterior" value="${item.MOD_DESCRIPCION}"  />
+	 	["|<c:out value="${item.PRIVILEGIO}"/>","<c:out value="${item.URL}"/>",,,"<c:out value="${item.PRIVILEGIO}"/>","mainFrame","1",,,],	
      </c:forEach>
 ];
 dm_initFrame("<c:out value="${mainDesc}"/>", 0, 1, 0);	

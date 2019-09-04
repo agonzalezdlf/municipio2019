@@ -108,6 +108,7 @@ function guardarDocumentoandFiles(){
 		  type: 'info',
 		  showCancelButton: true,
 		  showLoaderOnConfirm: true,
+		  allowOutsideClick: false,
 		  onOpen: function (){
 			  if ( num_doc=="" || tipo_docto=="")  { 
 				  swal({text:'Tipo de documento no válido o Número de documento no válido',timer:1500,showConfirmButton:false}).catch(swal.noop);
@@ -188,6 +189,7 @@ function guardarDocumento(){
 		  type: 'info',
 		  showCancelButton: true,
 		  showLoaderOnConfirm: true,
+		  allowOutsideClick: false,
 		  onOpen: function (){
 			  if ( num_doc=="" || tipo_docto=="")  { 
 				  swal({text:'Tipo de documento no válido o Número de documento no válido',timer:1500,showConfirmButton:false}).catch(swal.noop);
@@ -373,7 +375,8 @@ function eliminarVales(){
 	  	  showCancelButton: true,
 	  	  confirmButtonColor: '#3085d6',
 	  	  cancelButtonColor: '#d33',
-	  	  confirmButtonText: 'Si, Borrar!'
+	  	  confirmButtonText: 'Si, Borrar!',
+	  	  allowOutsideClick: false,	  
 	  	}).then(function (r) {
 	  		swal.showLoading();
 			controladorOrdenPagoRemoto.eliminarVales(checkVales, idOrden, {
@@ -447,7 +450,8 @@ function eliminarDetalle(){
 			  	showCancelButton: true,
 			  	confirmButtonColor: '#3085d6',
 			  	cancelButtonColor: '#d33',
-			  	confirmButtonText: 'Si, Borrar!'
+			  	confirmButtonText: 'Si, Borrar!',
+			  	allowOutsideClick: false,
 			  	}).then(function (r) {
 				  	if(r){
 							controladorOrdenPagoRemoto.eliminarDetalle(checkDetalles,idOrden, {
@@ -619,83 +623,80 @@ function generarOPS(checkFacturas){
 	});
 }
 
-//----------------------------------- Funcion para guardar la Orden de Pago Nueva ---------------------------------------------
-
+//======> Funcion que guarda la cabecera de la orden de pago llamada desde el boton guardar <====== 
 function guardar() {
-   
-   var tipo_gto = $('#tipoGasto').selectpicker('val');
-   
-   /*if ($('#fecha').attr('value')=="") {//jAlert('La fecha de la Orden de Pago no es vÃ¡lida'); 
-    	swal({
-      	  title: 'Error!',
-      	  text: 'La fecha de la Orden de Pago no es vÃ¡lida',
-      	  type: 'error',
-      	  confirmButtonText: 'Cool'
-      	})
-      	return false;};*/
-    
-    if ($('#xBeneficiario').selectpicker('val')==null) {
-    	swal({
-        	  title: 'Error!',
-        	  text: 'El Beneficiario seleccionado no es válido',
-        	  type: 'error',
-        	  confirmButtonText: 'Cool'
-        	})
-    
-    return false;}
-    if ($('#xNota').val()=="") {//jAlert('El concepto de la Orden de Pago no es válido');
-    	swal({
-      	  title: 'Error!',
-      	  text: 'El concepto de la Orden de Pago no es válido',
-      	  type: 'error',
-      	  confirmButtonText: 'Cool'
-      	})
-    return false;}
-    
-   	//Comprobar el tipo de gasto al guardar
-  
-    swal.queue([{
-		  title: 'Guardar orden de pago',
-		  text: 'Confirma que desea guardar la orden de pago',
-		  confirmButtonText: 'Confirmar',
-		  showLoaderOnConfirm: true,
-		  preConfirm: function () {
-		    return new Promise(function (resolve) {
-		    	
-		    	controladorOrdenPagoRemoto.validarTipoGasto(($('#id_orden').val()=='' ? 0:$('#id_orden').val()), tipo_gto, "", {
-					callback:function(items){
-						if(items=='')
-							_guardarOP();
-						else
-							//jError(items,'Error');
-						swal(items,'error');
-					} 					   				
-					,
-					errorHandler:function(errorString, exception) { 
-						swal(errorString,'error');
-					}
-		    	});
-		        resolve();
-		    })
-		  }
-		}]).then(function (resolve) {
-			swal({
-				  title: 'Guardando',
-				  text: 'Documento guardado con exito. ', 
-				  timer: 3000,
-				  onOpen: function () {
-				    swal.showLoading()
+	
+	cve_op= $('#id_orden').val();
+	swal('Numero de orden de pago es: ' +cve_op);
+	
+	if ( cve_op==''|| cve_op =='0') {
+		swal('No se ha generado el número de orden de pago!!!');
+		return
+	}
+   		
+	/*
+	if ( cve_op==''|| cve_op =='0') 
+	   		swal('No se ha generado el número de orden de pago!!!');
+	else
+		{*/
+		
+		   var tipo_gto = $('#tipoGasto').selectpicker('val');
+		   
+		   if ($('#xBeneficiario').selectpicker('val')==""){
+			   swal({title: 'Selecione un Beneficiario',type:"error",showConfirmButton: false,onOpen: function () {setTimeout(function () {swal.close()}, 2000)}})
+			   return false;
+		   }
+		   if ($('#xNota').val()==""){
+			   swal({title: 'El concepto de la Orden de Pago no es válido!!',type:"error",showConfirmButton: false,onOpen: function () {setTimeout(function () {swal.close()}, 2000)}})
+		       return false;
+		   }
+		    
+		   	//Comprobar el tipo de gasto al guardar
+		    
+		    swal.queue([{
+				  title: 'Guardar orden de pago',
+				  text: 'Confirma que desea guardar la orden de pago',
+				  confirmButtonText: 'Confirmar',
+				  showLoaderOnConfirm: true,
+				  preConfirm: function () {
+				    return new Promise(function (resolve) {
+				    	
+				    	controladorOrdenPagoRemoto.validarTipoGasto(($('#id_orden').val()=='' ? 0:$('#id_orden').val()), tipo_gto, "", {
+							callback:function(items){
+								if(items=='')
+									_guardarOP();
+								else
+									//jError(items,'Error');
+								swal(items,'error');
+							} 					   				
+							,
+							errorHandler:function(errorString, exception) { 
+								swal(errorString,'error');
+							}
+				    	});
+				        resolve();
+				    })
 				  }
-				}).then(
-				  function () {},
-				  // handling the promise rejection
-				  function (dismiss) {
-				    if (dismiss === 'timer') {
-				      console.log('Cerrado por terminar el tiempo')
-				    }
-				  }
-				)
-		})
+				}]).then(function (resolve) {
+					swal({
+						  title: 'Guardando',
+						  text: 'Documento guardado con exito. ', 
+						  timer: 3000,
+						  onOpen: function () {
+						    swal.showLoading()
+						  }
+						}).then(
+						  function () {},
+						  // handling the promise rejection
+						  function (dismiss) {
+						    if (dismiss === 'timer') {
+						      console.log('Cerrado por terminar el tiempo')
+						    }
+						  }
+						)
+				})
+		
+		//}
 }
 
 function _guardarOP(){
@@ -721,7 +722,8 @@ function _guardarOP(){
 			  $('#tabsOrdenes').tabs( 'enable' , 4);
 		  if(idOrden==0) $('#tabsOrdenes').tabs('option', 'selected', 1);
 		  cambiarModoDetalle();	  
-		  CloseDelay("Orden de Pago guardada con éxito");	  
+		  swal({title:'Orden de Pago guardada con éxito!!',showConfirmButton: false,timer:2000,type:"success"});
+		  
 	} 					   				
 	,
 	errorHandler:function(errorString, exception) { 
@@ -907,7 +909,7 @@ function mostrarOrdenPago(idOrden){
 	}
 }
 
-//---------------- Viene del boton generar nueva op, oculta controles ------------------------------------------------------------------
+/*======> Boton generar nueva op <=======*/
 function nuevaOp(){
 	$('#cve_op').val('');
 	$('#accion').val('');
@@ -1015,11 +1017,11 @@ function cerrarOrden( ) {
 						if(items=='')
 							_cerrarOrden();
 						else
-							swal('Oops...',errorString,'info');
+							swal('Oops 1...',errorString,'info');
 					} 					   				
 					,
 					errorHandler:function(errorString, exception) { 
-						swal('Oops...',errorString,'error');
+						swal('Oops 2...',errorString,'error');
 					}
 			},async=false );
 		}
@@ -1046,12 +1048,12 @@ function _cerrarOrden(){
 	controladorOrdenPagoRemoto.cerrarOrden( $('#id_orden').val(), {
 				callback:function(items) {
 					if (items != "exito")
-							jAlert(items, 'Advertencia');
+							swal(items, 'warning');
 					   else {
 						   getReporteOP($('#id_orden').val());
 						   limpiarForma();
-						   $('#btnCerrar').prop('disabled',true);	
-						   CloseDelay("Orden de Pago cerrada con éxito");
+						   $('#btnCerrar').prop('disabled',true);
+						   swal({title:'Orden de Pago cerrada con éxito!!',showConfirmButton: false,timer:2000,type:"success"});
 					   }	  
 				} 					   				
 				,

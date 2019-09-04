@@ -58,11 +58,12 @@ public class ControladorReporteRelaciones extends ControladorBase {
 					"	WHEN '10' THEN CONVERT(varchar(2),DAY(R.FECHA)) + ' de Octubre de '+CONVERT(varchar(4),YEAR(R.FECHA))  "+
 					"	WHEN '11' THEN CONVERT(varchar(2),DAY(R.FECHA)) + ' de Noviembre de '+CONVERT(varchar(4),YEAR(R.FECHA))   "+
 					"	WHEN '12' THEN CONVERT(varchar(2),DAY(R.FECHA)) + ' de Diciembre de '+CONVERT(varchar(4),YEAR(R.FECHA))  "+
-					"END AS FECHA_TEXT, "+
+					" END AS FECHA_TEXT, "+
 					"(SELECT CD.DEPENDENCIA FROM CAT_DEPENDENCIAS AS CD WHERE CD.ID = R.ID_DEPENDENCIA_DEV) AS DEPENDENCIA_DEV," +
-					"SAM_PERSONAS.ALIAS, "+
-					"R.TIPO_RELACION, " +
-					"ISNULL((SELECT SUM(IMPORTE) AS IMP FROM SAM_ORD_PAGO WHERE CVE_OP IN (SELECT CVE_OP FROM SAM_OP_RELACION_DETALLES WHERE ID_RELACION = R.ID_RELACION)),0) AS ACUMULADO  " +
+					" SAM_PERSONAS.ALIAS, "+
+					" R.TIPO_RELACION, " +
+					" R.ID_GRUPO, " +
+					" ISNULL((SELECT SUM(IMPORTE) AS IMP FROM SAM_ORD_PAGO WHERE CVE_OP IN (SELECT CVE_OP FROM SAM_OP_RELACION_DETALLES WHERE ID_RELACION = R.ID_RELACION)),0) AS ACUMULADO  " +
 				"FROM SAM_OP_RELACION R "+
 				"	 INNER JOIN SAM_PERSONAS ON (SAM_PERSONAS.CVE_PERS = R.CVE_PERS) WHERE R.ID_RELACION = ? ";
 		String[] Meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
@@ -73,7 +74,7 @@ public class ControladorReporteRelaciones extends ControladorBase {
 			modelo.put("DEPENDENCIA_DEV", "DEVOLUCIÓN DE ORDENES DE PAGO A " + modelo.get("DEPENDENCIA_DEV").toString());
 		
 		//Demo para mandar el grupo de firmas a la relacion de op 18-10-18
-		Integer idGrupo = getSesion().getIdGrupo();
+		Integer idGrupo = (Integer) modelo.get("ID_GRUPO");
 		//this.getJdbcTemplate().queryForInt("SELECT * FROM SAM_GRUPO_CONFIG_USUARIO GCP WHERE EXISTS (SELECT * FROM SAM_PERSONAS WHERE CVE_PERS=GCP.ID_USUARIO)	AND GCP.ID_USUARIO=? AND ASIGNADO=1", new Object[]{modelo.get("CVE_PERS").toString()}); //();
 				
 		gatewayFirmasDocumentos.getFirmasDocumentos(idGrupo, modelo);

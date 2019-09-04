@@ -237,19 +237,12 @@ public class GatewayRequisicion  extends BaseGateway {
 		parametros.put("1", verUnidad);
 		
 		String sql = "";
-		
+	
 		if (fInicial != null && fFinal != null ) 
 				sql = " AND CONVERT(datetime,CONVERT(varchar(10), R.FECHA ,103),103) between :fechaInicial and :fechaFinal ";
 		
 		if(tipo != null&&tipo!=0 ) 
 			sql+= " and R.TIPO=:tipo ";
-		
-		if(cboconOP!=null&&!cboconOP.equals("0")){
-			if(cboconOP.equals("1"))
-				sql+= " and R.CVE_REQ IN (SELECT CVE_REQ FROM SAM_OP_COMPROBACIONES WHERE CVE_REQ = R.CVE_REQ AND CVE_PED IS NULL) ";
-			if(cboconOP.equals("2"))
-				sql+= " and R.CVE_REQ NOT IN (SELECT CVE_REQ FROM SAM_OP_COMPROBACIONES WHERE CVE_REQ = R.CVE_REQ AND CVE_PED IS NULL) ";
-		}
 		
 		if (verUnidad==null&&!privilegio)
 			sql+= " AND R.CVE_PERS=:cve_pers ";
@@ -259,10 +252,7 @@ public class GatewayRequisicion  extends BaseGateway {
 		
 		if (verUnidad==null&&privilegio&&!unidad.equals("0"))
 			sql+= " AND (R.ID_DEPENDENCIA=:unidad) ";
-		/*
-		if (verUnidad==null&&privilegio&&!unidad.equals("0"))
-			sql+= "AND (R.ID_DEPENDENCIA=:unidad)";*/
-		
+				
 		if(verUnidad!=null&&privilegio&&unidad.equals("0"))
 			sql+= " AND (R.CVE_PERS=:cve_pers OR R.ID_DEPENDENCIA=:unidad)";
 			
@@ -294,19 +284,31 @@ public class GatewayRequisicion  extends BaseGateway {
 			if(!beneficiario.equals("0")&&!beneficiario.equals(""))
 				sql+= " AND B.CLV_BENEFI =:beneficiario";
 		
-		if (estatus.contains("9")) //STATUS = TODOS
+		if (estatus.contains("9")) //STATUS 9 ==> TODOS
 			estatus = "0,1,2,4,5 ";
+				
+		if (estatus.contains("0")) //STATUS 0 ==> EDICIÓN
+			sql+=" AND R.EN_OP IN ("+estatus+") ";
 		
-		if (estatus.contains("1")) //STATUS = CERRAD
-			sql+=" AND R.FECHA_FINIQUITADO IS NULL ";
+		if (estatus.equals("1")) //STATUS 1 ==> CERRADO
+			sql+=" AND R.EN_OP IN ("+estatus+") ";
 		
+		if (estatus.equals("2")) //STATUS 2 ==> PROCESO
+			sql+=" AND R.EN_OP IN ("+estatus+") ";
+		
+		if (estatus.equals("4")) //STATUS 4 ==> CANCELADO
+			sql+=" AND R.EN_OP IN ("+estatus+") ";
+		
+		if (estatus.equals("5")) //STATUS 1 ==> CERRADO
+			sql+=" AND R.EN_OP IN ("+estatus+") ";
+				
 		return this.getNamedJdbcTemplate().queryForList("SELECT R.CVE_REQ, R.NUM_REQ, R.CVE_PERS, C.ID_PROYECTO, C.N_PROGRAMA, R.CLV_PARTID, R.ID_DEPENDENCIA, R.OBSERVA, R.TIPO, "+
 																"TIPO_REQ = (CASE r.TIPO WHEN 1 THEN 'REQ.' WHEN 2 THEN 'O.S.' WHEN 3 THEN 'O.T.' WHEN 4 THEN 'O.T.M.P.' WHEN 5 THEN 'O.S.BOMBAS' WHEN 6 THEN 'PAQUETE' WHEN 7 THEN 'REQ. CALEN' WHEN 8 THEN 'OS. CALEN' END), "+
 																"R.PERIODO, (SELECT TOP 1 MES FROM MESES WHERE ESTATUS='ACTIVO') AS PERIODO_ACTUAL,  R.STATUS , convert(varchar(10), R.FECHA ,103) AS FECHA, "+
 																"ISNULL((SELECT SUM(CANTIDAD *PRECIO_EST) FROM SAM_REQ_MOVTOS WHERE CVE_REQ = R.CVE_REQ),0) AS IMPORTE, "+
 																"ISNULL((SELECT SUM(cantidad_temp * precio_est ) FROM SAM_REQ_MOVTOS WHERE CVE_REQ = R.CVE_REQ),0) AS IMPORTE2,   (CASE "+
 																"WHEN R.STATUS=1 AND R.FECHA_FINIQUITADO IS NULL THEN 'CERRADO' "+
-																"WHEN R.STATUS=1 AND R.FECHA_FINIQUITADO IS NOT NULL OR R.STATUS=5 THEN 'FINIQUITADO' "+
+																"WHEN R.STATUS IN (1,5) AND R.FECHA_FINIQUITADO IS NOT NULL THEN 'FINIQUITADO' "+
 																"WHEN R.STATUS=2 THEN 'PROCESO' "+
 																"WHEN R.STATUS=0 THEN 'EDICION' "+
 																"WHEN R.STATUS=4 THEN 'CANCELADO' "+
@@ -317,7 +319,7 @@ public class GatewayRequisicion  extends BaseGateway {
 																"LEFT JOIN CAT_RECURSO AS P ON (P.ID = C.ID_RECURSO) "+
 																"LEFT JOIN SAM_ORDEN_TRAB AS OT ON (OT.CVE_REQ = R.CVE_REQ) "+
 																"LEFT JOIN CAT_BENEFI AS B ON (B.CLV_BENEFI = OT.CLV_BENEFI) "+
-														"WHERE R.EJERCICIO =:ejercicio  AND R.STATUS IN ("+estatus+") "+sql+" ORDER BY R.FECHA DESC", parametros);
+														"WHERE R.EJERCICIO =:ejercicio AND R.EN_OP IN ("+estatus+") "+sql+" ORDER BY R.FECHA DESC", parametros);
 	}
 	
 	/*Metodo que genera el listado de requisiciones y busca mendiante los parametros*/
@@ -342,13 +344,6 @@ public class GatewayRequisicion  extends BaseGateway {
 		if(tipo != null&&tipo!=0 ) 
 			sql+= " and R.TIPO=:tipo ";
 		
-		if(cboconOP!=null&&!cboconOP.equals("0")){
-			if(cboconOP.equals("1"))
-				sql+= " and R.CVE_REQ IN (SELECT CVE_REQ FROM SAM_OP_COMPROBACIONES WHERE CVE_REQ = R.CVE_REQ AND CVE_PED IS NULL) ";
-			if(cboconOP.equals("2"))
-				sql+= " and R.CVE_REQ NOT IN (SELECT CVE_REQ FROM SAM_OP_COMPROBACIONES WHERE CVE_REQ = R.CVE_REQ AND CVE_PED IS NULL) ";
-		}
-		
 		if (verUnidad==null&&!privilegio)
 			sql+= " AND R.CVE_PERS=:cve_pers ";
 		if(verUnidad!=null&&!privilegio)
@@ -360,7 +355,6 @@ public class GatewayRequisicion  extends BaseGateway {
 			sql+= "AND (R.ID_DEPENDENCIA=:unidad)";
 		if(verUnidad!=null&&privilegio&&unidad.equals("0"))
 			sql+= " AND (R.CVE_PERS=:cve_pers OR R.ID_DEPENDENCIA=:unidad)";
-
 			
 		if(numreq!=null&&!numreq.equals("")){
 			sql+= " AND R.NUM_REQ LIKE '%"+numreq+"%'";
@@ -644,6 +638,17 @@ public class GatewayRequisicion  extends BaseGateway {
 					int tipo =Integer.parseInt(requisicion.get("TIPO").toString());
 					Long cve_contrato = (requisicion.get("CVE_CONTRATO")==null) ? 0L: Long.parseLong(requisicion.get("CVE_CONTRATO").toString());
 					Long cve_vale = (requisicion.get("CVE_VALE")==null) ? 0L: Long.parseLong(requisicion.get("CVE_VALE").toString());
+					
+					if(tipo_req!=7 || tipo_req!=1 ){
+						
+						String sql ="SELECT COSTO_TOTAL-(SELECT SUM(CR.IMPORTE) FROM SAM_COMP_REQUISIC CR  WHERE CR.CVE_REQ=OT.CVE_REQ)TOTAL FROM SAM_ORDEN_TRAB OT WHERE OT.CVE_REQ =?";
+						double importeOT = (double) getJdbcTemplate().queryForLong(sql,new Object []{cve_req});
+						
+						if (importeOT>0){
+							
+							throw new RuntimeException("No se actualizo el costo del servicio del documento.");
+						}
+					}
 					boolean presupuest = false;
 					
 					if(idproyecto==0) throw new RuntimeException("Fallo desconocido no se pudo completar la operacion al cerrar el documento, contacte a su administrador");       
@@ -1011,21 +1016,17 @@ public class GatewayRequisicion  extends BaseGateway {
 		
 		boolean finiquitar = true;
 		
-		int surtido = this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_REQ_MOVTOS WHERE STATUS IN (5) AND CVE_REQ = ?", new Object[]{cve_req});
+		int surtido = this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS SURTIDOS FROM SAM_REQ_MOVTOS WHERE STATUS IN (5) AND CVE_REQ = ?", new Object[]{cve_req});
 		
-		int mas = this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS N FROM SAM_REQ_MOVTOS WHERE STATUS IN (1) AND CVE_REQ = ?", new Object[]{cve_req});
+		int cerrados = this.getJdbcTemplate().queryForInt("SELECT COUNT(*) AS CERRADOS FROM SAM_REQ_MOVTOS WHERE STATUS IN (1) AND CVE_REQ = ?", new Object[]{cve_req});
 		
 		//Valida si existen lotes por pedir
-		if (mas == 0){
-			
+		if (cerrados == 0){
 			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_FINIQUITADA, 0, fecha_finiquitado, cve_req});
 			finiquitar = true;
-		
-		//Valida si existen lotes por pedir y en pedidos	
-		if (surtido > 0 ){
+		}
+		else if ( ( surtido != 0)&&( cerrados != 0 ) ){
 			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_EN_PROCESO, 1, null, cve_req});
-			}
-		//Cambia a estatus de cerrada para realizar pedidos
 		}else
 			this.getJdbcTemplate().update("UPDATE SAM_REQUISIC SET STATUS=?, COMPROMETE = ?, FECHA_FINIQUITADO=? WHERE CVE_REQ = ?", new Object []{REQ_STATUS_CERRADA, 1, null, cve_req});
 		return finiquitar;

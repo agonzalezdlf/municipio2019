@@ -18,6 +18,7 @@
 		<dwr:convert class="java.lang.StackTraceElement" type="bean" />
 		<dwr:convert class="java.util.Collection" type="collection" />
 		<dwr:convert class="java.util.Map" type="map" />
+		<dwr:convert type="enum" class=""></dwr:convert>
 	</dwr:configuration>
 
 	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -435,6 +436,9 @@
 		<dwr:remote javascript="controladorListadoOrdenRecibidas">
 			<dwr:include method="toback" />
 			<dwr:include method="fechaValidacionOrdenPago" />
+			<dwr:include method="getConceptosRelaciones" />
+			<dwr:include method="RecibidasFin" />
+			
 		</dwr:remote>
 	</bean>
 	
@@ -492,7 +496,11 @@
 			<dwr:include method="getBeneficiariosHijos" />
 			<dwr:include method="getBeneficiario" />
 			<dwr:include method="eliminarBenificiario" />
+			<dwr:include method="guardaRubroBenefi" />
+			<dwr:include method="getTodosRubrosBeneficiario" />
+			<dwr:include method="eliminarRubros" />
 		</dwr:remote>
+		
 	</bean>
 
 	<bean id="controladorRepresentante"

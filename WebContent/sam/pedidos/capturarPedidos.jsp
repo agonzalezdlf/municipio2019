@@ -89,7 +89,7 @@
 								      
 								      	<!-- Rounded switch -->
 											<label class="switch">
-											  <input type="checkbox" name="ped_cal" id="ped_cal">
+											  <input type="checkbox" name="pcalendarizado" id="pcalendarizado">
 											  <span class="slider round"></span>
 											</label>
 							     	</div>
@@ -105,7 +105,7 @@
 				                	<div class="control-label col-sm-3 ">*Fecha pedido:</div>
 				                    	<div class="form-group col-sm-3">
 				                        	<div class="input-group date">
-				                            	<input name="txtfecha" type="text" class="form-control" id="txtfecha" value="" style="width:100%" maxlength="10"/>
+				                            	<input name="txtfecha" type="text" class="form-control" id="txtfecha" value="<c:if test="${cve_ped==0||cve_ped==NULL}"><%=new java.util.Date()%></c:if><c:out value='${map.FECHA_PED}'/>" style="width:100%" maxlength="10"/>
 				                              	<span class="input-group-addon">
 				                                <span class="glyphicon glyphicon-calendar"></span>
 				                              	</span>

@@ -246,7 +246,7 @@ a:active {
     <td style="border-right:none"><c:out value='${item.OBSERVA}'/></td>
     <td align="center" style="border-right:none"><c:if test='${item.N_PROGRAMA!=NULL}'><c:out value='${item.N_PROGRAMA}'/>&nbsp;/&nbsp;<c:out value='${item.CLV_PARTID}'/></c:if>&nbsp;</td>
     <td align="right" style="border-right:none"><c:if test='${item.IMPORTE>0}'><fmt:formatNumber value="${item.IMPORTE}"  pattern="#,###,###,##0.00" /></c:if><c:if test='${item.IMPORTE<1}'><fmt:formatNumber value="${item.IMPORTE2}"  pattern="#,###,###,##0.00" /></c:if></td>
-    <td align="center" style="border-right:none"><img style="cursor:pointer" src="../../imagenes/pdf.gif" alt="Ver Documento en PDF" border="0" width="14" height="16" onClick="getRequisicion(<c:out value='${item.CVE_REQ}'/>)">
+    <td align="center" style="border-right:none"><img style="cursor:pointer" src="../../imagenes/pdf.gif" alt="Ver Documento en PDF" border="0" width="14" height="16" onClick="mostrarOpcionPDF(<c:out value='${item.CVE_REQ}'/>)">
     <sec:authorize ifNotGranted="ROLE_Sam_PRIVILEGIOS_SOLO_IMPRESION_GENERAL">
         <c:if test='${item.STATUS==0||item.STATUS==1||item.STATUS==2}'>
         <img src="../../imagenes/page_white_edit.png" alt="Editar / Abrir" style="cursor:pointer" onClick="editarRequisicion(<c:out value='${item.CVE_REQ}'/>, <c:out value='${item.STATUS}'/>)">

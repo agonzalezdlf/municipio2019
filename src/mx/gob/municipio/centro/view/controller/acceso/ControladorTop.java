@@ -36,6 +36,7 @@ public class ControladorTop extends ControladorBase {
 				? request.getParameter("main").equals("") ? null : Integer.parseInt(request.getParameter("main"))
 				: null;
 		String mainDesc = request.getParameter("mainDesc");
+		//Regresa la lista de los sistemas que cuenta permiso el usuario
 		List sistemas = gatewayUsuarios.getPermisosSistemas(this.getSesion().getIdUsuario());
 		if (main == null && sistemas.size() > 0) {
 			Map dato = (Map) sistemas.get(0);
@@ -47,6 +48,7 @@ public class ControladorTop extends ControladorBase {
 		modelo.put("unidad", this.getSesion().getUnidad());
 		modelo.put("mainDesc", mainDesc);
 		modelo.put("sistemas", sistemas);
+		//Retorna los modulos de todos los sistemas que cuenta con privilegios el usuario 
 		modelo.put("menus", gatewayUsuarios.getMenuPrivilegiosUsuario(this.getSesion().getIdUsuario(), main));
 		/*
 		 * Seccion para automatizar el paso de documentos al siguiente periodo

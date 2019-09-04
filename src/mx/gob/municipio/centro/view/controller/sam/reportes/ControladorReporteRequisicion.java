@@ -39,7 +39,7 @@ public class ControladorReporteRequisicion extends ControladorBase {
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = {RequestMethod.POST,RequestMethod.GET})    
-	public ModelAndView  requestGetControlador( Map modelo, @RequestParam("claveRequisicion")  Long  idRequisicion ) {
+	public ModelAndView  requestGetControlador( Map modelo, @RequestParam("claveRequisicion")  Long  idRequisicion,@RequestParam(value ="status", required = false) Long  status ) {
 		String[] Meses = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
 		modelo = gatewayRequisicion.getRequisicion(idRequisicion);
 		modelo.put("CALENDARIO", Meses[Integer.parseInt(modelo.get("PERIODO").toString())-1]);

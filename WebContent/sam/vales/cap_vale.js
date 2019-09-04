@@ -129,10 +129,14 @@ function getcontratoDocumento(num_contrato, cve_contrato, idRecurso, clv_benefi,
 }
 
 function agregarEdidatConcepto(){
-	if($('#ID_PROYECTO').val()==''||$('#ID_PROYECTO').val()=='0') {swal('','El programa escrito no es valido','warning'); return false;}
+	if($('#ID_PROYECTO').val()=='') {swal('','El programa escrito no es valido','warning'); return false;}
 	if($('#txtpartida').val()=='') {swal('','La partida escrita no es valida','warning'); return false;}
 	if($('#txtimporteDet').val()=='') {swal('','El importe escrito no es valido','warning'); return false;}
 	swal('','Agregando concepto','');
+	if ($('#ID_PROYECTO').val()==0){
+		muestraPresupuesto();
+		return false;
+	}
 	controladorValesRemoto.agregarConcepto($('#ID_DETALLE').val(), $('#cve_val').val(), $('#ID_PROYECTO').val(), $('#txtpartida').val(), $('#txtimporteDet').val(), $('#txtdetalle').val(), {
 		callback:function(items){
 					if(items=='')
@@ -143,8 +147,7 @@ function agregarEdidatConcepto(){
 							nLotes++;
 					}
 					else{
-						
-						swal(items,'Error');
+						swal(items,'error');
 					}
 						
 				} 					   				

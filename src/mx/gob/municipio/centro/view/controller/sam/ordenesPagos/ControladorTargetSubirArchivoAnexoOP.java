@@ -53,8 +53,7 @@ public class ControladorTargetSubirArchivoAnexoOP extends ControladorBase {
 		if (Integer.parseInt(idDocumento.toString()) == 0) {
 			  idDocumento = (String) this.getJdbcTemplate().queryForObject("select isnull(max(ANX_CONS),0)+1 from SAM_OP_ANEXOS where CVE_OP=? ", new Object[]{cve_op}, String.class);
 			  gatewayOrdenDePagos.insertaDocumento(Integer.parseInt(idDocumento.toString()), tipoMovDoc, numeroDoc,notaDoc, cve_op, this.getSesion().getEjercicio(), this.getSesion().getIdUsuario());	  
-		  }
-		  else
+		}else
 			  gatewayOrdenDePagos.actualizarDocumento(Integer.parseInt(idDocumento.toString()),tipoMovDoc,numeroDoc,notaDoc, cve_op, this.getSesion().getEjercicio(), this.getSesion().getIdUsuario());
 		
 		

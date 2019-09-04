@@ -68,6 +68,7 @@ public class ControladorListadoOrdenesDePago extends ControladorBase {
 		//determinar si solo puede filtrar capitulo 5000 en  privilegios
 		if(this.getPrivilegioEn(this.getSesion().getIdUsuario(), 113)){
 			modelo.put("cbocapitulo" ,5000);
+			
 		}
 		
 		if(privilegio){

@@ -13,12 +13,9 @@
 
 function regresaProducto(producto, ID_ARTICULO, GRUPO, SUBGRUPO, CLAVE, PRECIO, UNIDMEDIDA, CLV_UNIDAD) {
 	window.parent.__regresaProducto(producto, ID_ARTICULO, GRUPO, SUBGRUPO, CLAVE, PRECIO, UNIDMEDIDA, CLV_UNIDAD);
-	
 }
-
 function cerrar(){
 	window.parent.swal.close();
-	
 }
 </script>
 <style type="text/css">

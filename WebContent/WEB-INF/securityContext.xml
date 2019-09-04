@@ -14,7 +14,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <context:annotation-config/>
   
     <security:http auto-config="true" access-denied-page="/accesoDenegado.action">        
-    <security:form-login login-page="/index.action" default-target-url="/menu/index.action" always-use-default-target="true" authentication-failure-url="/index.action?message=1"/>
+    
+    <security:form-login login-page="/index.action" 
+    	default-target-url="/menu/index.action" 
+    	always-use-default-target="true" 
+    	authentication-failure-url="/index.action?message=1"/>
     <security:logout logout-success-url="/index.action" logout-url="/j_spring_security_logout" invalidate-session="true"  />            
     
     <security:intercept-url pattern="/index.action*" filters="none"/>
@@ -85,8 +89,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	<security:intercept-url pattern="/sam/ordenesdepago/_subirArchivoAnexoOP.*" access="ROLE_Sam_Ordenes_de_Pago_Captura_de_Orden_de_Pago"  />
 	<security:intercept-url pattern="/sam/ordenesdepago/anexos/**" access="ROLE_Sam_Ordenes_de_Pago_Captura_de_Orden_de_Pago"  />
 	<security:intercept-url pattern="/sam/consultas/muestra_facturas.*" access="ROLE_Sam_Ordenes_de_Pago_Captura_de_Orden_de_Pago" />
-	<security:intercept-url pattern="/sam/consultas/muestra_anexosOP.*" access="ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago, ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago_para_Ejercer" />
-	<security:intercept-url pattern="/sam/ordenesdepago/muestra_anexosOPArchivos.*" access="ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago, ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago_para_Ejercer" />
+	<security:intercept-url pattern="/sam/consultas/muestra_anexosOP.*" access="ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago, ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago_para_Ejercer, ROLE_ORDENES_DE_PAGO_VER_ARCHIVOS_ANEXOS" />
+	<security:intercept-url pattern="/sam/ordenesdepago/muestra_anexosOPArchivos.*" access="ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago, ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago_para_Ejercer, ROLE_ORDENES_DE_PAGO_VER_ARCHIVOS_ANEXOS" />
 	
 	<security:intercept-url pattern="/sam/consultas/muestra_detalles_Op.*" access="ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago_para_Ejercer"  />
 	<security:intercept-url pattern="/sam/consultas/rpt_relacion_globalOP.*" access="ROLE_Sam" />
@@ -153,6 +157,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 	<security:intercept-url pattern="/sam/reportes/**" access="ROLE_Sam_Vales_Listado_vales_Finanzas,ROLE_Sam_Vales_Listado_de_vales,ROLE_Sam_Requisiciones_Listado_Requisiciones/OT/OS,ROLE_Sam_Pedidos_Listado_de_pedidos,ROLE_Sam_Pedidos_Listado_de_Requisiciones,ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_de_Pago,ROLE_Sam_Ordenes_de_Pago_Listado_de_Ordenes_Ejercidas" />
 	<security:intercept-url pattern="/sam/reportes/lst_reportepresupestodis.*" access="ROLE_Sam_Reportes_Reporte_disponible" />
 	<security:intercept-url pattern="/sam/reportes/lst_reportetransferencia.*" access="ROLE_Sam_Reportes_Reporte_de_Transferencia" />
+	<security:intercept-url pattern="/sam/reportes/lst_reporte_op_detalle.*" access="ROLE_Sam_Reportes_Reporte_de_OP_Detalle" />
 	<security:intercept-url pattern="/sam/consultas/muestra_vales_reembolso.*" access="ROLE_Sam_Vales_Comprobacion_Por_Reembolso_liquido"  />
 	
 	
@@ -215,7 +220,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     
       <bean id="passwordEncoder" class="org.springframework.security.providers.encoding.Md5PasswordEncoder" />                    
       <!--bean id="passwordEncoder" class="mx.gob.municipio.centro.view.seguridad.PasswordEncoder" /-->
+      
       <bean id="userDetailsService" class="mx.gob.municipio.centro.view.seguridad.UserDetailsService"/>    
+      
       <bean id="loggerListener"
       	class="org.springframework.security.event.authentication.LoggerListener" />
 </beans>

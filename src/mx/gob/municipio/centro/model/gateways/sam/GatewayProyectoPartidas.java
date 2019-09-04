@@ -595,6 +595,28 @@ public class GatewayProyectoPartidas extends BaseGateway {
 		return resultado;
 	}
 	
+	public Map<String, Object> getPresupuestoProyectoPartidaPC(String proyecto , String partida,Long CVE_REQ ) {		
+		Map<String,Object> parametros = new HashMap<String,Object>();
+		parametros.put("proyecto", proyecto);
+		parametros.put("partida",partida);		
+		parametros.put("CVE_REQ",CVE_REQ);	
+		String sql =" SELECT [ID_PROYECTO], [N_PROGRAMA], [CLV_PARTID], ISNULL([1], 0) AS ENEPREREQ, ISNULL([2], 0) AS FEBPREREQ, ISNULL([3], 0) AS MARPREREQ, ISNULL([4], 0) " + 
+					" AS ABRPREREQ, ISNULL([5], 0) AS MAYPREREQ, ISNULL([6], 0) AS JUNPREREQ, ISNULL([7], 0) AS JULPREREQ, ISNULL([8], 0) AS AGOPREREQ, ISNULL([9], 0) " + 
+					" AS SEPPREREQ, ISNULL([10], 0) AS OCTPREREQ, ISNULL([11], 0) AS NOVPREREQ, ISNULL([12], 0) AS DICPREREQ " +
+					" FROM  (SELECT PERIODO, [CED].[ID_PROYECTO], [CED].[N_PROGRAMA], [CLV_PARTID], SUM([MONTO]) PRECOMPROMISO " +
+					" FROM   VT_COMPROMISOS INNER JOIN " +
+                              " CEDULA_TEC AS CED ON (CED.ID_PROYECTO = VT_COMPROMISOS.ID_PROYECTO) " +
+               " WHERE TIPO_DOC IN ('REQ') AND CONSULTA = 'PRECOMPROMETIDO' AND VT_COMPROMISOS.CVE_DOC=:CVE_REQ " +
+               " GROUP BY PERIODO, CED.ID_PROYECTO, CED.N_PROGRAMA, [CLV_PARTID]) C PIVOT (SUM(PRECOMPROMISO) FOR PERIODO IN ([1], [2], [3], [4], [5], [6], [7], [8], " + 
+               " [9], [10], [11], [12])) PRECOMPR "; 
+					
+					
+					
+					
+					//" WHERE pe.id_proyecto=:proyecto  and  pe.clv_partid=:partida and exists (SELECT * FROM SAM_REQUISIC R WHERE R.CVE_REQ=:CVE_REQ AND R.ID_PROYECTO = PE.ID_PROYECTO AND R.CLV_PARTID=PE.CLV_PARTID )   ";
+		Map<String, Object> resultado =  this.getNamedJdbcTemplate().queryForMap(sql,parametros);
+		return resultado;
+	}
 
 	/*Metodo que devuelve la informacion presupuestal del pedido*/
 	public Map<String, Object> getLightPartidaPresupuestal(String proyecto, String clv_partid){

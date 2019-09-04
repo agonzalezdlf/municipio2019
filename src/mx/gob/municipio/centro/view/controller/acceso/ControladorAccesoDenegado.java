@@ -5,6 +5,7 @@
  */
 package mx.gob.municipio.centro.view.controller.acceso;
 
+import java.security.Principal;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -27,8 +28,15 @@ public class ControladorAccesoDenegado extends ControladorBase  {
     
     @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.GET)
-    public String  handleRequest(Map modelo , HttpServletRequest request  ) {
-    modelo.put("ruta",request.getContextPath());
+    public String  handleRequest(Map modelo , HttpServletRequest request, Principal user  ) {
+    	if (user != null) {
+    		modelo.put("msg", "Hola " + user.getName() 
+			+ ", Tú no cuentas aún con privilegios para accesar al sistema SAM!");
+		} else {
+			modelo.put("msg", 
+			"Tu no cuentas aún con privilegios para accesar al sistema SAM!");
+		}
+    		modelo.put("ruta",request.getContextPath());
         return "accesoDenegado.jsp";
     }                
 }

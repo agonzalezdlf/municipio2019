@@ -331,14 +331,14 @@
 		                    	<div class="form-group">
 		                        	<div class="control-label col-sm-3 ">*Proyecto:</div>
 		                         	<div class="form-group col-sm-2">
-										<input placeholder="Proyecto" type="text" class="form-control sm" name="txtproyecto" id="txtproyecto" maxlength="4" style="margin-bottom: 8px;"/>
+										<input placeholder="Proyecto" type="text" class="form-control sm" name="txtproyecto" id="txtproyecto" maxlength="4" onKeyPress="" style="margin-bottom: 8px;"/>
 										<input type="hidden" id="ID_PROYECTO" value="0"/>
 									</div>
 									<label class="control-label col-sm-1" for="txtproyecto">*Partida:</label>
 									<div class="col-sm-2">
 										<div class="input-group">
 										<div class="input-group-btn">
-											<input placeholder="Partida" type="text" id="txtpartida" name="txtpartida" class="form-control sm" maxlength="5"  onKeyPress=" return keyNumbero( event );"/>
+											<input placeholder="Partida" type="text" id="txtpartida" name="txtpartida" class="form-control sm" maxlength="5"  onKeyPress="return keyNumbero( event );"/>
 											<input type="hidden" id="CLV_PARTID" value="0"/>
 											<button type="button" class="btn btn-info" id="cmdpresupuesto" name="cmdpresupuesto">
 				      							<span class="glyphicon glyphicon-search"></span>

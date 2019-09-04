@@ -59,6 +59,7 @@ public class GatewayBitacora extends BaseGateway {
 	public static int OP_DEV_RECEP_EN_PROGRAMACION	= 61;
 	public static int OP_DEV_RECEP_EN_FINANZAS	= 62;
 	
+	
 	/*PARA LAS FACTURAS*/
 	public static int FACTURA_NUEVA=54;
 	public static int FACTURA_ACTUALIZAR =55;
@@ -116,4 +117,7 @@ public class GatewayBitacora extends BaseGateway {
 		return this.getJdbcTemplate().queryForLong("select max(cve_movto) as n from bitacora_movtos where ejercicio=?", new Object[]{ejercicio});
 	}
 
+	public void guardarBitacoraBenefi(int ID_MOVTO, int CVE_PERS, Date FECHA_DOC, String DESCRIPCION){
+		String sql="";
+	}
 }

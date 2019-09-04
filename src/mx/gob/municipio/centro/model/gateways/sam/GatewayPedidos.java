@@ -803,7 +803,7 @@ public class GatewayPedidos extends BaseGateway {
  
 //--------------------------------------   CIERRE DE PEDIDOS  -----------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------------------------------
-	public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final int cve_pers, final int ejercicio, final boolean pcalendarizado){
+	public void cerrarPedido(final Long cve_ped, final int tipo, final Double iva, final List<Map<String,String>> calendario, final int cve_pers, final int ejercicio, final boolean check){
 		try
 		{
 			/*this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
@@ -823,7 +823,7 @@ public class GatewayPedidos extends BaseGateway {
 				Long cve_vale = new Long((pedido.get("CVE_VALE")==null) ? 0L:(Integer)pedido.get("CVE_VALE"));
 					
 				//REQ. CALENDARIZADA										
-				if (tipo==7 && pcalendarizado==true){
+				if (tipo==7 && check==true){
 					
 					boolean tiene_precom = tienePrecompromisoDisponiblePrecom(proyecto, partida, idReq, importe, cve_contrato, cve_vale );
 					
@@ -862,9 +862,8 @@ public class GatewayPedidos extends BaseGateway {
 						    
 						}
 				}
-					
 				//Pedido normal 
-					else if (tipo==1 || tipo==7){
+				else if (tipo==1){
 						boolean tiene = tienePrecompromisoDisponible(proyecto, partida, mesActivo, idReq, importe, cve_contrato, cve_vale );
 						
 						if (tiene){	
@@ -907,7 +906,10 @@ public class GatewayPedidos extends BaseGateway {
 						  //TERMINA PROCEDIMIENT0
 					}
 				} 
-				
+				else if ( (tipo==7 && check==false )||(tipo==1 && check==true )){
+					
+					throw new RuntimeException("El Pedido debe ser calendarizado, por que esta siendo elaborado desde una requisicion anualizada");
+				}
 				
 				else {
 					throw new RuntimeException("El monto del Pedido actual es mayor al precompromiso de la Requisición <br>- La Requisición no esta precomprometiendo el recurso del periodo actual");

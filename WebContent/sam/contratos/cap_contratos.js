@@ -73,7 +73,7 @@ $(document).ready(function() {
 	 //Configura los tabuladores
 	 
 	 $('#txtproyecto').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});
-	 $('#txtpartida').focus(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});
+	 $('#txtpartida').blur(function(event){__getPresupuesto($('#ID_PROYECTO').val(),$('#txtproyecto').val(),$('#txtpartida').val(), $('#cbomes').val(),  'txtpresupuesto','txtdisponible','');});
 	
 		 
 	 //if($('#txtnumreq').val()!='') cargarOS($('#CVE_REQ').val());
@@ -258,7 +258,7 @@ function ValidarTipoContrato()
 function nuevoContrato(){
 	document.location = "cap_contratos.action";
 }
-
+/***********************************************************************************************************************/
 function agregarConcepto(){
 		
 	if ($('#txtproyecto').val()=="") {swal('El proyecto de concepto no es válido'); return false;};
@@ -272,6 +272,11 @@ function agregarConcepto(){
 		swal('','Capitúlo 1000,<br><strong>Se encuentra COMPROMETIDO</strong>','error');
 		return false;
 	} 
+	if ($('#ID_PROYECTO').val()==0){
+		muestraPresupuesto();
+		return false;
+	}
+			
 	swal({title: 'Guardando concepto', onOpen: function () { swal.showLoading()}});
 	ControladorContratosRemoto.guardarConcepto($('#ID_DETALLE').val(), $('#CVE_CONTRATO').val(), $('#ID_PROYECTO').val(),$('#txtpartida').val(), $('#cbomes').val(), $('#txtimporte').val(),{
 	  callback:function(items) {
@@ -290,7 +295,7 @@ function agregarConcepto(){
 }
 /*funcion para mostrar el listado del presupuesto*/
 function muestraPresupuesto(){
-		
+	
 	var id_proyecto = $('#ID_PROYECTO').val();
 	var proyecto = $('#txtproyecto').val();
 	var partida = $('#txtpartida').val();
@@ -299,83 +304,58 @@ function muestraPresupuesto(){
 	var tgasto = $('#tipoGasto').val();
 		
 	if(mes==0) {swal('','Seleccione un periodo presupuestal válido','warning'); return false;}
-	if($('#txtproyecto').val()==''||$('#txtpartida').val()=='')
+	
+	if($('#txtproyecto').val()==''||$('#txtproyecto').val()==null||$('#txtpartida').val()==''||$('#txtpartida').val()==null){
 		$('#ID_PROYECTO').val('0');
+	}
 		
 	if(idUnidad==null||idUnidad=="") idUnidad = 0;
-	
+		
 	__listadoPresupuesto(id_proyecto,proyecto,partida,mes, tgasto , idUnidad);
 }
 
 /*------------------------------------ Revisar el cierre del contratos --------------------------------------------------*/
 function cierraContrato(){
-	
-	/*$("#cmdcerrar").click(function() {
-	 });*/
-	
+		
 	if(!cerrar) {swal('','Es necesario que exista al menos un concepto de contrato para realizar esta operación','warning'); return false;}
 	
 	var cve_contrato = $('#CVE_CONTRATO').val();
 	
-	swal({
-		  title: 'Es seguro?',
-		  text: '¿Confirma que desea cerrar el contrato?',
-		  type: 'warning',
+	 swal({
+		  title: 'Eliminar conceptos?',
+		  type: 'info',
 		  showCancelButton: true,
-		  confirmButtonText: 'Sí, Cerrar!',
-		  cancelButtonText: 'No, abortar!'
-		}).then((result) => {
-		  if (result.value  ) {
-			  
-				ShowDelay('Cerrando contrato','');
-				ControladorContratosRemoto.cerrarContrato(cve_contrato,{
-							callback:function(items){
-											/*
-											if(getHTML(items)=="") {
-												CloseDelay('Contrato cerrado con éxito', 2000, function(){
-														$('#cmdcerrar').attr('disabled', true);
-														 getReporteContrato($('#CVE_CONTRATO').attr('value'));
-														 document.location='lista_contratos.action';
-													});
-											}*/
-								swal({
-									  title: 'Cerrando',
-									  type: 'success',
-									  timer: 4000,
-									  onOpen: () => {
-									    swal.showLoading()
-									  }
-									}).then((result) => {
-									  if ( result.dismiss === swal.DismissReason.timer  ) {
-										  swal("Contrato cerrado con éxito!");
-										    $('#cmdcerrar').prop('disabled', true);
-											//getReporteContrato($('#CVE_CONTRATO').attr('value'));
-											document.location='lista_contratos.action'; 
-									   
-									  }
-									})
-									}
-									,
-								errorHandler:function(errorString, exception) { 
-									swal('',errorString, 'error');   
-									return false;
-								}
+		  showLoaderOnConfirm: true,
+		  allowOutsideClick: false,
+		  confirmButtonText: 'Sí, eliminar',
+		  cancelButtonText:'No, abortar',
+		  preConfirm: function() {
+			 return new Promise(function(resolve, reject) {
+				 setTimeout(function() {
+					 resolve();
+					 ControladorContratosRemoto.cerrarContrato(cve_contrato, {
+							callback:function(items) {
+								$('#cmdcerrar').prop('disabled', true);
+								//getReporteContrato($('#CVE_CONTRATO').attr('value'));
+								document.location='lista_contratos.action'; 
+							},errorHandler:function(errorString, exception) { 
+								swal(errorString,'error');          
+							}
 					});
-				
-		  } else if (result.dismiss === swal.DismissReason.cancel) {
-		    swal(
-		      'Cancelado',
-		      'Proceso abortado con exito!',
-		      'error'
-		    )
-		  }
+				 }, 2000);//Cierra el setTimeout
+			});//ciera el Promise
+		  },//Cierra el preConfirm
+		}).then(function (result) {
+			    if (result.value) {
+		        	swal({title:'Contrato cerrado con éxito!!',allowOutsideClick: false,showConfirmButton: false,timer:1000,type:"success"});
+		        }else
+		        	swal({title:'Abortado!!!',text:'Proceso abortado, no realizó ningun cambio',allowOutsideClick: false,showConfirmButton: false,timer:1000,type:"info"});
+		  
 		})
-		
 }
 
 function _validate(){
 	
-	//if($("#usermail").val().length > 0){ }
 	if($('#cbUnidad').val()==0) {swal('','La Unidad Administrativa no es válida','warning');return false;}
 	if($('#cbotipocontrato').val()==0){swal('','El tipo de contrato no es válido','warning'); return false;}
 	if($('#txtnumcontrato').val()=='') {swal('','El número de contrato no es válido','warning'); return false;}
@@ -410,6 +390,7 @@ function guardaContrato2(){
 			  confirmButtonText: 'Sí, gaurdar!',
 			  cancelButtonText: 'No, abortar!',
 			  showLoaderOnConfirm: true,
+			  allowOutsideClick: false,
 			  preConfirm: function(email) {
 				    return new Promise(function(resolve, reject) {
 				      setTimeout(function() {
@@ -417,19 +398,14 @@ function guardaContrato2(){
 				          reject('');
 				        } else {
 				          resolve();
-				         		 
-				          						  
-						  ControladorContratosRemoto.guardarContrato(id_contrato, $('#cbUnidad').val(), $('#txtnumcontrato').val(), $('#txtfechainicial').val(), $('#txtfechatermino').val(), $('#txtnumoficio').val(), $('#txttiempoentrega').val(), $('#cbotipocontrato').selectpicker('val'), $('#txtdescripcion').val(), $('#txtanticipo').val(), $('#tipoGasto').selectpicker('val'), $('#xBeneficiario').selectpicker('val'), $('#CVE_DOC').val(), {
+				          ControladorContratosRemoto.guardarContrato(id_contrato, $('#cbUnidad').val(), $('#txtnumcontrato').val(), $('#txtfechainicial').val(), $('#txtfechatermino').val(), $('#txtnumoficio').val(), $('#txttiempoentrega').val(), $('#cbotipocontrato').selectpicker('val'), $('#txtdescripcion').val(), $('#txtanticipo').val(), $('#tipoGasto').selectpicker('val'), $('#xBeneficiario').selectpicker('val'), $('#CVE_DOC').val(), {
 								callback:function(items) {
 									$('#detalle').removeClass("disabledTab");
 									$('#CVE_CONTRATO').val(items);
 									//$('#tabuladores').tabs('enable',1);
 									getConceptos();
 									subirArchivo();
-									setTimeout(function(){swal("Contrato guardado con exito!");}, 2000);
-									console.log('Pasa por este mensaje...');
-								} 					   				
-								,
+								},
 								errorHandler:function(errorString, exception) { 
 									swal('Oops 2...',"Fallo la operacion:<br>"+"<strong>"+errorString+"</strong>"+"<br>message:"+"<br>Consulte a su administrador");          
 									return false;
@@ -444,9 +420,7 @@ function guardaContrato2(){
 			}).then((result) => {
 				  
 			  if (result.value  ) {
-				
-							
-			  
+					swal({title:"Contrato guardado con exito!",allowOutsideClick: false,showConfirmButton: false,timer:1000,type: 'success',});
 			  } else if (result.dismiss === swal.DismissReason.cancel) {
 				  		swal('Cancelado','Proceso cancelado','error')
 			  }
@@ -460,21 +434,24 @@ function guardaContrato2(){
 //Selecciona el tipo de contrato para mostrar las opciones de captura segun la selección 2019/04/15...... 
 function tipoContratos(){
 		
-	var tContrato=$('#cbotipocontrato').selectpicker('val');
+var tContrato=$('#cbotipocontrato').selectpicker('val');
 	
 	if (tContrato==1)
+		
 		$('#cto_obra').show();
+	
 	else
+		
 		$('#cto_obra').hide();
 	
-	//if($('#cbotipocontrato').val()==0){swal('','Es necesario seleccionar el tipo de contrato','warning'); return false;}
+	if($('#cbotipocontrato').val()==0){swal('','Es necesario seleccionar el tipo de contrato','warning'); return false;}
 	
 	/*Retorna si vale cero*/
 	if($('#TOTAL_CONCEPTOS').val()>'1'){
+		//alert('Total de detalles: ' +$('#TOTAL_CONCEPTOS').val());
 		
-		alert('Total de detalles: ' +$('#TOTAL_CONCEPTOS').val());
-		$('#cbotipocontrato').prop('disabled',true);
-			swal('','No se puede cambiar el tipo de documento, debe eliminar el detalle primero','error');
+		$('#cbotipocontrato').prop('disabled', true);
+		swal('','No se puede cambiar el tipo de documento, debe eliminar el detalle primero','error');
 		return false;
 	}
 	
@@ -484,8 +461,6 @@ function tipoContratos(){
 	
 		case "7"://Adquisicion
 			$('#doctol').show();
-			$('#div_benaficiarioFijo').hide();
-			
 		break;
 		
 		case "1"://OBRAS
@@ -494,21 +469,82 @@ function tipoContratos(){
 		break;
 		
 		case "13"://Vales
-			alert('Tipo de documento a enlazar es Vales');
 			$('#doctol').show();
-			$('#div_benaficiarioFijo').hide();
-			
 		break;
 		
 		case "3"://OSuOT
-			alert('Tipo de documento a enlazar es Orden de Servicio o Trabajo');
 			$('#doctol').show();
-			$('#div_benaficiarioFijo').hide();
 		break;
 	}
 	
 }
 
+function muestraDocumento(){
+
+	//cbUnidad
+	$('#doctol').show();
+	var clv_benefi = $('#xBeneficiario').selectpicker('val');
+	if(clv_benefi=='') $('#CLV_BENEFI').selectpicker('val','');
+	
+	var num_req = $('#txtdocumento').val();
+	var idDependencia = $('#cbUnidad').val();
+		
+	
+	if(idDependencia==0||idDependencia=="") {swal('','Es necesario seleccionar la Unidad Administrativa para listar los documentos','warning'); return false;}
+	if($('#cbotipocontrato').val()==0){swal('','Es necesario seleccionar el tipo de contrato','warning'); return false;}
+
+	/*Retorna si vale cero*/
+	if(cbotipocontrato=='0') return false;
+		
+	if ($('#cbotipocontrato').val()==7){ //Adquisicion - Pedidos
+		$('#doctol').show();
+		swal({
+				  title: 'Listado de Pedidos',
+				  text: 'Seleccione pedido a contratar',
+				  html:
+					  '<iframe width="650" height="400" name="consultaPedido" id="consultaPedido" frameborder="0" src="../../sam/consultas/muestra_pedidos_contratos.action?idDependencia='+idDependencia+'"></iframe>',
+				  width: 800,
+				  padding: 10,
+				  animation: false,
+				  confirmButtonText: 'Cerrar'
+			})
+	}
+	
+	if ($('#cbotipocontrato').val()==13) //VALE
+	{
+		$('#doctol').show();
+		
+		swal({
+			  title: 'Listado de Vales',
+			  text: 'Seleccione vale a comprobar',
+			  html:
+				  '<iframe width="750" height="350" name="ventanaVales" id="ventanaVales" frameborder="0" src="../../sam/consultas/muestraVales_tipo_contratos.action?idVale='+$('#CVE_DOC').val()+'&idDependencia='+idDependencia+'&clv_benefi='+clv_benefi+'"></iframe>',
+			  width: 800,
+			  padding: 10,
+			  animation: false,
+			  confirmButtonText: 'Cerrar'
+			})
+		
+	}																																											//id_vale,num_vale,clv_benefi, comprobado,por_comprobar
+		
+	if ($('#cbotipocontrato').val()==3){
+		
+		$('#doctol').show();
+		swal({
+			  title: 'Listado de O.S. y O.T.',
+			  text: 'Seleccione OS u OT a contratar',
+			  html:
+				  '<iframe width="800" height="400" name="DocumentoContrato" id="DocumentoContrato" frameborder="0" src="../../sam/consultas/muestra_os_contratos.action?num_req='+num_req+'&idDependencia='+idDependencia+'&clv_benefi='+clv_benefi+'"></iframe>',
+			  width: 800,
+			  padding: 10,
+			  animation: false,
+			  confirmButtonText: 'Cerrar'
+			})
+			
+	}
+		
+		
+}
 function cargarOS(cve_req, num_doc, proveedor, clv_benefi){
 	$('#CVE_DOC').val(cve_req);
 	$('#txtdocumento').val(num_doc);
@@ -603,73 +639,49 @@ function pintarDetalles(table, obj){
 
 function eliminarConcepto()
 {
-	 //if($('#CVE_DOC').val()!=''&&$('#CVE_DOC').val(!='0') {jAlert('No se pueden eliminar los conceptos que se agregan a travez de un documento externo','Advertencia'); return false;}
 	 var checkMovimientos = [];
-	 
-     $('input[name=chkConcepto]:checked').each(function() { checkMovimientos.push($(this).val());});	
+	 $('input[name=chkConcepto]:checked').each(function() { checkMovimientos.push($(this).val());});	
 	 if (checkMovimientos.length>0){
 		 
 		 swal({
-			  title: 'Eliminar conceptos',
-			  text: 'Confirma que desea eliminar?',
+			  title: 'Eliminar conceptos?',
 			  type: 'info',
-			  cancelButtonColor: '#d33',
 			  showCancelButton: true,
 			  showLoaderOnConfirm: true,
+			  allowOutsideClick: false,
+			  confirmButtonText: 'Sí, eliminar',
+			  cancelButtonText:'No, abortar',
 			  preConfirm: function() {
-			    return new Promise(function(resolve, reject) {
-			    	// here should be AJAX request
-			    	var numFilas = $('#listaConceptos > tbody > tr').length;
-					//swal('Eliminando concepto','');
-					ControladorContratosRemoto.eliminarConceptos($('#CVE_CONTRATO').val(), checkMovimientos, {
-						callback:function(items) {
-							
-							if (items< 1){
-								$('#cmdcerrar').addClass("btn_disable");
-								$("#detalle").addClass("disabled");
-							}
-							nuevoConcepto(); 	
-							getConceptos();
-							swal({title:'Conceptos eliminados con éxito!',timer:1000, showConfirmButton:false});
-								
-						},
-						errorHandler:function(errorString, exception) { 
-							swal(errorString,'error');          
-					}
-				});
-			      setTimeout(function() {
-			        resolve();
-			        swal.close();
-			      }, 2000);
-			    });
-			  },
-			})/*.then(function() {
-			  swal('Los cambios no se guardaron!');
-			}).done();*/
-		/*jConfirm('¿Confirma que desea eliminar los conceptos del Contrato?','Confirmar', function(r){
-				if(r){
-						var numFilas = $('#listaConceptos > tbody > tr').length;
-						ShowDelay('Eliminando concepto','');
-						ControladorContratosRemoto.eliminarConceptos($('#CVE_CONTRATO').val(), checkMovimientos, {
-							callback:function(items) {
-								
-								if (items< 1){
-										$('#cmdcerrar').addClass("btn_disable");
-								
+				 return new Promise(function(resolve, reject) {
+					 setTimeout(function() {
+						 resolve();
+						 var numFilas = $('#listaConceptos > tbody > tr').length;
+						 
+						 ControladorContratosRemoto.eliminarConceptos($('#CVE_CONTRATO').val(), checkMovimientos, {
+								callback:function(items) {
+										if (items< 1){
+											$('#cmdcerrar').addClass("btn_disable");
+											$("#detalle").addClass("disabled");
+										}
+										nuevoConcepto(); 	
+										getConceptos();
+										
+								},errorHandler:function(errorString, exception) { 
+									swal(errorString,'error');          
 								}
-								nuevoConcepto(); 	
-								getConceptos();
-								CloseDelay('Conceptos eliminados con éxito');	
-								
-						} 					   				
-						,
-						errorHandler:function(errorString, exception) { 
-							jError(errorString, 'Error');          
-						}
-					});
-				}
-	   });*/
-	 } 
+						});
+					 }, 2000);
+					 //swal({title:'Documentos eliminados con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+				});
+			  },
+			}).then(function (result) {
+				    if (result.value) {
+			        	swal({title:'Concluido con exito!!!!',allowOutsideClick: false,showConfirmButton: false,timer:1000,type:"success"});
+			        }else
+			        	swal({title:'Abortado!!!',text:'Proceso abortado, no realizó ningun cambio',allowOutsideClick: false,showConfirmButton: false,timer:1000,type:"info"});
+			  
+			})
+	} 
 	else 
 	    swal('','Es necesario que seleccione por lo menos un concepto del listado', 'info');
 }

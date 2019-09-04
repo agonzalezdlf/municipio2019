@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+  var motivo;	
   var imagen="../../imagenes/cal.gif";	
   var formatFecha="dd/mm/yy";	
 
@@ -9,7 +9,7 @@ $(document).ready(function() {
   $('#cmdcancelarm').on('click', function(){
 		cancelacionMultiple();
 	});
-  $('#cmdaperturar2').on('click', function(){
+  $('#cmdaperturar').on('click', function(){
 		aperturarOrden();
 	});
   $('#btnBuscar').on('click', function(){
@@ -18,7 +18,7 @@ $(document).ready(function() {
   $('#cmdpdf').on('click', function(){
 	  getListadoOrdenPago();
 	});
-  
+   
 //Checkbox para seleccionar toda la lista.... 
   $("input[name=todos]").change(function(){
   	$('input[type=chkordenes]').each( function() {			
@@ -51,6 +51,7 @@ $(document).ready(function() {
 	    $('#fechaFinal').data("DateTimePicker").maxDate(e.date);
 	});
 
+	$('.selectpicker').selectpicker();
 //Demo se actualizo...
 });
 
@@ -108,7 +109,7 @@ function getAnexosListaOP(cve_op){
 function getListadoOrdenPago(){
 	var checkStatus = [];
      $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	 
-	 if (checkStatus.length==0 )   {jAlert('Es necesario seleccionar al menos un status de Orden de Pago', 'Advertencia'); return false;}
+	 if (checkStatus.length==0 )   {swal({title: 'Es necesario seleccionar al menos un status', timer:2500, type:'error', showConfirmButton:false}); return false;}
 	 
 	$('#forma').attr('target',"impresionlistado");
 	$('#forma').attr('action',"../reportes/rpt_listado_op.action");
@@ -119,75 +120,45 @@ function getListadoOrdenPago(){
 }
 
 function getOrden(){
+	
 	var checkStatus = [];
-     $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	 
-	 if (checkStatus.length==0 )   {
-		 swal({
-			  title: 'Error!',
-			  text: 'Es necesario seleccionar al menos un status',
-			  timer: 2000,
-			  showConfirmButton:false,
-			  onOpen: function () {
-			    swal.showLoading()
-			  }
-			}).then(
-			  function () {},
-			  // handling the promise rejection
-			  function (dismiss) {
-			    if (dismiss === 'timer') {
-			      console.log('Tiempo caducado')
-			    }
-			  }
-			)
-		 return false;}
-	 
-	 if ($('#fechaInicial').attr('value')=="" && $('#fechaFinal').attr('value')!="" || $('#fechaInicial').attr('value')!="" && $('#fechaFinal').attr('value')=="")  {
-		 swal('El rango de fechas no es válido'); 
-		 return false;}
-	 swal({
-		  title: 'Buscando',
-		  text: 'En listado de ordenes de pago',
-		  timer: 2000,
-		  onOpen: function () {
-		    swal.showLoading()
-		  }
-		}).then(
-		  function () {},
-		  // handling the promise rejection
-		
-		  function (dismiss) {
-		    if (dismiss === 'timer') {
-		      console.log('Tiempo caducado')
-		      var s = 'lista_ordenPago.action?idUnidad='+$('#cbodependencia').attr('value')+"&fechaInicial="+$('#fechaInicial').attr('value')+"&fechaFinal="+$('#fechaFinal').attr('value')+"&status="+checkStatus+"&tipo_gto="+$('#cbotipogasto').val();
-		      $("#forma").submit()
-		    }
-		  }
-		)
-	;
+    $('input[name=status]:checked').each(function() {checkStatus.push($(this).val());});	
+   
+    if (checkStatus.length==0 )   {
+    	swal({title: 'Es necesario seleccionar al menos un status', timer:2500, type:'error', showConfirmButton:false}); 
+		return false;
+	}
+	swal({
+		title: 'Buscando Ordenes de Pago',
+		timer: 3000,
+		allowOutsideClick: false,
+		onOpen: function () {
+			swal.showLoading()
+		}
+	}).then(function (result) {
+		if (result.dismiss === 'timer'){
+			var s = 'lista_ordenPago.action?idUnidad='+$('#cbodependencia').prop('value')+"&fechaInicial="+$('#fechaInicial').prop('value')+"&fechaFinal="+$('#fechaFinal').prop('value')+"&status="+checkStatus+"&tipo_gto="+$('#cbotipogasto').val();
+			$("#forma").submit()
+		}
+	});
 }
 /*--------------------------------- Manda a cargar la op desde el listado de op -------------------------------------*/
 function editarOP(cve_op){
-		
-	//document.location = 'orden_pago.action?cve_op='+ cve_op + '&accion=edit';
-	//if (status==-1)document.location = "orden_pago.action?cve_op="+cve_op+"&accion=edit";
-	//if(status==0||status==4||status==6) getConsultaOrdenPago(cve_op);
+	
 	swal({
-		  title: 'Abriendo Orden de Pago...',
-		  text: 'La Orden de pago para editar es: ' +cve_op,
-		  timer: 2000,
-		  onOpen: function () {
-		    swal.showLoading()
-		  }
-		}).then(
-		  function () {},
-		  // handling the promise rejection
-		  function (dismiss) {
-		    if (dismiss === 'timer') {
-		      console.log(cve_op)
-		      document.location = 'orden_pago.action?cve_op='+ cve_op + '&accion=edit';
-		    }
-		  }
-		)
+		title: 'Cargando Orden de Pago',
+		text: 'La Orden de pago para editar es: ' +cve_op,
+		timer: 3000,
+		width: 350,
+		allowOutsideClick: false,
+		onOpen: function () {
+			swal.showLoading()
+		}
+	}).then(function (result) {
+		if (result.dismiss === 'timer'){
+			document.location = 'orden_pago.action?cve_op='+ cve_op + '&accion=edit';
+		}
+	});
 }
 
 function getReporteOP(clave) {
@@ -206,192 +177,131 @@ function aperturarOrden(){
    
     if (checkClaves.length>0){
     	swal({
-		  	  	  title: 'Esta seguro?',
-		  	  	  text: "¿Confirma que desea aparturar la(s) orden(es) de pago(s) seleccionada(s)?",
-		  	  	  type: 'warning',
-		  	  	  showCancelButton: true,
-		  	  	  confirmButtonColor: '#3085d6',
-		  	  	  cancelButtonColor: '#d33',
-		  	  	  confirmButtonText: 'Si, apeturar!'
-  	  	}).then(function (r) {
-		  	  			//swal.showLoading();
-			  			controladorOrdenPagoRemoto.aperturarOrdenes(checkClaves, {
-			  			callback:function(items) {	
-			  						//getOrden();
-			  				
-			  			} 						   				
-			  			,
-			  				errorHandler:function(errorString, exception) { 
-			  					swal('Oops...',errorString,'error');	
-			  				}
-			  			},async=false ); 
-			  	  swal({
-  				  title: 'Confirmacion',
-  				  text: 'Aperturando la(s) orden(s) de pago(s) ' + checkClaves,
-  				  timer: 3000,
-  				  onOpen: function () {
-  				    swal.showLoading()
-  				  }
-  				}).then(
-  				  function () {},
-  				  // handling the promise rejection
-  				  function (dismiss) {
-  				    if (dismiss === 'timer') {
-  				      console.log('I was closed by the timer')
-  				    }
-  				  }
-  				)
-  	  	})
-  	 } else 
-  		swal({
-			  title: 'Error!',
-			  text: 'Es necesario seleccionar por lo menos una Orden de Pago del listado.',
-			  type: 'info',
-			  timer: 2000
-			}).then(
-			  function () {},
-			  // handling the promise rejection
-			  function (dismiss) {
-			    if (dismiss === 'timer') {
-			      console.log('I was closed by the timer')
-			    }
-			  }
-			)
+  		  title: 'Esta seguro?',
+  		  text: '¿Confirma que desea aparturar la(s) orden(es) de pago(s) seleccionada(s)?',
+  		  type: 'info',
+  		  showCancelButton: true,
+  		  confirmButtonText: "Aperturar",
+  		  showLoaderOnConfirm: true,
+  		  allowOutsideClick: false,
+  		  preConfirm: function() {
+  		    return new Promise(function(resolve, reject) {
+  		    	// here should be AJAX request
+  		      setTimeout(function() {
+  		        resolve();
+  		      }, 2000);
+  		    });
+  		  },
+  		}).then(function(result) {
+            if (result.value) {
+            	controladorOrdenPagoRemoto.aperturarOrdenes(checkClaves, {
+		  			callback:function(items) {	
+		  				setTimeout(function() {
+			            	getOrden();
+			                swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:2000,type:"success"});
+			            }, 2000);
+		  				
+		  			},
+		  			errorHandler:function(errorString, exception) { 
+		  				swal('Oops...',errorString,'error');	
+		  			}
+		  		},async=false ); 
+            	//swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:2000,type:"success"});
+            } else if (result.dismiss === 'cancel') {
+            	swal({title:'Proceso abortado con exito!!',showConfirmButton: false,timer:2000,type:"info"});
+            }
+  		})
+  		
+     } else 
+    	 swal({title:'Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción',showConfirmButton: false,timer:2500,type:"info"});
  }
 
-
-
-
 /*------------------------------ Cancelacion de ordenes de pago ----------------------------------------------------------------------------------------------------*/
-function cancelarOrden(idOrden)
-{
+function cancelarOrden(idOrden){
+	
 	var checkClaves = [];
 	checkClaves.push(idOrden);
 	if (idOrden!=0){
 		
-		/*Inicia el ciclo*/
 		swal({
-			  title: 'Cancelar Orden(es) de Pago',
-			  text: 'Indique el motivo de cancelación',
-			  input: 'textarea',
-			  inputPlaceholder: 'Motivo de cancelación',
-			  showCancelButton: true,
-			  allowOutsideClick: false,
-			  inputValidator: function (value) {
-				var motivo=$(".swal2-textarea").val();//swal2-textarea
-			    return new Promise(function (resolve, reject) {
-			      if (value) {
-			    	  cancelarops(motivo,checkClaves);
-			        resolve()
-			      } else {
-			      		reject('Debe escribir un motivo de cancelación')
-			      }
+			title: '¿Confirma que desea cancelar la(s) ordenes de pago seleccionada(s)?',
+			input: 'textarea',
+			showCancelButton: true,
+			allowOutsideClick: false,
+			inputValidator: function (result) {
+				swal.disableConfirmButton();
+				return new Promise(function (resolve, reject) {
+					if (result === '') { 
+						resolve('Como requisito deberá escribir el motivo para que proceda la cancelacíon');
+			        }else{
+			            reject('Debe estar aca: '+result);
+			            setTimeout(function() {
+			            	cancelarops(result,checkClaves);
+			            	getOrden();
+			                swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:2000,type:"success"});
+			            }, 2000);
+			        }
 			    })
 			  }
-			}).then(function (result) {	
-				 
-				 if (result.value) {
-					 	
-			        	swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:1000,type:"success"});
-			        }else
-			        	alert('Este es el motivo: ' +motivo);
-			        	swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
-			})
-		/*Termina ciclo de cancelacion*/
+		}).then(function() {
+			  //delete item
+		}, function(dismiss) {
+		  if (dismiss === 'cancel' || dismiss === 'close') {
+		    // ignore
+		  } 
+		});		
 	}
-	else
-		swal('Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción','warning');
 }
 
 function cancelarops(motivo,checkClaves){
-	alert('LLego hasta aqui: '+motivo + '|' + 'Claves de op: ' +checkClaves );
+	
 	controladorOrdenPagoRemoto.cancelarOrden(checkClaves, motivo, {
 		callback:function(items) { 
-			getOrden();
-	  
-	 } 					   				
-	,
-	errorHandler:function(errorString, exception) { 
-		
-		swal('Oops...',errorString,'error');
-	}
-},async=false ); 
+			//getOrden();
+		},
+		errorHandler:function(errorString, exception) { 
+			swal('Oops...',errorString,'error');
+		}
+	},async=false );
 }
 
 function cancelacionMultiple(){
-	var checkClaves = [];
 	
+	var checkClaves = [];
 	$('input[name=chkordenes]:checked').each(function() { checkClaves.push($(this).val());});	
 
 	if (checkClaves.length>0){
 
 		swal({
-			  title: 'Cancelar Orden(es) de Pago',
-			  text: 'Indique el motivo de cancelación',
-			  input: 'textarea',
-			  inputPlaceholder: 'Motivo de cancelación',
-			  showCancelButton: true,
-			  allowOutsideClick: false,
-			  inputValidator: function (value) {
-			    return new Promise(function (resolve, reject) {
-			      if (value) {
-			        resolve()
-			        
-			      } else {
-			      		reject('Debe escribir un motivo de cancelación')
-			      	
-				  }
+			title: '¿Confirma que desea cancelar la(s) ordenes de pago seleccionada(s)?',
+			input: 'textarea',
+			showCancelButton: true,
+			allowOutsideClick: false,
+			inputValidator: function (result) {
+				swal.disableConfirmButton();
+				return new Promise(function (resolve, reject) {
+					if (result === '') { 
+						resolve('Como requisito deberá escribir el motivo para que proceda la cancelacíon');
+			        }else{
+			            reject('Debe estar aca: '+result);
+			            setTimeout(function() {
+			            	cancelarops(result,checkClaves);
+			            	getOrden();
+			                swal({title:'Proceso cocluido con exito!!',showConfirmButton: false,timer:2000,type:"success"});
+			            }, 2000);
+			        }
 			    })
 			  }
-			}).then(function (text) {	
-				 motivo=text;
-				 /*Inicia*/
-				 swal({
-					  title: 'Estas seguro?',
-					  text: "¿Confirma que desea cancelar la(s) ordenes de pago seleccionada(s)?",
-					  type: 'warning',
-					  showCancelButton: true,
-					  confirmButtonColor: '#3085d6',
-					  cancelButtonColor: '#d33',
-					  confirmButtonText: 'Sí, confirmar!',
-					  cancelButtonText: 'No, cancelar!',
-					  confirmButtonClass: 'btn btn-success',
-					  cancelButtonClass: 'btn btn-danger',
-					  allowOutsideClick: false,
-					  buttonsStyling: false
-					}).then(function (r) {
-					  swal('Cancelado!','Tu documento fue cancelado con éxito!','success')
-					  /*clase para cencelacion*/
-							  if(r){
-									swal.showLoading();
-									controladorOrdenPagoRemoto.cancelarOrden(checkClaves,motivo, {
-									callback:function(items) { 	
-										getOrden();
-									} 					   				
-									,
-									errorHandler:function(errorString, exception) { 
-										
-										swal('Oops...',errorString,'error');
-									}
-								},async=false ); 
-							
-							}
-					  /*cancelacion cirre*/
-					}, function (dismiss) {
-					  // dismiss can be 'cancel', 'overlay',
-					  // 'close', and 'timer'
-					  if (dismiss === 'cancel') {
-					    swal(
-					      'Cancelado',
-					      'El proceso no fue ejecutado',
-					      'error'
-					    )
-					  }
-					})
-				 /*Hasta aqui*/
-			})
+		}).then(function() {
+			  //delete item
+		}, function(dismiss) {
+		  if (dismiss === 'cancel' || dismiss === 'close') {
+		    // ignore
+		  } 
+		});	
 			
 	}//cierre del if principal
 	else
-		swal('Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción','warning');
+		//swal('Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción','warning');
+		swal({title:'Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción',showConfirmButton: false,timer:2500,type:"info"});
 }

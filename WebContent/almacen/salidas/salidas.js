@@ -70,6 +70,7 @@ function getTotalesMasIva(){
 
 
 function cerrarSalida(){
+
 	if($('#ID_SALIDA').attr('value')==''||$('#ID_SALIDA').attr('value')=='0'){jAlert('No se puede crear la salida, guarde los cambios primero y vuelva a intentar esta operación','Advertencia'); return false;}
 	jConfirm('¿Confirma que desea cerrar la Salida?','Cerrar', function(r){
 				if(r){
@@ -166,6 +167,12 @@ function guardarCantidadDetalles(){
 }
 
 function guardar(){
+	console.log('valor del tipo salida es: '+$('#cbotiposalida').val());
+	
+	if($('#cbotiposalida').val()==null || $('#cbotiposalida').val()=='0'){
+		jAlert('Es necesario que seleccione por lo menos un tipo de salida', 'Advertencia');
+		return false;
+	}
 	jConfirm('¿Confirma que desea guardar la Salida?','Guardar', function(r){
 				if(r){
 						var id_entrada = $('#ID_ENTRADA').attr('value');

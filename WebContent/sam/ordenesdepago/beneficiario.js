@@ -1,52 +1,102 @@
 /**
 Descripcion: Codigo controlador para la pagina beneficiario.jsp
-Autor      : Mauricio Hernandez, Israel Hernandez & Abraham Gonzalez
-Fecha      : 20/05/2018
 */
-
 /**
 *Al iniciar la pagina carga los eventos a los controles del formulario
 */
-
+ var index ='';
 $(document).ready(function() {  
 	
-	
+	$('select').selectpicker();
 	$('#municipal').hide();//
-	
-	
-	 $('#cmdcerrar').on('click', function(){
+	$('#cmdcerrar').on('click', function(){
 		window.parent.swal.close();
-	 });
-  	 $('#cmdguardar').click(function(event){guardar();});
-  	 
-  	$('#fecha_altab').datetimepicker({
+	});
+  	$('#cmdguardar').click(function(event){guardar();});
+  	$('#fechbaja').datetimepicker({
 		format: 'DD/MM/YYYY',
 		//defaultDate: new Date()
 	});
-  	$('#fecha_bajab').datetimepicker({
+  	$('#fechalta').datetimepicker({
 		format: 'DD/MM/YYYY',
-		
 	});
-  
-  	$('#tipo').on('change',function(event){//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
+  	$('#fechmod').datetimepicker({
+		format: 'DD/MM/YYYY',
+	});
+   	$('#tipo').on('change',function(event){//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
 		DatosBeneficiarios();
 	});
   	
   	$('.selectpicker').selectpicker();
+   	$('#fecha_sat').datetimepicker({
+  		format: 'DD/MM/YYYY',
+  	});
   	
+  	//El metodo on asigna uno o mas controladores de eventos para los elementos seleccionados.
+    $('#tipoBenefi').on('change',function(event){
+ 	   cambioTipoBeneficiario();
+ 	   return false;
+ 	 
+    });
     
-  	
+    $("#persfis").hide();
+    $("#persfis2").hide();
+    cambioTipoBeneficiario();
+   
+    var count= 0;
+   
+   // $('#cborubro').on('changed.bs.select',function(e, clickedIndex, newValue, oldValue) {
+    $('#cborubro').on('change',function() {
+    	index= $('#cborubro').selectpicker('val').toString();
+    	console.log(index);
+    });
+           
+    /*funciones*/
+	 if( ($('#idProveedor').val()!=0) ){
+		 
+		 llenarTablaDeRubros();
+	 	 var clv_benefi=$('#idProveedor').val();
+	 	 editarBeneficiario(clv_benefi);
+	 	 $("#tabsrubro").removeClass("disabled");
+	 	 $("#tabsanexos").removeClass("disabled");
+	 }
+	 
+	 $('#btnNuevoRubro').on('click', function(){
+			
+	 });
+	 $('#btnGuardarRubro').on('click', function(){
+		 guardarRubro();
+	 });
+	 
+	 $(".nav li.disabled a").click(function() {
+		  return false;
+		});
 });
+
+
+function cambioTipoBeneficiario(){
+		
+	if ($('#tipoBenefi').val()==='PF' ){
+		
+		 $("#persfis").show();
+		 $("#persfis2").show();
+		 $("#otros").hide();
+	}else if ($('#tipoBenefi').val()!='PF'){
+		$("#persfis").hide();
+		 $("#persfis2").hide();
+		 $("#otros").show();
+	}
+}
 function cerrarmodal(){
 
 	window.parent.swal.close();
 	
 }
 
-
 function DatosBeneficiarios(){
 	
 	var tipoBeneficiario = $('#tipo').val();
+	
 	/*Retorna si vale cero*/
 	if(tipoBeneficiario=='0') return false;
 	
@@ -112,19 +162,30 @@ function restaFechas2 (f1,f2){
 }
 
 function guardar(){	
+		
+	alert('El beneficiario es: ' +$('#idProveedor').val());
+	alert('El beneficiario es: ' +$('#idBenefi').val());
+	var clave= $('#idBenefi').val();
 	
-	 var status=0;
-     var error="";
-	 var clave= $('#idProveedor').val();			 			 
+	var giro =$('#cbogiro').selectpicker('val');
+	var cboPadron =$('#cbopadron').selectpicker('val');
+	$('select[name=cborubro]').val(1);
+	$('.selectpicker').selectpicker('refresh');
+	 
+	 var error="";
+				 			 
 	 var razonSocial=$('#razonSocial').val();
-	 var responsable=$('#responsable').val();
-	 var responsable2=$('#responsable2').val();
+	 var razonComercial=$('#razonComercial').val();
+	 var email=$('#txtemail').val();
 	 var rfc=$('#rfc').val();
-	 var curp=$('#curp').val();
+	 var curp=$('#txtcurp').val();
 	 var telefono=$('#telefono').val();
-	 var tipo=$('#tipo').val();
+	 var tipo=$('#tipoBenefi').val();
 	 var calle=$('#calle').val();
 	 var colonia=$('#colonia').val();
+	 var localidad=$('#txtlocalidad').val();
+	 var num_int=$('#txtnumint').val();
+	 var num_ext=$('#txtnumext').val();
 	 var ciudad=$('#ciudad').val();
 	 var estado=$('#estado').val();
 	 var cp=$('#cp').val();
@@ -133,37 +194,46 @@ function guardar(){
 	 var clabeb=$('#clabeb').val();
 	 var tipoCuenta=$('#tipoCuenta').val();
 	 var idBeneficiarioPadre=$('#idBeneficiarioPadre').val();
-	 //$('#fecha').val()
+	 var fecha_sat=$('#fechaSAT').val();
 	 var fecha_altab=$('#fecha_altab').val();
 	 var fecha_bajab=$('#fecha_bajab').val();
-	 //swal('Oops...','Something went wrong!','error') swal('El Tipo de beneficiario no es válido','warning')
+	 var fecha_modifica=$('#fecha_modifica').val();
+	 var ap_paterno =$('#appaterno').val();
+	 var ap_materno =$('#apmaterno').val();
+	 var nombre=$('#txtnombre').val();
+	 var ppmc=$('#txtPPMC').val();
+	 var rcomercia=$('#razonComercial').val();
+	 var id_vialidad=$('#cbovialidad').val();
 	 if ( tipo=="0") {swal('Oops...','El Tipo de beneficiario no es válido!','warning'); return false;}
 	 if ( fecha_altab=="") {swal('Oops...','La fecha de alta no es válida!','warning'); return false;}
 	 if ( fecha_bajab=="") {swal('Oops...','La fecha de baja no es válida!','warning'); return false;}
 	 
-	 if(tipo=="PM"){
-		 if ( rfc=="")  {swal('','El RFC no es válido','warning'); return false;}
+	 if ( rfc=="")  {swal('','El RFC no es válido','warning'); return false;}
+	 if ( calle=="") {swal('','La Calle no es válida', 'warning'); return false;}
+	 if ( colonia=="")  {swal('','La Colonia no es válida', 'warning'); return false;}
+	 if ( estado=="")  {swal('','El Estado no es válido', 'warning'); return false;}
+	 if ( ciudad=="")  {swal('','La Ciudad no es válida', 'warning'); return false;}
+	 if ( cp=="")  {swal('','El Codigo postal no es válido', 'warning'); return false;}
+	 if ( noCuenta=="") {swal('','La Cuenta debe ser capturada.', 'warning'); return false;}
+	 if ( clabeb=="") {swal('','La Cuenta debe ser capturada.', 'warning'); return false;}
+	 if (clabeb.length!=18){swal('','La CLABE debe contener 18 digitos.','warning');return false;}
+	 
+	 if(tipo!="PF"){
+		 
 		 if ( razonSocial=="")  {swal('','La Razón Social no es válida', 'warning'); return false;}
-		 //if ( responsable=="")  {swal('','El Responsable no es válido', 'warning'); return false;}
-		 if ( calle=="") {swal('','La Calle no es válida', 'warning'); return false;}
-		 if ( colonia=="")  {swal('','La Colonia no es válida', 'warning'); return false;}
-		 if ( estado=="")  {swal('','El Estado no es válido', 'warning'); return false;}
-		 if ( ciudad=="")  {swal('','La Ciudad no es válida', 'warning'); return false;}
-		 if ( cp=="")  {swal('','El Codigo postal no es válido', 'warning'); return false;}
-		 if ( noCuenta=="") {swal('','La Cuenta debe ser capturada.', 'warning'); return false;}
-		 if ( clabeb=="") {swal('','La Cuenta debe ser capturada.', 'warning'); return false;}
-		 if (clabeb.length!=18){swal('','La CLABE debe contener 18 digitos.','warning');return false;}
+		 if ( tipo=="0")  {swal('','El tipo del padrón no es válido', 'warning'); return false;}
+			 
 	 }
-	 else
+	 else 
 	 {
-		 if ( razonSocial=="")  {swal('La Razón Social no es válida', 'warning'); return false;}
+		 razonSocial = nombre + ' ' + ap_paterno+' '+ ap_materno; 
 	 }
 	
 	 var vigencia=restaFechas2(fecha_altab,fecha_bajab);
 	
-	 if ($('#estatus').is(':checked'))	
+	 if ($('#chkstatus').is(':checked'))	
 		   estatus='1';	
-	
+	 console.log('Mando actualizar el beneiciario: ' +clave);
 	swal({
 		  title: 'Es seguro?',
 		  text: '¿Confirma que desea guardar la informacion del beneficiario?',
@@ -176,7 +246,6 @@ function guardar(){
 			 
 			  swal({
 				  title: 'Guardando',
-				  //text: 'Pedido guardado con éxito!',
 				  type: 'success',
 				  timer: 4000,
 				  onOpen: () => {
@@ -187,10 +256,11 @@ function guardar(){
 				   
 				    result.dismiss === swal.DismissReason.timer
 				  ) {
-				  
-					  controladorBeneficiarioRemoto.guardarBeneficiario(clave,razonSocial,responsable, responsable2, rfc, curp, telefono, tipo, calle, colonia, ciudad, estado, cp, idBanco, noCuenta, tipoCuenta, idBeneficiarioPadre, vigencia, status, clabeb, fecha_altab, fecha_bajab,{
-							 callback:function(items) {
-								 $('#idProveedor').val(items);
+					  // AP_PATERNO= ?, AP_MATERNO= ?, NOMBRE= ?, FECHA_SAT= ?, NUM_INTERIOR= ?, PPMC= ?, NUM_EXTERIOR= ?, LOCALIDAD= ? , PTIPO= ?" +  " WHERE ID_BENEFICIARIO= ?"  
+					  controladorBeneficiarioRemoto.guardarBeneficiario(clave,razonSocial,razonComercial,email, rfc, curp, telefono, tipo, calle, colonia, ciudad, estado, cp, idBanco, noCuenta, tipoCuenta, idBeneficiarioPadre, vigencia, estatus, clabeb, fecha_altab, fecha_bajab,
+							  ap_paterno, ap_materno, nombre, fecha_sat, ppmc, num_int, num_ext, localidad, cboPadron, giro,fecha_modifica,id_vialidad,{
+						  	 callback:function(items) {
+								 //$('#idProveedor').val(items);
 								 window.parent.cambiarVariable(razonSocial);
 								 swal("Good job!", "Beneficiario Guardado con éxito!", "success");
 								 
@@ -257,8 +327,8 @@ function guardar(){
 
  }
 
-  function pintaTabla( table, consecutivo,id,nombre,rfc,domicilio,tipo,vigencia){
-	alert('Entro aqui pintaTabla');
+function pintaTabla( table, consecutivo,id,nombre,rfc,domicilio,tipo,vigencia){
+
  	var tabla = document.getElementById( table ).tBodies[0];
  	var row =   document.createElement( "TR" );
     var htmlCheck = "<input type='checkbox' name='claves' id='claves' value='"+id+"' >";
@@ -302,48 +372,30 @@ function guardar(){
     }); 
 
  }
- 
- function editar(id) {
-	
-	controladorBeneficiarioRemoto.getBeneficiario(id,{
-    callback:function(items) { 
-    	        		
-			 $('#idProveedor').val(items.ID_PROVEEDOR);
-			 $('#clave').val(items.CLV_BENEFI);
-			 $('#razonSocial').val(items.NCOMERCIA);
-			 $('#responsable').val(items.BENEFICIAR);
-			 $('#responsable2').val(items.BENEFICIA2);
-			 $('#rfc').val(items.RFC);
-			 $('#curp').val(items.CURP);
-			 $('#telefono').val(items.TELEFONOS);
-			 $('#tipo').val(items.TIPOBENEFI);
-			 $('#calle').val(items.DOMIFISCAL);
-			 $('#colonia').val(items.COLONIA);
-			 $('#ciudad').val(items.CIUDAD);
-			 $('#estado').val(items.ESTADO);
-			 $('#cp').val(items.CODIGOPOST);
-			 $('#banco').val(items.BANCO);
-			 $('#idBanco').val(items.CLV_BNCSUC);
-			 $('#noCuenta').val(items.NUM_CTA);
-			 $('#clabeb').val(items.CLABE);
-			 $('#tipoCuenta').val(items.TIPO_CTA);
-			 $('#beneficiarioPadre').val(items.BENEFICIARIO);
-			 $('#idBeneficiarioPadre').val(items.CLAVE_PADRE);
-			 $('#fecha_altab').val(items.FECHA_ALTA);
-			 $('#fecha_bajab').val(items.FECHA_BAJA);
-			  if (items.VIGENCIA=='ACTIVO')
-		        $('#vigencia').attr('checked',true);			 
-		      else
-		        $('#vigencia').attr('checked',false);		   
-			    buscarBeneficiarioHijos();
-    } 					   				
-    ,
-    errorHandler:function(errorString, exception) { 
-        jError("Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador");          
-}
-},async=false );
-	
-}
+
+ function editarBeneficiario(clv_benefi) {
+	 console.log('Entro a la editarBeneficiario');
+	 
+	 controladorBeneficiarioRemoto.getBeneficiario(clv_benefi,{
+        callback:function(items) { 		
+        	 $('#idProveedor').val(items.ID_PROVEEDOR);
+			 console.log('El Status: ' +items.STATUS);
+			 console.log('El Estatus: ' +items.ESTATUS);
+			 $('#fecha_modifica').val(items.FECHA_MODIFICADA);
+			 if (items.STATUS=='1'){
+		    		$('#chkstatus').prop('checked',true);
+		    	}
+		    					 
+			    else
+			        $('#chkstatus').prop('checked',false); 
+			
+        },
+        errorHandler:function(errorString, exception) { 
+	        swal('Carga edición','Fallo la operacion:<br>Error:: ' + errorString + '-message:: ' + exception.message + '-JavaClass:: ' + exception.javaClassName + '.<br>Consulte a su administrador','warning');
+	    }	
+    }); 
+ }	
+
 
  
  
@@ -368,3 +420,137 @@ function guardar(){
 	    jInformation("Es necesario que seleccione un elemento de la lista");
 
  }
+  
+  function limpiarRubro(){
+		$('#cborubro').selectpicker('val','');
+		$('#cborubro').selectpicker('refresh')
+	}
+	function guardarRubro(){
+		
+		clv_benefi= $('#idBenefi').val();
+		id_rubro = $('#cborubro').selectpicker('val');
+		alert('El rubro que se agisnara es: ' +id_rubro + "|" + "Al beneficiario: " +id_rubro);
+		if( (id_rubro=='0') || (id_rubro=='' || (id_rubro == null)) ) {
+			swal('','El Rubro no es válido','error'); 
+			return false;
+		}
+		
+		swal({
+			  title: 'Guardar',
+			  text: 'Asignar rubro al beneficiario',
+			  type: 'info',
+			  showCancelButton: true,
+			  showLoaderOnConfirm: true,
+			  confirmButtonText:'Asignar',
+			  cancelButtonText:'Cancelar',
+			  preConfirm: function() {
+			    return new Promise(function(resolve, reject) {
+			    	setTimeout(function() {
+			        	controladorBeneficiarioRemoto.guardaRubroBenefi(clv_benefi, id_rubro, {
+							callback:function(items) {
+								$('#idProveedor').val(items);
+								limpiarRubro();
+								llenarTablaDeRubros();
+							}, //Cierra 	callback				   				
+							errorHandler:function(errorString, exception) { 
+								swal("Fallo la operacion:<br>Error::",+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+							}
+					});  //termina el llamado al controlador
+			        	resolve();
+			        }, 2500);
+			    });
+			  },
+			}).then(function(result) {
+				 if (result.value  ) {
+					  swal({title:'Rubro guardado con éxito!!',showConfirmButton: false,timer:1000,type:"success"});
+				  } else if (result.dismiss === swal.DismissReason.cancel) {
+				 		swal('Cancelado','Proceso cancelado','error')
+				  }
+			})
+	}
+
+	function llenarTablaDeRubros() {
+		quitRow("listaRubros");
+		clv_benefi= $('#idBenefi').val();
+		controladorBeneficiarioRemoto.getTodosRubrosBeneficiario(clv_benefi, {
+		    callback:function(items) { 		
+				jQuery.each(items,function(i) {
+				    pintaRubros( "listaRubros", i+1,this.CLV_RUBRO,this.DESCRIPCION,this.STATUS);
+				});
+			},
+		    errorHandler:function(errorString, exception) { 
+		    	swal('Oops...',errorString,'error');
+		    }
+		},async=false ); 
+
+	}
+
+	function pintaRubros( table, consecutivo,CLV_RUBRO,descripcion,status){
+		
+	 	var tabla = document.getElementById( table ).tBodies[0];
+	 	var row =   document.createElement( "TR" );    
+	    var htmlEdit = "<img src=\"../../imagenes/page_white_edit.png\" style='cursor: pointer;' alt=\"Editar registro\" width=\"16\" height=\"16\" border=\"0\" onClick='cambiarStatusRubro("+CLV_RUBRO+",\""+descripcion+"\")' >"; 	
+	    var htmlCheck = "<input type='checkbox' name='clavesRubros' id='clavesRubros' value='"+CLV_RUBRO+"' >";
+		row.appendChild( Td("",centro,"",htmlCheck) );
+		row.appendChild( Td(consecutivo,izquierda) );
+		row.appendChild( Td(CLV_RUBRO,izquierda) );
+		row.appendChild( Td(descripcion,izquierda) );
+		row.appendChild( Td(status,izquierda) );
+		row.appendChild( Td("",centro,"",htmlEdit) );
+		tabla.appendChild( row );
+	 }
+
+	function eliminarRubros (){
+		clv_benefi= $('#idBenefi').val();
+		var checkRubros = [];
+	    $('input[name=clavesRubros]:checked').each(function() {checkRubros.push($(this).val());	 });
+	    if (clv_benefi==''){
+	    	swal('El beneficiario no es correcto');
+	    	return false;
+	    }
+	    	
+	    
+	    if ( checkRubros.length > 0 ) {
+	    	
+	    	swal({
+	  		  title: 'Eliminar',
+	  		  text: 'Confirma que desea eliminar el rubro del beneficiario',
+	  		  type: 'info',
+	  		  showCancelButton: true,
+	  		  showLoaderOnConfirm: true,
+	  		  confirmButtonText:'Eliminar',
+	  		  cancelButtonText:'Abortar',
+	  		  preConfirm: function() {
+	  		    return new Promise(function(resolve, reject) {
+	  		    	setTimeout(function() {
+	  		    		console.log('claves de rubros: ' +checkRubros);
+	  		    		alert('Al beneficiario: ' + clv_benefi +', Se eliminan los siguientes rubros: ' +checkRubros);
+	  		        	controladorBeneficiarioRemoto.eliminarRubros(checkRubros, clv_benefi, {
+	  						callback:function(items) {
+	  						 llenarTablaDeRubros();
+	  						}, //Cierra 	callback				   				
+	  						errorHandler:function(errorString, exception) { 
+	  							swal("Fallo la operacion:<br>Error::",+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');          
+	  						}
+	  		        	}); //termina el llamado al controlador
+	  		        	resolve();
+	  		        }, 2500);
+	  		    });
+	  		  },
+	  		}).then(function(result) {
+	  			 if (result.value  ) {
+	  				  swal({title:'Rubro(s) eliminados con éxito!!',showConfirmButton: false,timer:1000,type:"success"});
+	  			  } else if (result.dismiss === swal.DismissReason.cancel) {
+	  			 		swal('Cancelado','Proceso cancelado','error')
+	  			  }
+	  		})
+	    } else 
+		   	swal('Oops...','Es necesario que seleccione un elemento de la lista','error');	
+		
+		
+	}
+	function cambiarStatusRubro (){
+		
+	}
+	
+	

@@ -42,20 +42,43 @@
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
 
 <style type="text/css">
-<!--
-a:link {
-	text-decoration: none;
-}
-a:visited {
-	text-decoration: none;
-}
-a:hover {
-	text-decoration: underline;
-}
-a:active {
-	text-decoration: none;
-}
--->
+	.cargando {
+		width: 100%;height: 100%;
+		overflow: hidden; 
+		top: 0px;
+		left: 0px;
+		z-index: 10000;
+		text-align: center;
+		position:absolute; 
+		background-color: #FFFFFF;
+		opacity:0.6;
+		filter:alpha(opacity=40);
+	}
+
+	#WindowLoad
+	{
+	    position:fixed;
+	    top:0px;
+	    left:0px;
+	    z-index:3200;
+	    filter:alpha(opacity=65);
+	   -moz-opacity:65;
+	    opacity:0.65;
+	    background:#999;
+	}
+	a:link {
+		text-decoration: none;
+	}
+	a:visited {
+		text-decoration: none;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+	a:active {
+		text-decoration: none;
+	}
+
 </style></head>
 
 <body class="Fondo" >
@@ -73,8 +96,8 @@ a:active {
 	  			
 	  		</div>
 	  		<div class="col-md-6">
-	  			<input type="button" id="cmdcargar" title='Subir el layout con la información de las nominas.' name="cmdcargar" value="Cargar layout" class="btn btn-info btn-md">
-	  			<input type="button" id="cmdCargar" title='Carga los datos para su validación presupuestal.' name="cmdCargar" value="Cargar datos" class="btn btn-success btn-md">
+	  			<input type="button" id="cmdupload" title='Subir el layout con la información de las nominas.' name="cmdupload" value="Cargar layout" class="btn btn-info btn-md">
+	  			<input type="button" id="cmdload" title='Carga los datos para su validación presupuestal.' name="cmdload" value="Cargar datos" class="btn btn-success btn-md">
 	  			<input type="button" id="cmdVaciar" title='Borra la información almacena.' name="cmdVaciar" value="Borrar datos" class="btn btn-warning btn-md">
 	  			<input type="button" name="cmdexportar" id="cmdexportar" value="Exporar a excel" data-toggle="tooltip" title="Exportar a excel" class="btn btn-sucess" style="width:200px;">
 	  			<input type="button" id="cmdCrearFacturaOP" title='Genera el momento del devengado y la Orden de Pago.' name="cmdCrearFacturaOP" value="Crear Facturas y Ordenes de Pago" class="btn btn-danger btn-outline">
@@ -231,22 +254,13 @@ a:active {
             </div>
         </div>
 <br />
-<div class="form-group">
-	<div class="col-md-2">
-		<div>
-        <input type="text" name="firstname" id="firstname">
-    </div>
- 	<div>
-        <input type="text" name="lastname" id="lastname">
-    </div>
- 	<div>
-        <button type="submit" name="submit">Submit</button>
-    </div>
-	</div>
-</div> 	
 </form>
 <form name="frmExcel" id="frmExcel" action="lst_reporteexcelNomina.action" method="post">
 	
+	<div id="bloquea" class="cargando" style="display:none;">
+	<img style="margin-left: 5%;margin-top: 15%" alt="Espere..." src="../imagenes/spinner_2.gif" />
+
+</div>
 </form>
 </body>
 </html>

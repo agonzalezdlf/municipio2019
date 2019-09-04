@@ -3,19 +3,21 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Muestra Pedidos</title>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css">
-<script language="javascript">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../include/css/estilosam.css" type="text/css"/>
+<script>
 
 function regresaPedido(num, ID_PEDIDO, id_proyecto, programa, clv_partid, clv_benefi, ncomercia, nota) {
 	window.parent.__regresaPedido(num, ID_PEDIDO, id_proyecto, programa, clv_partid, clv_benefi, ncomercia, nota);
 }
-
+function cerrar(){
+	window.parent.swal.close();
+}
 </script>
 <style type="text/css">
 <!--
@@ -41,7 +43,7 @@ a:active {
 </style></head>
 
 <body>
-<table class="listas" align="center" width="100%">
+<table class="listas" style="align:center; width:100%">
   <tr>
     <th width="11%" height="18%" align="center"><strong>Num. Pedido</strong></th>
     <th width="14%" height="16%" align="center"><strong>&nbsp;Fecha</strong></th>

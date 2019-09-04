@@ -14,6 +14,6 @@ public class GatewayGiros extends BaseGateway {
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getGiros(){
 		
-		return this.getJdbcTemplate().queryForList("SELECT DESCRIPCION FROM SAM_CAT_GIROS");
+		return this.getJdbcTemplate().queryForList("SELECT * FROM SAM_CAT_GIROS");
 	}
 }

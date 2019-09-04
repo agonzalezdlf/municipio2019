@@ -8,14 +8,13 @@ var resultData=["Mumbai","Delhi","Chennai","Goa"]
 var myselect = $('<select>');
 $(document).ready(function() {
 	
-	
+$('.selectpicker').selectpicker();
 	
 });
 
 /***********************************funcion que sirve para mostrar el submenu de opciones********************************************************/
 function subOpAdm(modulo, cve_doc, cve_pers){
-	alert('Como esta en la nueva ventana');
-	
+		
 	var titulo = "";
 	if(modulo=='req') titulo = 'Requisiciones';
 	if(modulo=='ped') titulo = 'Pedidos'
@@ -499,7 +498,7 @@ function cambiarUsuarioDocumento(cve_doc, modulo, cve_pers){
 					      '<div><strong>'+((chkReq.length==1) ? 'Número de Requisición':'Grupo de Requisiciones:')+'</strong></div>'+
 			 	          '<div>'+((chkNumReq.length==0) ? 'CVE_REQ: '+cve_doc:chkNumReq)+'</div>'+
 					      '<div><strong>Seleccione un usuario de destino:</strong></div>'+
-					      '<div><select id="cbousuarios" style="width:500px">'+items+'</select></div>';
+					      '<div><select id="cbousuarios" class="form-control input-sm" style="width:300px">'+items+'</select></div>';
 									
 					swal({title:'<h2>Mover documento a otro usuario</h2>',html:html,allowOutsideClick:false,showCancelButton: true,confirmButtonText: 'Cambiar'}).catch(swal.noop);
 					$('.swal2-confirm').click(function(event){_cambiarUsuarioRequisicion(chkReq,cve_doc);})
@@ -531,7 +530,7 @@ function cambiarUsuarioDocumento(cve_doc, modulo, cve_pers){
 					      '<div><strong>'+((chkPed.length==1) ? 'Número de Pedido':'Grupo de Pedidos:')+'</strong></div>'+
 				 	      '<div>'+((chkNumPed.length==0) ? 'CVE_PED: '+cve_doc:chkNumPed)+'</div>'+
 					      '<div><strong>Seleccione un usuario de destino:</strong></div>'+
-					      '<div><select id="cbousuarios" style="width:500px">'+items+'</select></div>';
+					      '<div><select id="cbousuarios" class="form-control input-sm" style="width:300px">'+items+'</select></div>';
 					
 				    swal({title:'<h2>Mover documento a otro usuario</h2>',html:html,allowOutsideClick:false,showCancelButton: true,confirmButtonText: 'Cambiar'}).catch(swal.noop);
 					$('.swal2-confirm').click(function(event){_cambiarUsuarioPedidos(chkPed,cve_doc);})
@@ -561,7 +560,7 @@ function cambiarUsuarioDocumento(cve_doc, modulo, cve_pers){
 					 	  '<div><strong>'+((chkOp.length==1) ? 'Orden de Pago':'Grupo de Orden(es) de Pago:')+'</strong></div>'+
 					 	  '<div>'+((chkNumOp.length==0) ? 'CVE_OP: '+cve_doc:chkNumOp)+'</div>'+
 					 	 '<div><strong>Seleccione un usuario de destino:</strong></div>'+
-						  '<div><select id="cbousuarios" style="width:400px">'+items+'</select></div>';
+						  '<div><select id="cbousuarios" class="form-control input-sm" style="width:300px">'+items+'</select></div>';
 						
 					swal({
 						  title:'<h2>Mover documento a otro usuario</h2>',
@@ -781,8 +780,15 @@ function _cambiarUsuarioOrdenPago(chkOp, cve_doc){
 /* -------------------------------------  Clase para el cambio del beneficiario ------------------------------------------------*/
 /* -----------------------------------------------------------------------------------------------------------------------------*/
 function cambiarBeneficiario(cve_doc, modulo){
+	var smodulo = "";
+	if(modulo=='req') smodulo = "Requisiciones";
+	if(modulo=='ped') smodulo = "Pedidos";
+	if(modulo=='op') smodulo = "Ordenes de Pago";
+	if(modulo=='val') smodulo = "Vales";
+	
 	var beneficiario="";
 	var clave="";
+	
 	if(modulo=='req'){
 			controladorListadoRequisicionesRemoto.getBeneficiario(cve_doc,{
 				callback:function(items) { 
@@ -796,8 +802,10 @@ function cambiarBeneficiario(cve_doc, modulo){
 						html ='<div><span style="font-size:12px"><I><strong>Requisición:</strong></I></div>'+
 						  	  '<div><strong>'+items.NUM_REQ+'</strong></div>'+
 						  	  '<div><strong>Beneficiario:</strong></div>'+
+						  	  "<select name='cbogrupos' id='cbogrupos' class='form-control' style='width:450px'>"+texto+"</select>" +
+						  	  "<input type='hidden' id='grupo' name='grupo' value=''>" +
 						      '<div><input type="text" id="txtbeneficiario" value="'+beneficiario+'" style="width:400px"/><input type="hidden" id="CVE_BENE" value="'+clave+'"/></div>';
-							 				
+							  				
 							//_closeDelay();
 						swal({title:'<h2>Cambio de beneficiario</h2>',html:html,allowOutsideClick:false,showCancelButton: true,confirmButtonText: 'Cambiar'}).catch(swal.noop);
 						$('.swal2-confirm').click(function(event){_cambiarBeneficiarioRequisicion(chkReq,cve_doc);}) 	
@@ -839,27 +847,29 @@ function cambiarBeneficiario(cve_doc, modulo){
 	if(modulo=='op'){
 			controladorOrdenPagoRemoto.getBeneficiario(cve_doc,{
 				callback:function(items) { 
+						console.log(items);
 						//ShowDelay('Cargando padrón de beneficiarios...','');
-						if(items==null){
+						/*if(items==null){
 							beneficiario = ""; clave= "";	
 						}
 						else{
 							beneficiario = getHTML(items.BENEFICIARIO); clave= getHTML(items.CLV_BENEFI);	
-						}
-						html ='<div><span style="font-size:12px"><I><strong>Requisición:</strong></I></div>'+
-				  	          '<div><strong>'+items.NUM_OP+'</strong></div>'+
+						}*/
+						html ='<div><span style="font-size:12px"><I><strong>'+smodulo+':</strong></I></div>'+
+				  	          '<div><strong>'+cve_doc+'</strong></div>'+
 				  	          '<div><strong>Beneficiario:</strong></div>'+
-				              '<div><input type="text" id="txtbeneficiario" value="'+beneficiario+'" style="width:400px"/><input type="hidden" id="CVE_BENE" value="'+clave+'"/></div>';
-							  '<div>'+
-							  	'<select name="cboprestadorservicio" class="form-control" id="cboprestadorservicio" style="width:100%">'+
-							  	'<c:forEach items="${beneficiarios}" var="item" varStatus="status">'+
-							  	'<option value="<c:out value="${item.CLV_BENEFI}"/>'+
-							  '<c:if test="${item.CLV_BENEFI==CVE_BENEFI}">selected</c:if>><c:out value="${item.NCOMERCIA}"/>  '+
-							  '</c:forEach>'+
-							  '</select>'+
-							  '</div> '+
+				              '<div><select id="cbobeneficiario" class="selectpicker form-control input-sm m-b" data-live-search="true" data-size="2" style="width:300px">'+items+'</select></div>';
 							  '<div><strong>Beneficiario:</strong></div>';			
-						swal({title:'<h2>Cambio de beneficiario</h2>',html:html,allowOutsideClick:false,showCancelButton: true,confirmButtonText: 'Cambiar'}).catch(swal.noop);
+						swal({
+							  title:'Cambio de beneficiario',
+							  html:html,allowOutsideClick:false,
+							  customClass: 'swal2-overflow',
+							  showCancelButton: true,
+							  confirmButtonText: 'Cambiar',
+							  onOpen: function() {
+								  $('.selectpicker').selectpicker();
+							  },
+						  }).catch(swal.noop);
 						$('.swal2-confirm').click(function(event){_cambiarBeneficiarioOrdenPago(cve_doc);}) 
 							//getBeneficiarios('txtbeneficiario','CVE_BENE',''); 
 				}
@@ -899,7 +909,7 @@ function cambiarBeneficiario(cve_doc, modulo){
 //Cambio de beneficiario en Vales
 function _cambiarBeneficiarioVale(cve_doc){
 	var cve_benefi = $('#CVE_BENE').attr('value');
-	if(cve_benefi==''){swal('Es necesario especificar el nuevo beneficiario para continuar','Alerta'); return false;}	
+	if(cve_benefi==''){swal('Es necesario especificar el nuevo beneficiario para continuar','info'); return false;}	
 	jConfirm('¿Confirma que desea cambiar el beneficiario del documento actual?','Confirmar', function(r){
 			if(r){		
 				ShowDelay('Cambiando beneficiario...', '');
@@ -921,8 +931,41 @@ function _cambiarBeneficiarioVale(cve_doc){
 }
 //Cambio de beneficiario en las Ordenes de Pago
 function _cambiarBeneficiarioOrdenPago(cve_doc){
-	var cve_benefi = $('#CVE_BENE').val();
+	var cve_benefi = $('#cbobeneficiario').val();
 	if(cve_benefi==''){swal('Es necesario especificar el nuevo beneficiario para continuar','Alerta'); return false;}	
+	 console.log('El beneficiario que eligio es: ' +cve_benefi);
+	 swal({
+		  title: '¿Confirma que desea cambiar el beneficiario del documento actual?',
+		  text: 'Cambiando beneficiario',
+		  type: 'info',
+		  showCancelButton: true,
+		  showLoaderOnConfirm: true,
+		  allowOutsideClick: false,
+		  preConfirm: function() {
+			 return new Promise(function(resolve, reject) {
+				 controladorOrdenPagoRemoto.cambiarBeneficiario(cve_doc, cve_benefi,{
+						callback:function(items) {
+							if(items!=null){
+								swal({title:'Se ha cambiado el beneficiario con exito', timer:1000,showConfirmButton: false,type:'success'});
+								setTimeout('getOrden()', 1000);
+							}
+							
+						},
+						errorHandler:function(errorString, exception) { 
+						swal(errorString, 'error');   
+					}   
+				});
+		     });
+		  },
+	}).then(function (result) {
+			console.log('Demo del result: ' +result.value);
+			if (result.value) {
+				swal({title:'Informacion cargada con exito!!',showConfirmButton: false,timer:1000,type:"success"});
+		    }else
+		        swal({title:'Abortado!!!',text:'Proceso abortado, no se realizó ningun cambio',showConfirmButton: false,timer:1000,type:"info"});
+	}) 
+	
+	/*
 	jConfirm('¿Confirma que desea cambiar el beneficiario del documento actual?','Confirmar', function(r){
 			if(r){		
 				ShowDelay('Cambiando beneficiario...', '');
@@ -940,7 +983,7 @@ function _cambiarBeneficiarioOrdenPago(cve_doc){
 					}   
 				});
 			}
-		});
+		});*/
 }
 //Cambio de beneficiario en las Pedidos
 function _cambiarBeneficiarioPedidos(cve_doc){
@@ -1001,6 +1044,7 @@ function cambiarGrupoFirmas(cve_doc, modulo){
 			  '<iframe width="800" height="350" name="grupoFirmas" id="grupoFirmas" frameborder="0" src="../../sam/utilerias/cambiarFirmas.action?modulo='+modulo+'&cve_doc='+cve_doc+'"></iframe>',
 		  width: 800,
 		  padding: 10,
+		  confirmButtonText:'Cerrar',
 		  animation: false
 		})
 	
@@ -1185,6 +1229,7 @@ function reduccionAmpliacion(cve_doc, modulo, num_doc)
 	{
 		controladorListadoContratosRemoto.getConceptosContrato(cve_doc, {
 						callback:function(items) {
+							console.log('Daots de items: ' + items[0]+" demo "+items[1]+" demo2 "+items[3]);
 							html+= '<div></div>'
 								+'<div id="divMovCaptura" style="display:none; width: 650px; padding: 20px; background: rgb(255, 255, 255); position:relative; top:15px; padding-bottom:10px">'
 								+'<h1>Capturar movimientos de contrato</h1>'
@@ -1244,13 +1289,13 @@ function reduccionAmpliacion(cve_doc, modulo, num_doc)
 							$.each( proyectos, function( index, value ){
 									$('#cboProyecto').append('<option value='+value+'>'+value+'</option>');
 							});
-								$.each( partidas, function( index, value ){
+							$.each( partidas, function( index, value ){
 									$('#cboPartidas').append('<option value='+value+'>'+value+'</option>');
 							});
 						} 					   				
 					 ,
 					 errorHandler:function(errorString, exception) { 
-						jError(errorString, 'Error');          
+						swal(errorString, 'error');          
 					 }
 		});
 		

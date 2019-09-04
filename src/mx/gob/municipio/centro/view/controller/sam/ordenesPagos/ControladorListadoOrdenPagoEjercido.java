@@ -270,7 +270,8 @@ public class ControladorListadoOrdenPagoEjercido extends ControladorBase {
 		
 		Integer cve = (this.getJdbcTemplate().queryForInt("SELECT MAX(NUMERO) AS N FROM SAM_OP_RELACION WHERE EJERCICIO = ? AND TIPO_RELACION = ? ", new Object[]{this.getSesion().getEjercicio(), tipos}))+1;
 		String numero = this.rellenarCeros(cve.toString(), 4);
-		this.getJdbcTemplate().update("INSERT INTO SAM_OP_RELACION(NUMERO, FOLIO, EJERCICIO, FECHA, CVE_PERS, TIPO_RELACION, ACTIVO, CERRADA, DEVUELTO, ID_GRUPO, ID_DEPENDENCIA_DEV) VALUES(?,?,?,?,?,?,?,?,?,?,?)", new Object[]{cve, numero, this.getSesion().getEjercicio(), f, this.getSesion().getIdUsuario(), tipos, "S", "N", "N",1, idDependencia });
+		Integer idGrupo = getSesion().getIdGrupo();
+		this.getJdbcTemplate().update("INSERT INTO SAM_OP_RELACION(NUMERO, FOLIO, EJERCICIO, FECHA, CVE_PERS, TIPO_RELACION, ACTIVO, CERRADA, DEVUELTO, ID_GRUPO, ID_DEPENDENCIA_DEV) VALUES(?,?,?,?,?,?,?,?,?,?,?)", new Object[]{cve, numero, this.getSesion().getEjercicio(), f, this.getSesion().getIdUsuario(), tipos, "S", "N", "N",idGrupo, idDependencia });
 		return this.getJdbcTemplate().queryForInt("SELECT MAX(ID_RELACION) AS ID FROM SAM_OP_RELACION WHERE EJERCICIO = ? AND TIPO_RELACION = ? ",new Object[]{this.getSesion().getEjercicio(), tipos});
 	}
 	

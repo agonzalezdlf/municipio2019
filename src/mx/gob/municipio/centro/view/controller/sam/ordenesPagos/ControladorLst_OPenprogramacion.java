@@ -1,5 +1,6 @@
 package mx.gob.municipio.centro.view.controller.sam.ordenesPagos;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -94,5 +95,29 @@ public class ControladorLst_OPenprogramacion extends ControladorBase{
 	                    throw new RuntimeException(e.getMessage(),e);
 	                }
 	                
+		}
+		
+		public List<Map<String, Object>> getConceptosRelaciones(Long folio){
+			return this.getJdbcTemplate().queryForList(" SELECT OPRD.ID_RELACION, OPR.FOLIO,OPRD.ID_DETALLE, OPRD.CVE_OP,CONVERT(varchar(10), OPRD.FECHA, 103) AS FECHA  " + 
+													   " FROM SAM_OP_RELACION_DETALLES OPRD  " +
+													   " INNER JOIN SAM_OP_RELACION OPR ON OPR.ID_RELACION=OPRD.ID_RELACION AND OPR.TIPO_RELACION='ENVIO' " +
+													   " WHERE OPR.FOLIO =? AND EXISTS(SELECT * FROM SAM_ORD_PAGO OP WHERE OP.CVE_OP=OPRD.CVE_OP AND FECHA_RECEP_F IS NULL )"  + 
+													   " ORDER BY OPR.FOLIO ", new Object[]{folio});
+			
+		}
+		public void RecibidasFin(final List<Long> lst_ordenes, final String fecha, final String motivo){
+			try {                 
+	            this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
+		            @Override
+		            protected void   doInTransactionWithoutResult(TransactionStatus status) {
+		            	for (Long cve_op :lst_ordenes) {	                		
+		            		gatewayOrdenDePagos.RecibidoFinanzas(cve_op, fecha, getSesion().getEjercicio(), getSesion().getIdUsuario(), motivo);
+		                }
+		            } 
+	            });
+	        } catch (DataAccessException e) {            
+	        	log.info("La Operacion de Validacion en Ordenes de Pago Recibidas ha fallado");	                    
+	            throw new RuntimeException(e.getMessage(),e);
+	        }
 		}
 }

@@ -39,15 +39,18 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 	public ControladorCargarNominaDeductivas(){}
 	
 	@SuppressWarnings("unchecked")
-	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})  
-	public String requestGetControlador(Map modelo, HttpServletRequest request, HttpServletResponse response, @RequestParam(value="recarga",required=false) String recarga) throws IOException{
-		//, @RequestParam("recarga") String recarga
+	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}) 
+	public String requestGetControlador(Map<String, Object> modelo, HttpServletRequest request, HttpServletResponse response, @RequestParam(value="recarga",required=false) String recarga ) throws IOException{
+		
 		Gson gson = new Gson();
-	    Map m = new HashMap();
+	    @SuppressWarnings("rawtypes")
+		Map<String, Object> m = new HashMap();
 	    
 	    String json = "";
-		//String recarga =request.getParameter("recarga");
+		String sql="SELECT ISNULL(count (*),0.00)REGISTROS FROM SAM_NOMINA";
 		
+		int cdatos = (int) getJdbcTemplate().queryForObject(sql, new Object[]{}, Integer.class);
+				
 		if (recarga == null ){
 			//
 			 m.put("mensaje", true);
@@ -66,17 +69,16 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 		
 		return "sam/facturas/lst_CargarNomina.jsp";
 	}
+
+	@RequestMapping(value="/{recarga}", method=RequestMethod.GET)
+    public @ResponseBody String getProvider(@RequestParam String recarga) {
+        log.info("Entro aqui al responseBody");
+        if (recarga == null) {
+            throw new RuntimeException(recarga);
+        }
+        return recarga; 
+    }
 	
-	/*@RequestMapping(value = "sam/facturas/lst_CargarNomina/profile", method = RequestMethod.GET)
-	public @ResponseBody String processAJAXRequest(
-	            @RequestParam("firstname") String firstname,
-	            @RequestParam("lastname") String lastname   ) {
-	        String response = "";
-	        // Process the request
-	        // Prepare the response string
-	        return response;
-	    }
-	*/
 	public void cargarInformacion(Map modelo){
 		long startTime = System.nanoTime();
 
@@ -87,6 +89,8 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 		modelo.put("listadodeducciones", deduccicones);
 		
 		List<ListaNomina> lista = new ArrayList<ListaNomina>();
+		int mes = getJdbcTemplate().queryForInt("SELECT MAX (MES) FROM SAM_NOMINA");
+				
 		List<Map> validacionNomina = this.getJdbcTemplate().queryForList("SELECT  N.TIPO_NOMINA, "+
 																					"VP.ID_RECURSO, "+
 																					"VP.CLV_UNIADM, "+
@@ -97,19 +101,38 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 																					"N.CLV_PARTID, "+
 																					"CP.PARTIDA, "+
 																					"SUM(N.IMPORTE) AS IMPORTE, "+
-																					"dbo.getDisponible(N.MES, N.ID_PROYECTO, N.CLV_PARTID) AS DISPONIBLE_MES, "+
-																					"dbo.getDisponibleAlPeriodo(1,12, N.ID_PROYECTO, N.CLV_PARTID) AS DISPONIBLE_ANIO, 0 AS TOTAL "+
-																			"FROM SAM_NOMINA AS N  "+
-																					"INNER JOIN VPROYECTO AS VP ON (VP.ID_PROYECTO = N.ID_PROYECTO)  "+
-																					"INNER JOIN CAT_PARTID AS CP ON (CP.CLV_PARTID = N.CLV_PARTID) "+ 
-																			"GROUP BY N.TIPO_NOMINA, VP.ID_RECURSO, VP.CLV_UNIADM, VP.UNIDADADM, N.ID_PROYECTO, VP.N_PROGRAMA, VP.ACT_INST, N.CLV_PARTID, CP.PARTIDA, N.MES  "+
-																			"ORDER BY N.TIPO_NOMINA, VP.ID_RECURSO, VP.UNIDADADM, VP.CLV_UNIADM ASC");
+																					//"dbo.getDisponible(N.MES, N.ID_PROYECTO, N.CLV_PARTID) AS DISPONIBLE_MES, 0 AS TOTAL "+
+																					"ISNULL( " +
+																					"( CASE " + 
+																							" WHEN N.MES = 1 THEN SP.ENEPRECOM " + 
+																							" WHEN N.MES = 2 THEN SP.FEBPRECOM " + 
+																							" WHEN N.MES = 3 THEN SP.MARPRECOM " +  
+																							" WHEN N.MES = 4 THEN SP.ABRPRECOM " + 
+																							" WHEN N.MES = 5 THEN SP.MAYPRECOM " + 
+																							" WHEN N.MES = 6 THEN SP.JUNPRECOM " + 
+																							" WHEN N.MES = 7 THEN SP.JULPRECOM " + 
+																							" WHEN N.MES = 8 THEN SP.AGOPRECOM " + 
+																							" WHEN N.MES = 9 THEN SP.SEPPRECOM " + 
+																							" WHEN N.MES = 10 THEN SP.OCTPRECOM " + 
+																							" WHEN N.MES = 11 THEN SP.NOVPRECOM " + 
+																							" WHEN N.MES = 12 THEN SP.DICPRECOM " + 
+																							" END " + 
+																						" ),0.00 " + 
+																					" )DISPONIBLE_MES, 0 as total " +
+																			" FROM SAM_NOMINA AS N  "+
+																					" INNER JOIN VPROYECTO AS VP ON (VP.ID_PROYECTO = N.ID_PROYECTO)  "+
+																					" INNER JOIN VPRES_COMPROMETIDO_GC AS SP ON (SP.ID_PROYECTO = N.ID_PROYECTO AND SP.CLV_PARTID=N.CLV_PARTID) AND MES= ? "+
+																					" INNER JOIN CAT_PARTID AS CP ON (CP.CLV_PARTID = N.CLV_PARTID) "+ 
+																			" GROUP BY N.TIPO_NOMINA, VP.ID_RECURSO, VP.CLV_UNIADM, VP.UNIDADADM, N.ID_PROYECTO, VP.N_PROGRAMA, VP.ACT_INST, N.CLV_PARTID, CP.PARTIDA, N.MES ,SP.JUNPRECOM,SP.ENEPRECOM,SP.FEBPRECOM,SP.MARPRECOM,SP.ABRPRECOM " +
+																			" ,SP.MAYPRECOM,SP.JUNPRECOM,SP.JULPRECOM,SP.AGOPRECOM,SP.SEPPRECOM,SP.OCTPRECOM,SP.NOVPRECOM,SP.DICPRECOM "+
+																			" ORDER BY N.TIPO_NOMINA, VP.ID_RECURSO, VP.UNIDADADM, VP.CLV_UNIADM ASC ",new Object[]{mes});
 		//Realizar aqui el proceso para recuperar el proyecto y partida
 		for(Map row: validacionNomina)
 		{	
-			if(lista.indexOf(new ListaNomina((Integer) row.get("ID_PROYECTO"), row.get("CLV_PARTID").toString(), (BigDecimal) row.get("DISPONIBLE_MES"), (BigDecimal) row.get("DISPONIBLE_ANIO")))==-1)
+			if(lista.indexOf(new ListaNomina((Integer) row.get("ID_PROYECTO"), row.get("CLV_PARTID").toString(), (BigDecimal) row.get("DISPONIBLE_MES")))==-1)
 			{
-				lista.add(new ListaNomina((Integer)row.get("ID_PROYECTO"), row.get("CLV_PARTID").toString(), (BigDecimal) row.get("DISPONIBLE_MES"), (BigDecimal) row.get("DISPONIBLE_ANIO")));
+				lista.add(new ListaNomina((Integer)row.get("ID_PROYECTO"), row.get("CLV_PARTID").toString(), (BigDecimal) row.get("DISPONIBLE_MES")));
+				
 			}
 		}
 		
@@ -126,6 +149,7 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 					row.put("DISPONIBLE_MES", reg.IMPORTE_MES);
 					reg.IMPORTE_MES = disponibleMES;
 					row.put("TOTAL", disponibleMES);
+					
 				}
 			}
 			
@@ -136,23 +160,26 @@ public class ControladorCargarNominaDeductivas extends ControladorBase {
 		modelo.put("timer", timer);
 		modelo.put("listavalidacionNomina", validacionNomina);
 	}
+	
 	public void borrarDatosNomina(){
 		gatewayFacturas.borrarDatosNomina();
 	}
 	
 	public void crearFacturaOrdenPago(){
 		
-		String sql="SELECT count (*) FROM SAM_NOMINA";
+		String sql="SELECT ISNULL(count (*),0.00)REGISTROS FROM SAM_NOMINA";
 			
 		int cdatos = (int) getJdbcTemplate().queryForObject(sql, new Object[]{}, Integer.class);
 		            	
-		if (cdatos>0){
+		if (cdatos != 0){
+			
+			//Modulo que genera devengado por nomina agrupando para generar solo un devengado en maestro
+			gatewayFacturas.CreatePayRollSAM(this.getSesion().getIdUsuario(), this.getSesion().getEjercicio(), Integer.parseInt(this.getSesion().getIdUnidad()), getSesion().getIdGrupo());
+			
+			//Modulo anterior que generaba devengado por movimiento de la nomina obteniendo muchas nominas en el maestro
+			//gatewayFacturas.crearFacturaOrdenPago(this.getSesion().getIdUsuario(), this.getSesion().getEjercicio(), Integer.parseInt(this.getSesion().getIdUnidad()), getSesion().getIdGrupo());
+		}else
 			throw new RuntimeException("No existe informacion para generar documentos");
-		}
-		//Modulo que genera devengado por nomina agrupando para generar solo un devengado en maestro
-		gatewayFacturas.CreatePayRollSAM(this.getSesion().getIdUsuario(), this.getSesion().getEjercicio(), Integer.parseInt(this.getSesion().getIdUnidad()), getSesion().getIdGrupo());
 		
-		//Modulo anterior que generaba devengado por movimiento de la nomina obteniendo muchas nominas en el maestro
-		//gatewayFacturas.crearFacturaOrdenPago(this.getSesion().getIdUsuario(), this.getSesion().getEjercicio(), Integer.parseInt(this.getSesion().getIdUnidad()), getSesion().getIdGrupo());
 	}
 }

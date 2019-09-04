@@ -683,9 +683,9 @@ public class ControladorOrdenPago extends ControladorBase  {
 	  }
 	  
       @SuppressWarnings("unchecked")
-	public List getTodasRetencionesOrdenes(Integer idOrden) {
+      public List getTodasRetencionesOrdenes(Integer idOrden) {
     	  return gatewayOrdenDePagos.getTodasRetencionesOrdenes(idOrden);
-    	  }  
+      }  
       
       /* Documentos */
      public List getDocumentosOrdenes (Long idOrden) {
@@ -864,27 +864,6 @@ public class ControladorOrdenPago extends ControladorBase  {
          }	      
  	}
      
-     public String getListUsuarios(int cve_pers){
- 		return this.gatewayOrdenDePagos.getListUsuarios(cve_pers);
- 	}
-     
-    public boolean moverOrdenesPago(final List<Long> lst_ordenes, final int cve_pers_dest){
-    	try{
-    		this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
-                @Override
-                protected void   doInTransactionWithoutResult(TransactionStatus status) {	                	
-                	for (Long cve_op :lst_ordenes) {	                		
-                		 gatewayOrdenDePagos.moverOrdenes(cve_op, cve_pers_dest, getSesion().getEjercicio(), getSesion().getIdUsuario());
-                	}
-                } });
-    		return  true;
-    	}
-    	catch(DataAccessException e){
-    		throw new RuntimeException(e.getMessage(), e);
-    	}
-    	
-    }
-    
     public String validarTipoGasto(Long cve_op, String tipo_gto, String ban){
     	try{
     		String texto = "";
@@ -945,19 +924,51 @@ public class ControladorOrdenPago extends ControladorBase  {
 		  return this.gatewayOrdenDePagos.cambiarFechaPeriodo(cve_op, fechaNueva, periodo, this.getSesion().getIdUsuario(), this.getSesion().getEjercicio());
 	  }
     
-    public Map getBeneficiario(Long cve_doc){
-		  return this.gatewayOrdenDePagos.getBeneficiario(cve_doc);
-	  }
+    /*public Map getBeneficiario(Long cve_doc){
+    	return this.gatewayOrdenDePagos.getBeneficiario(cve_doc);
+    }*/
     
+    public String getBeneficiario(Integer  cve_doc) {
+  	  Map mp = this.getJdbcTemplate().queryForMap("SELECT * FROM SAM_ORD_PAGO WHERE CVE_OP=?",new Object[]{cve_doc});
+  	  if(mp.get("CLV_BENEFI")==null) mp.put("CLV_BENEFI", 0);
+   	  List <Map> lst = this.getJdbcTemplate().queryForList("SELECT CLV_BENEFI, NCOMERCIA FROM CAT_BENEFI where STATUS=1 ORDER BY CLV_BENEFI ASC");
+   	  String s = ""; 
+   		  s+="<option value=0 selected>[Seleccione un grupo]</option>";
+   	  for(Map m:lst){
+   		  s+="<option value='"+m.get("CLV_BENEFI").toString()+"' "+(Integer.parseInt(m.get("CLV_BENEFI").toString())==Integer.parseInt(mp.get("CLV_BENEFI").toString()) ? "selected":"")+">"+m.get("NCOMERCIA").toString()+"</option>";
+   	  }
+   	  return s;
+	  }
     public boolean cambiarBeneficiario(Long cve_doc, String clv_benefi){ 
 		return gatewayOrdenDePagos.cambiarBeneficiario(cve_doc, clv_benefi, this.getSesion().getEjercicio(), this.getSesion().getIdUsuario());
 	}
+   
+    public String getListUsuarios(int cve_pers){
+ 		return this.gatewayOrdenDePagos.getListUsuarios(cve_pers);
+ 	}
+     
+    public boolean moverOrdenesPago(final List<Long> lst_ordenes, final int cve_pers_dest){
+    	try{
+    		this.getTransactionTemplate().execute(new TransactionCallbackWithoutResult(){
+                @Override
+                protected void   doInTransactionWithoutResult(TransactionStatus status) {	                	
+                	for (Long cve_op :lst_ordenes) {	                		
+                		 gatewayOrdenDePagos.moverOrdenes(cve_op, cve_pers_dest, getSesion().getEjercicio(), getSesion().getIdUsuario());
+                	}
+                } });
+    		return  true;
+    	}
+    	catch(DataAccessException e){
+    		throw new RuntimeException(e.getMessage(), e);
+    	}
+    	
+    }
     
     public List<Map> getListaAnexosArchivosOP(Long cve_op){
     	return gatewayOrdenDePagos.getListaAnexosArchivosOP(cve_op);
     }
     
-//---------------------------------- Clase que carga las facturas desde la lista en las OP ---------------------- //
+    //---------------------------------- Clase que carga las facturas desde la lista en las OP ---------------------- //
     
     public String guardarFacturasEnOrdenPago(final Long cve_op, final Long[] cve_facturas){
     	return gatewayOrdenDePagos.guardarFacturasEnOrdenPago(cve_op, cve_facturas, this.getSesion().getEjercicio(), this.getSesion().getIdUsuario());

@@ -121,14 +121,14 @@ function imprimirGeneral(){
 function imprimirRelacion(){
 	var id_relacion = $('#cborelacion').val();
 	$('#id_relacion').val(id_relacion);
-	console.log('Esta es la opcion de impresion: ' +id_relacion + '|' +$('#id_relacion').val(id_relacion) );
-	$('#frmreporte').attr('action',"../reportes/rpt_relacion_envio.action");
+	
+	$('#frmreporte').prop('action',"../reportes/rpt_relacion_envio.action");
 
-	$('#frmreporte').attr('target',"impresion");
+	$('#frmreporte').prop('target',"impresion");
 	$('#frmreporte').submit();
-	$('#frmreporte').attr('target',"");
-	$('#frmreporte').attr('action',"");
-	$('#cmdimprimir').attr('disabled', false);
+	$('#frmreporte').prop('target',"");
+	$('#frmreporte').prop('action',"");
+	$('#cmdimprimir').prop('disabled', false);
 	$('#cmdimprimir').focus();
 }
 
@@ -465,6 +465,7 @@ function eliminarOpRelacion(){
             type: "warning",
             confirmButtonText: "Sí, eliminar",
             showCancelButton: true,
+            allowOutsideClick: false,
             showLoaderOnConfirm: true,
 			  preConfirm: function() {
 			    return new Promise(function(resolve, reject) {
@@ -486,6 +487,7 @@ function eliminarOpRelacion(){
 			    });
 			  },
         	}).then(function (result)  {
+        		
         		cargarRelacion();
             })//.catch(swal.noop);
 	}
@@ -786,25 +788,25 @@ function limpiar(){
 		dwr.util.removeAllOptions('lstdetalles');
 		//$('#txtfechaentrada').attr('disabled', true);
 		$('#divfechaentrada').text('');
-		$('#cmdagregar').attr('disabled', true);
-		$('#cmdeliminar').attr('disabled', true);
-		$('#cmdimprimir').attr('disabled', true);
-		$('#cmdimprimirgeneral').attr('disabled', true);
-		$('#cmdmodificar').attr('disabled', true);
-		$('#divcerrada').text("");
-		$('#divdevuelta').text("");
-		$('#hdcerrada').attr('value', '');
-		$('#hddevuelta').attr('value', '');
-		$('#cmdabrir').attr('disabled', true);
-		$('#txtnumop').attr('value', '');
-		$('#txtnumop').attr('disabled', true);
-		$('#txtarea').attr('value', '');
-		$('#txtarea').attr('disabled', true);
-		$('#cmdmodificarop').attr('disabled', true);
-		$('#hddetalle').attr('value', 0);
-		$('#cmdmodificarop').attr('value', 'Modificar');
-		$('#chkdevuelto').attr('disabled', true);
-		$('#chkdevuelto').attr('checked', false);
+		$('#cmdagregar').prop('disabled', true);
+		$('#cmdeliminar').prop('disabled', true);
+		$('#cmdimprimir').prop('disabled', true);
+		$('#cmdimprimirgeneral').prop('disabled', true);
+		$('#cmdmodificar').prop('disabled', true);
+		$('#divcerrada').prop("");
+		$('#divdevuelta').prop("");
+		$('#hdcerrada').prop('value', '');
+		$('#hddevuelta').prop('value', '');
+		$('#cmdabrir').prop('disabled', true);
+		$('#txtnumop').prop('value', '');
+		$('#txtnumop').prop('disabled', true);
+		$('#txtarea').prop('value', '');
+		$('#txtarea').prop('disabled', true);
+		$('#cmdmodificarop').prop('disabled', true);
+		$('#hddetalle').prop('value', 0);
+		$('#cmdmodificarop').prop('value', 'Modificar');
+		$('#chkdevuelto').prop('disabled', true);
+		$('#chkdevuelto').prop('checked', false);
 		
 }
 
@@ -812,35 +814,41 @@ function cargarRelacion(){
 	
 	var id_relacion = $('#cborelacion').val();
 	var cont =0;
-	
 	limpiar();
 	
 	if(id_relacion==0) return false;
 	
-	//ShowDelay('Cargando informcion de la relacion');
+	swal({
+		title: 'Cargando información de la relación!',type:'info',allowOutsideClick: false,timer: 5000
+		}).then(
+        function () {},
+          swal.showLoading(),
+        function (dismiss) {
+          if (dismiss === 'overlay') {}
+    })
 	 controladorListadoOrdenPagoEjercidoRemoto.cargarRelacionesDocumentos(id_relacion, {
 						callback:function(items) { 
 						jQuery.each(items,function(i) {
-							$('#cmdmodificar').attr('disabled', false);
-							$('#cmdagregar').attr('disabled', false);
-							$('#cmdeliminar').attr('disabled', false);
-							$('#cmdimprimir').attr('disabled', false);
-							$('#cmdimprimirgeneral').attr('disabled', false);
-							$('#lstdetalles').attr('disabled', false);
-							$('#cmdabrir').attr('disabled', false);
-							$('#txtfechaentrada').attr('disabled', false);
-							$('#txtnumop').attr('value', '');
-							$('#txtnumop').attr('disabled', false);
-							$('#txtarea').attr('disabled', false);
-							$('#hddetalle').attr('value', '');
+							$('#cmdmodificar').prop('disabled', false);
+							$('#cmdagregar').prop('disabled', false);
+							$('#cmdeliminar').prop('disabled', false);
+							$('#cmdimprimir').prop('disabled', false);
+							$('#cmdimprimirgeneral').prop('disabled', false);
+							$('#lstdetalles').prop('disabled', false);
+							$('#cmdabrir').prop('disabled', false);
+							$('#txtfechaentrada').prop('disabled', false);
+							$('#txtnumop').prop('value', '');
+							$('#txtnumop').prop('disabled', false);
+							$('#txtarea').prop('disabled', false);
+							$('#hddetalle').prop('value', '');
 							if(cont==0){
 								//muestra la informacion general
 								
 								$('#divfechaentrada').text(this.FECHA);
 								$('#divcerrada').text((this.CERRADA=='S')? 'Si': 'No');
 								$('#divdevuelta').text(getHTML((this.DEVUELTO=='S')? 'Si': 'No'));
-								$('#hddevuelta').attr('value', this.DEVUELTO);
-								$('#hdcerrada').attr('value', this.CERRADA);
+								$('#hddevuelta').prop('value', this.DEVUELTO);
+								$('#hdcerrada').prop('value', this.CERRADA);
 								
 								(this.CERRADA=='S') ? $('#cmdabrir').val('Abrir relacion'): $('#cmdabrir').val('Cerrar relacion');
 								//Recupera la Unidad administrativa
@@ -854,20 +862,19 @@ function cargarRelacion(){
        					 });	
 						 
 						 dwr.util.addOptions('lstdetalles',items,"ID_DETALLE", "NUM_OP");
-						 
 						 if(cont==0) { 
-							$('#cmdimprimir').attr('disabled', true);
+							$('#cmdimprimir').prop('disabled', true);
 						 }
-						 if($('#hdcerrada').attr('value')=='S'){
-								$('#cmdagregar').attr('disabled', true);
-								$('#cmdeliminar').attr('disabled', true);
-								$('#txtnumop').attr('value', '');
-								$('#txtnumop').attr('disabled', true);
-								$('#txtarea').attr('value', '');
-								$('#txtarea').attr('disabled', true);
+						 if($('#hdcerrada').prop('value')=='S'){
+								$('#cmdagregar').prop('disabled', true);
+								$('#cmdeliminar').prop('disabled', true);
+								$('#txtnumop').prop('value', '');
+								$('#txtnumop').prop('disabled', true);
+								$('#txtarea').prop('value', '');
+								$('#txtarea').prop('disabled', true);
 						}
 						 
-							_closeDelay();
+							//_closeDelay();
 							
 					 } 					   				
 					 ,
@@ -1116,7 +1123,7 @@ function ejercerOP()
 	  		        		  
 	  		        	  },
 	  		           	  errorHandler:function(errorString, exception) {
-	  		           		swal({text:errorString,type:'error', showConfirmButton: false,timer:4000});
+	  		           		swal({text:errorString, type:'error', showConfirmButton: false/*, timer:5000*/});
 	  		           	    demo_option=0;
 	  		           	  }
     				  });
@@ -1139,22 +1146,7 @@ function ejercerOP()
     				swal({title:'Proceso abortado con exito!!',showConfirmButton: false,timer:3000,type:"info"});
     			}
     	})
-    	alert('Valord de: '+demo_option);
-    	if (demo_option==1){
-    		$.notify("Orden (es) de pago Ejercida (s) con éxito!!!!!",{
-    			offset: {
-    				x: 50,
-    				y: 100
-    			}
-    		});
-    	}else if(demo_option==0){
-    		$.notify("Error al ejerver Orden (es) de pago!!!!!",{
-    			offset: {
-    				x: 50,
-    				y: 100
-    			}
-    		});
-    	}
+    	
 	 }//Cierra debe seleccionar al menos una op para ejercer...
 	 else 
 	    swal('','Es necesario que seleccione por lo menos una Orden de Pago para realizar esta acción', 'warning');

@@ -1,5 +1,6 @@
 package mx.gob.municipio.centro.model.gateways.sam;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +61,7 @@ public class GatewayExcelReporteNomina extends AbstractExcelView{
 			 	excelSheet.autoSizeColumn(9);
 			 	excelSheet.autoSizeColumn(10);
 			 	excelSheet.autoSizeColumn(11);
-			 	excelSheet.autoSizeColumn(12);
-			 	
+			 				 	
 	}
 	public void setExcelHeader(HSSFSheet excelSheet, Workbook woorkbook) {
 		
@@ -120,11 +120,8 @@ public class GatewayExcelReporteNomina extends AbstractExcelView{
 		excelHeader.createCell ((short) 10).setCellValue ("DISPONIBLE_MES");
 		excelHeader.getCell(10).setCellStyle(headerStyle);
 		
-		excelHeader.createCell ((short) 11).setCellValue ("DISPONIBLE_ANIO"); 
+		excelHeader.createCell ((short) 11).setCellValue ("TOTAL");
 		excelHeader.getCell(11).setCellStyle(headerStyle);
-		
-		excelHeader.createCell ((short) 12).setCellValue ("TOTAL");
-		excelHeader.getCell(12).setCellStyle(headerStyle);
 	}
 	public void setExcelRows(HSSFSheet excelSheet, Map model, Workbook woorkbook){
 		
@@ -142,75 +139,76 @@ public class GatewayExcelReporteNomina extends AbstractExcelView{
 		short numFila = 1;
 		short colNum = 0;
 		
-		List<Map> NewModel = (List<Map>)model.get("listadomovimientos");
+		@SuppressWarnings("unchecked")
+		List<Map<String,Object>> NewModel = (List<Map<String,Object>>)model.get("listavalidacionNomina");
 		
 		rowStyle = woorkbook.createCellStyle();
 		
-		/*----ESTILO COLUMNA ID_REC----*/
+		/*----ESTILO COLUMNA TIPO NOMINA----*/
 		CellStyle rowStyle_01 = woorkbook.createCellStyle();
 		rowStyle_01.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_01.setDataFormat(format.getFormat("0"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA RECURSO----*/
+		/*----ESTILO COLUMNA CLAVE RECURSO----*/
 		CellStyle rowStyle_02 = woorkbook.createCellStyle();
 		rowStyle_02.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_02.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA ID_DEP----*/
+		/*----ESTILO COLUMNA CLAVE UNIDAD ADMINISTRATIVA----*/
 		CellStyle rowStyle_03 = woorkbook.createCellStyle();
 		rowStyle_03.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_03.setDataFormat(format.getFormat("0"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA DEPENDENCIA----*/
+		/*----ESTILO COLUMNA UNIDAD ADMINITRATIVA----*/
 		CellStyle rowStyle_04 = woorkbook.createCellStyle();
 		rowStyle_04.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_04.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA ID_PRO----*/
+		/*----ESTILO COLUMNA CLAVE PROYECTO----*/
 		CellStyle rowStyle_05 = woorkbook.createCellStyle();
 		rowStyle_05.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_05.setDataFormat(format.getFormat("0"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA DECRIPCION----*/
+		/*----ESTILO COLUMNA PROGRAMA PRESUPUESTAL----*/
 		CellStyle rowStyle_06 = woorkbook.createCellStyle();
 		rowStyle_06.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_06.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA ID_PAR----*/
+		/*----ESTILO COLUMNA ACTIVIDAD INSTITUCIONAL----*/
 		CellStyle rowStyle_07 = woorkbook.createCellStyle();
 		rowStyle_07.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_07.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA PARTIDA----*/
+		/*----ESTILO COLUMNA CLAVE PARTIDA----*/
 		CellStyle rowStyle_08 = woorkbook.createCellStyle();
 		rowStyle_08.setAlignment(HorizontalAlignment.LEFT);
 		rowStyle_08.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA INICIAL----*/
+		/*----ESTILO COLUMNA PARTIDA----*/
 		CellStyle rowStyle_09 = woorkbook.createCellStyle();
-		rowStyle_09.setAlignment(HorizontalAlignment.RIGHT);
-		rowStyle_09.setDataFormat(format.getFormat("#,##0.00_);[Red](#,##0.00)"));
+		rowStyle_09.setAlignment(HorizontalAlignment.LEFT);
+		rowStyle_09.setDataFormat(format.getFormat("text"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA PRESUPUESTO----*/
+		/*----ESTILO COLUMNA IMPORTE----*/
 		CellStyle rowStyle_10 = woorkbook.createCellStyle();
 		rowStyle_10.setAlignment(HorizontalAlignment.RIGHT);
 		rowStyle_10.setDataFormat(format.getFormat("#,##0.00_);[Red](#,##0.00)"));
 		/*----------------------------*/
-		/*----ESTILO COLUMNA COMPROMETIDO----*/
+		/*----ESTILO COLUMNA DISPONIBLE MES----*/
 		CellStyle rowStyle_11 = woorkbook.createCellStyle();
 		rowStyle_11.setAlignment(HorizontalAlignment.RIGHT);
 		rowStyle_11.setDataFormat(format.getFormat("#,##0.00_);[Red](#,##0.00)"));
+		
 		/*----------------------------*/
-		/*----ESTILO COLUMNA DEVENGADO----*/
+		/*----ESTILO COLUMNA TOTAL----*/
 		CellStyle rowStyle_12 = woorkbook.createCellStyle();
 		rowStyle_12.setAlignment(HorizontalAlignment.RIGHT);
 		rowStyle_12.setDataFormat(format.getFormat("#,##0.00_);[Red](#,##0.00)"));
 		
 		for (Map p : NewModel) {
 			
-			/*disponible = Double.parseDouble(p.get("PRESUPUESTO_")!= null ? p.get("PRESUPUESTO_").toString(): "0") - 
-					     Double.parseDouble(p.get("COMPROMETIDO_") != null ? p.get("COMPROMETIDO_").toString():"0") - 
-					     Double.parseDouble(p.get("PRECOMPROMISO_") !=null  ? p.get("PRECOMPROMISO_").toString(): "0");*/
+			Double TOTAL = Double.parseDouble(p.get("DISPONIBLE_MES")!= null ? p.get("DISPONIBLE_MES").toString(): "0") - 
+					     Double.parseDouble(p.get("IMPORTE") != null ? p.get("IMPORTE").toString():"0");
 			
 			//La hoja debemos añadirle las filas que deseemos. La numeración empieza en cero.
 			fila = excelSheet.createRow(numFila++); 
@@ -231,45 +229,47 @@ public class GatewayExcelReporteNomina extends AbstractExcelView{
 			celda.setCellStyle(rowStyle_03);
 			
 			celda = (HSSFCell) fila.createCell((short)3);
-			HSSFRichTextString id_proyecto = new HSSFRichTextString((p.get("ID_PROYECTO").toString()));
+			HSSFRichTextString id_proyecto = new HSSFRichTextString((p.get("UNIDADADM").toString()));
 			celda.setCellValue(id_proyecto);
 			celda.setCellStyle(rowStyle_04);
 			
 			celda = (HSSFCell) fila.createCell((short)4);
-			HSSFRichTextString n_programa = new HSSFRichTextString((p.get("N_PROGRAMA").toString()));
+			HSSFRichTextString n_programa = new HSSFRichTextString((p.get("ID_PROYECTO").toString()));
 			celda.setCellValue(n_programa);
 			celda.setCellStyle(rowStyle_05);
 			
 			celda = (HSSFCell) fila.createCell((short)5);
-			HSSFRichTextString act_inst = new HSSFRichTextString((p.get("ACT_INST").toString()));
+			HSSFRichTextString act_inst = new HSSFRichTextString((p.get("N_PROGRAMA").toString()));
 			celda.setCellValue(act_inst);
 			celda.setCellStyle(rowStyle_06);
 			
 			celda = (HSSFCell) fila.createCell((short)6);
-			HSSFRichTextString clv_partid = new HSSFRichTextString((p.get("CLV_PARTID").toString()));
+			HSSFRichTextString clv_partid = new HSSFRichTextString((p.get("ACT_INST").toString()));
 			celda.setCellValue(clv_partid);
 			celda.setCellStyle(rowStyle_07);
 			
 			celda = (HSSFCell) fila.createCell((short)7);
-			HSSFRichTextString descpar = new HSSFRichTextString((p.get("PARTIDA").toString()));
+			HSSFRichTextString descpar = new HSSFRichTextString((p.get("CLV_PARTID").toString()));
 			celda.setCellValue(descpar);
 			celda.setCellStyle(rowStyle_08);
 			
 			celda = (HSSFCell) fila.createCell((short)8);
-			celda.setCellValue(Double.parseDouble(p.get("IMPORTE").toString()));
+			HSSFRichTextString partida = new HSSFRichTextString((p.get("PARTIDA").toString()));
+			celda.setCellValue(partida);
 			celda.setCellStyle(rowStyle_09);
 			
 			celda = (HSSFCell) fila.createCell((short)9);
-			celda.setCellValue(Double.parseDouble(p.get("DISPONIBLE_MES").toString()));
+			celda.setCellValue(Double.parseDouble(p.get("IMPORTE").toString()));
 			celda.setCellStyle(rowStyle_10);
 			
 			celda = (HSSFCell) fila.createCell((short)10);
-			celda.setCellValue(Double.parseDouble(p.get("DISPONIBLE_ANIO").toString()));
+			celda.setCellValue(Double.parseDouble(p.get("DISPONIBLE_MES").toString()));
 			celda.setCellStyle(rowStyle_11);
 			
 			celda = (HSSFCell) fila.createCell((short)11);
-			celda.setCellValue(Double.parseDouble(p.get("TOTAL").toString()));
+			celda.setCellValue(TOTAL);
 			celda.setCellStyle(rowStyle_12);
+					
 			
 		}
 	}

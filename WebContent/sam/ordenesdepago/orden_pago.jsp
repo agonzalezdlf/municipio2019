@@ -412,7 +412,7 @@ a:active {
             	</form>
             </div>
             <!--Tab Anexos-->
-              <div class="tab-pane" id="tabsDoc">
+            <div class="tab-pane" id="tabsDoc">
             	<form class="form-horizontal" id="frmDoc" name="frmDoc" method="post" enctype="multipart/form-data">
             	<input name="CveOrdenOP" type="hidden"  id="CveOrdenOP" size="8" value="" />
             		<!--Tipo Movimiento-->
@@ -452,7 +452,7 @@ a:active {
 		                    <div class="form-group col-sm-3">&nbsp;</div>
 		                </div>    
                     </div>
-                <!--Notas-->
+               		<!-- Anexos -->
             	 	<div class="row">
             	 		<div class="form-group">
 		            		<div class="control-label col-sm-3 ">*Archivo:</div>

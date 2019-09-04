@@ -70,7 +70,9 @@ public class UserDetailsService implements org.springframework.security.userdeta
                 esUsuarioVigente=true;
             if(exclusivo)
             	esUsuarioVigente=true;
-            idUsuario= (Integer)resultado.get("CVE_PERS");            
+            
+            idUsuario= (Integer)resultado.get("CVE_PERS"); 
+            
             List<GrantedAuthority> grantedAuthorities = buscarPrivilegios(idUsuario.intValue());                
             cargarSesion(resultado,idUsuario);
             GrantedAuthority[] granted = new GrantedAuthority[grantedAuthorities.size()];
@@ -109,6 +111,10 @@ private void cargarSesion(Map datosUsuario, Integer idUsuario  ){
         log.info("ROLE_ENTRAR");
         int op = 0;
         log.info("Se van a buscar los privilegios...");
+        if (!gatewayUsuarios.conPrivilegios(sys_usuario)){
+			log.info("Nocuenta con privilegios asignados...");
+		}
+               
         rs = gatewayUsuarios.getPrivilegiosUsuario(sys_usuario);
         if (rs.next()) {
             boolean salir = true;

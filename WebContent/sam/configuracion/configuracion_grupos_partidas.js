@@ -72,12 +72,12 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 	
 	if(idGrupoProyecto==0) {swal('Oops','El Grupo de Proyecto que desea asignar no es válido','error'); return false;}
 	//ShowDelay('Guardando Grupo de Proyectos','');
-	swal({text:'Guardando Grupo de Proyectos!',type: 'sucess',timer:800,showConfirmButton: false});
+	swal({text:'Guardando Grupo de Proyectos!',type: 'success',timer:800,showConfirmButton: false});
 	controladorGruposPartidasRemoto.guardarGrupoProyectoEnPartidas(idGrupoProyecto, idGrupoPartida,{
         callback:function(items){
 			if(items) {
 				//CloseDelay('Grupo de Proyectos guardado con éxito',300); }
-				swal({text:'Grupo de Proyectos guardado con éxito!',type: 'sucess',timer:300,showConfirmButton: false});
+				swal({text:'Grupo de Proyectos guardado con éxito!',type: 'success',timer:300,showConfirmButton: false});
 				}
 		},
 			errorHandler:function(errorString, exception) { 
@@ -98,6 +98,7 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 		  swal({
 			  text: 'Cargando listado de partidas..... ' ,
 			  showConfirmButton: false,
+			  allowOutsideClick: false,
 			  onOpen: function () {
 				swal.showLoading()
 			    setTimeout(function () {
@@ -149,7 +150,7 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 		  showLoaderOnConfirm: true,
 		  allowOutsideClick: false,
 		  preConfirm: function() {
-			  swal({title:'Guardando listado de partidas del grupo',showConfirmButton: false});
+			  swal({title:'Guardando listado de partidas del grupo',showConfirmButton: false,allowOutsideClick: false});
 			  return new Promise(function(resolve, reject) {
 				  swal.showLoading()	
 				  setTimeout(function() {
@@ -158,8 +159,7 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 							  setTimeout(function () {
 								  $('#grupo').val(idgrupo);
 								  pintarTablaDetalles();
-								  
-							  }, 2000)
+							  },1000)
 						  },
 						errorHandler:function(errorString, exception) { 
 							swal('',"Fallo la operacion:<br>Error::"+errorString+"-message::"+exception.message+"-JavaClass::"+exception.javaClassName+".<br>Consulte a su administrador",'error');    
@@ -172,7 +172,7 @@ function guardarGrupoProyecto(idGrupoProyecto,idGrupoPartida){
 		 },
 		 }).then((result) => {
 			 if (result.value  ) {
-				 swal({text:'Información guardada con éxito!',type: 'info',timer:800,showConfirmButton: false});
+				 swal({text:'Información guardada con éxito!',type: 'success',timer:1000, showConfirmButton: false});
 				 limpiar();
 			  } else if (result.dismiss === swal.DismissReason.cancel) {
 				

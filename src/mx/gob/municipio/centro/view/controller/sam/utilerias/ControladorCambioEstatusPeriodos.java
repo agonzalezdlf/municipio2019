@@ -261,7 +261,7 @@ public class ControladorCambioEstatusPeriodos extends ControladorBase{
 			//DELETE FROM SAM_COMP_REQUISIC WHERE CVE_REQ =29 AND PERIODO = 4
 			if ((pdocto > 0) && (pdocto == mes) ){
 				
-				BigDecimal compromiso_PS =  (BigDecimal) getJdbcTemplate().queryForObject("SELECT IMPORTE FROM SAM_COMP_REQUISIC WHERE CVE_REQ =? AND PERIODO = ? " ,new Object[]{cve_req, mes}, BigDecimal.class);
+				BigDecimal compromiso_PS =  (BigDecimal) getJdbcTemplate().queryForObject("SELECT IMPORTE FROM SAM_COMP_REQUISIC WHERE CVE_REQ =? AND PERIODO = ? AND TIPO='COMPROMISO'" ,new Object[]{cve_req, mes}, BigDecimal.class);
 				BigDecimal actComprimiso_PS = compromiso_PS.add(por_comprobar);
 				//Actualiza el importe del mes mas el importe no gastado del periodo en cierre
 				this.getJdbcTemplate().update("UPDATE SAM_COMP_REQUISIC SET IMPORTE= ? WHERE CVE_REQ =? AND PERIODO = ? AND TIPO =?", new Object[]{actComprimiso_PS, cve_req, mes, "COMPROMISO"});

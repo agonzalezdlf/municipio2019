@@ -13,36 +13,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<script type="text/javascript"
-	src="../../include/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../../include/js/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../../include/js/bootstrap-3.3.7.js"></script>
 <script type="text/javascript" src="../../include/js/jquery.form.js"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2.js"></script>
-<link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css"
-	type="text/css">
-<link rel="stylesheet" href="../../include/css/bootstrap2.css"
-	type="text/css" />
-<link rel="stylesheet" href="../../include/css/style-tabs.css"
-	type="text/css" />
-<link rel="stylesheet"
-	href="../../include/css/boostrap-select/dist/css/bootstrap-select.css"
-	type="text/css">
-<script type="text/javascript"
-	src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script>
-<script type="text/javascript"
-	src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
-<link rel="stylesheet"
-	href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css"
-	type="text/css">
-<script type="text/javascript"
-	src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
-<link rel="stylesheet" href="../../include/css/sweetalert2.css"
-	type="text/css">
-
+<link rel="stylesheet" href="../../include/css/bootstrap-3.3.7.css" type="text/css">
+<link rel="stylesheet" href="../../include/css/bootstrap2.css" type="text/css" />
+<link rel="stylesheet" href="../../include/css/style-tabs.css" type="text/css" />
+<link rel="stylesheet" href="../../include/css/boostrap-select/dist/css/bootstrap-select.css" type="text/css">
+<script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script> 
+<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
+<link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
+<script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
+<link rel="stylesheet" href="../../include/css/sweetalert2.css" type="text/css">
 <script type="text/javascript" src="lst_reportetransferencia.js?x=<%=System.currentTimeMillis()%>"></script>
-<script type = "text / javascript">
 
-</script>
 <style type="text/css">
 a:link {
 	text-decoration: none;
@@ -147,7 +132,7 @@ a:active {
 		</div> 
     </div>
     
-    <c:set var="cont" value="1" />
+    <c:set var="cont" value="0" />
 	<c:set var="id_recurso" value="0" />
 	<c:set var="id_proyecto" value="0" />
 	<c:set var="tipo_adecuacion" value="" />

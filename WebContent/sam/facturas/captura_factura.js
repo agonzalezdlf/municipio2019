@@ -1331,7 +1331,9 @@ function regresaEntrada(num_ped, cve_ped, folio, ID_ENTRADA, clv_benefi, iva, su
 	$('#div_num_entrada').html(folio);
 	$('#txtiva').val(formatNumber(iva).replace(',', ''));
 	$('#txtsubtotal').val(formatNumber(subtotal).replace(',', ''));
-	$('#txttotal').val(formatNumber(importeEntrada).replace(',', ''));
+	//$('#txttotal').val(formatNumber(importeEntrada).replace(',', ''));
+	$('#div_total').html(formatNumber(importeEntrada).replace(',', ''));
+	console.log('importe de la entrada: ' +$('#div_total').html());
 	$('#div_total_entrada').html(formatNumber(importeEntrada, '$'));
 	cargarBeneficiarioyPresupuestoPedidos(clv_benefi, cve_ped);
 	$('#txtfecha').focus();
@@ -1351,7 +1353,7 @@ function cargarBeneficiarioyPresupuestoPedidos(clv_benefi, cve_ped)
 		} 					   				
 		,
 			errorHandler:function(errorString, exception) { 
-				jError(errorString,'Error');   
+				swal(errorString,'error');   
 			}
 		});	
 	}
@@ -1471,7 +1473,10 @@ function guardarFactura(){
 	var valida = validarDetalles();
 	
 	if(valida) return false;
-
+		
+	var rowTemplate= document.getElementsByName("div_total_entrada");
+	console.log('Total replace es: ' +rowTemplate);
+	
 	var cve_factura = $('#CVE_FACTURA').val();
 	var cve_doc = $('#CVE_DOC').val();
 	var idTipoFactura = $('#cbotipodocumento').selectpicker('val');
@@ -1483,11 +1488,16 @@ function guardarFactura(){
 	var num_fact = $('#txtnumfactura').val();
 	var iva = $('#txtiva').val(); 
 	var subtotal = $('#txtsubtotal').val();
-	var total = $('#txttotal').val();
+	var total = $('#div_total').html();
 	var observacion = $('#txtobservacion').val();
 	var fecha_doc = $('#txtfecha').val();
-	subtotal = subtotal.replace(',', "");
-
+	
+	subtotal = subtotal.toString().replace(',', "");
+	console.log('Subtotal es: ' +subtotal);
+	
+	total = total.replace(/\d+(\.\d{1,2})?/, "");
+	console.log('Total es: ' +total);
+	
 	if (idTipoFactura==3){
 		tipo_doc = "CVE_PED";
 		var clv_benefi = $('#CLV_BENEFI').val();

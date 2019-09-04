@@ -43,13 +43,9 @@ function cerrar(){
 	 $('.swal2-container.swal2-fade.swal2-shown').remove();
 	 $('.swal2-shown').remove();
 	 $('body').removeClass('swal2-shown');
-	 //swal2-container swal2-shown
-	 //swal2-container swal2-shown
+	
 	 document.body.removeAttribute('.swal2-container-swal2-shown');
-	//swal2-container swal2-shown
-	/*$(".swal2-container.swal2-shown").remove();//Cierra la ventana modal.
-	$(".swal2-container.swal2-fade.swal2-shown").remove();//Cierra la ventana modal.
-	$(".swal2-confirm swal2-styled");*/
+	
 }
 
 function compruebaVariable(){
@@ -69,15 +65,37 @@ function getReporteBenefi(id){
 	jAlert('Operacion no disponible por el momento','Advertencia');
 }
 
-//swal2-confirm swal2-styled
+/*
 function nuevoEditarBeneficiario(idBeneficiario){
-	var titulo = (idBeneficiario==0) ? "Nuevo beneficiario": "Editar beneficiario";
 	
 	swal({
-		  title: '',
+		title: 'Cargando Orden de Pago',
+		text: 'La Orden de pago para editar es: ' +idBeneficiario,
+		timer: 3000,
+		width: 350,
+		allowOutsideClick: false,
+		onOpen: function () {
+			swal.showLoading()
+		}
+	}).then(function (result) {
+		if (result.dismiss === 'timer'){
+			document.location = 'beneficiario.action?clv_benefi='+ idBeneficiario + '&accion=edit';
+		}
+	});
+}
+*/
+
+function nuevoEditarBeneficiario(idBeneficiario){
+	
+	var titulo = (idBeneficiario==0) ? "Nuevo beneficiario": "Editar beneficiario";
+	idBeneficiario=idBeneficiario=='' ? 0:idBeneficiario;
+	
+	
+	swal({
+		  title: titulo,
 		  text: '',
 		  html:
-			  '<iframe width="800" height="500" name="BENEFI" id="BENEFI" frameborder="0" src="../../sam/ordenesdepago/beneficiario.action?id='+idBeneficiario+'"></iframe>',
+			  '<iframe width="900" height="600" name="BENEFI" id="BENEFI" frameborder="0" src="../../sam/ordenesdepago/beneficiario.action?id='+idBeneficiario+'"></iframe>',
 		  width: 800,
 		  padding: 10,
 		  animation: false,

@@ -46,8 +46,6 @@ public final static  int VER_TODAS_LAS_UNIDADES = 25;
 		Integer tipogasto = request.getParameter("cbotipogasto") != null ? Integer.parseInt(request.getParameter("cbotipogasto")): 0;
 		Integer idproyecto = request.getParameter("txtproyecto")!= null ? Integer.parseInt(!request.getParameter("txtproyecto").toString().equals("") ? request.getParameter("txtproyecto").toString(): "0"): 0;
 		String idpartida = request.getParameter("txtpartida")!= null ? request.getParameter("txtpartida"): "";
-		//String clv_capitulo = request.getParameter("cbocapitulo")== null ? request.getParameter("cbocapitulo"): "";
-		//Integer clv_capitulo = request.getParameter("cbocapitulo")!= null ? Integer.parseInt(request.getParameter("cbocapitulo")): 0;
 		Integer clv_capitulo = request.getParameter("cbocapitulo")!= null ? Integer.parseInt(!request.getParameter("cbocapitulo").toString().equals("") ? request.getParameter("cbocapitulo").toString(): "0"): 0;
 		
 		Map<String, Object> MesActual = this.GetMesActual();

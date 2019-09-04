@@ -29,7 +29,17 @@
 
 
 <style type="text/css">
-
+.swal2-overflow {
+  overflow-x: visible;
+  overflow-y: visible;
+  
+  
+}
+.swal2-overflow .swal2-content{
+  	width:150px;
+  	margin-left: auto;
+    margin-right: auto;
+}
 <!--
 a:link {
 	text-decoration: none;
@@ -164,12 +174,12 @@ a:active {
 <div class="row">
 		 <div class="form-group">
 		 	<div class="col-sm-1" id="Recibe" style="display:none;">
-					 <input  name="cmdvalidar" type="button" class="btn btn-buscar" id="cmdvalidar" value="Recibir OP" style="width:100px;margin-top: 10px;">
+				<input  name="cmdvalidar" type="button" class="btn btn-buscar" id="cmdvalidar" value="Recibir OP" style="width:100px;margin-top: 10px;">
 			</div>
-			<div class="col-sm-1" id="Devuelve" style="display:none;">
-					 <input  name="cmdback" type="button" class="btn btn-buscar" id="cmdback" value="Devolver OP" style="width:100px;margin-top: 10px;">
+			<div class="col-sm-3" id="Devuelve" style="display:none;">
+				<input  name="cmdback" type="button" class="btn btn-buscar" id="cmdback" value="Devolver OP" style="width:100px;margin-top: 10px;">
+				<input  name="cmdfinanzas" type="button" class="btn btn-buscar" id="cmdfinanzas" value="Enviada a Finanzas" style="width:150px;margin-top: 10px;">
 			</div>
-			
 		 </div>
 </div>
 <div class="alert alert-info">

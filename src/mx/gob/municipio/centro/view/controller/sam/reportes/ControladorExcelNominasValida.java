@@ -1,5 +1,8 @@
 package mx.gob.municipio.centro.view.controller.sam.reportes;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayExcelReporteNomina;
 import mx.gob.municipio.centro.model.gateways.sam.GatewayReporteNominaValida;
 import mx.gob.municipio.centro.view.bases.ControladorBase;
+import mx.gob.municipio.centro.view.controller.sam.facturas.ListaNomina;
 
 @Controller
 @RequestMapping("/sam/facturas/lst_reporteexcelNomina.action")
@@ -29,12 +33,12 @@ public class ControladorExcelNominasValida extends ControladorBase{
 	public ControladorExcelNominasValida(){		
 	}
 	
+	
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})  
 	public ModelAndView requestGetControlador(Map modelo, HttpServletRequest request, HttpServletResponse response) {
 		
-		boolean privilegio = this.getPrivilegioEn(this.getSesion().getIdUsuario(), VER_TODAS_LAS_UNIDADES);
-		modelo.put("listadomovimientos", this.gatewayReporteNominaValida.getreparametros(modelo));
-		log.info("Paso por lst_reporteexcelNomina");
+		gatewayReporteNominaValida.cargarInformacion(modelo);
+		
 		return new ModelAndView(new GatewayExcelReporteNomina(),"modelo", modelo);
 		
 	}

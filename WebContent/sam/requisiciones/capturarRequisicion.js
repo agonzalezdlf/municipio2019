@@ -34,6 +34,7 @@ $(document).ready(function() {
 	$('#cmdenviarlotes').prop('disabled',true);
 	$('#cmdreenumerar').prop('disabled',true);
 	$('#cmdimportar').prop('disabled',true);
+	
 	$('#txtpartida').keypress(function(event){return keyNumbero(event);});
 	$('#txtcantidad').keypress(function(event){return keyNumbero(event);});
 	$('#txtprecioestimado').keypress(function(event){return keyNumbero(event);});	
@@ -69,9 +70,9 @@ $(document).ready(function() {
 			format: 'DD/MM/YYYY'
 	});
 		
-	 $(".nav li.disabled a").click(function() {
-	     return false;
-	   });
+	$(".nav li.disabled a").click(function() {
+	  return false;
+	});
 
 	 
 	 $('.nav-tabs a[href="#tab-requisicion"]').tab('show');//Carga mostrando el primer tabs

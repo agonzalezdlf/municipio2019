@@ -20,9 +20,10 @@
 <script type="text/javascript" src="../../include/js/toolsamV20.js?x=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/sweetalert2.all.js"></script>
 <script type="text/javascript" src="../../include/js/sweetalert2/7.0/core-js-2.4.1.js"></script>
-<script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script>
+<!-- <script type="text/javascript" src="../../include/js/utilsJquery/jquery-ui-1.7.1.custom.min.js"></script> -->
 <script type="text/javascript" src="../../dwr/interface/controladorListadoRequisicionesRemoto.js"> </script>
 <script type="text/javascript" src="../../dwr/engine.js"></script>
+<script type="text/javascript" src="../../include/css/boostrap-select/dist/js/bootstrap-select.js"></script>
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/moment-with-locales-2.9.0.js"></script>
 <link rel="stylesheet" href="../../include/css/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker-4.15.35.css" type="text/css">
 <script type="text/javascript" src="../../include/css/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker-4.15.35.js"></script>
@@ -229,7 +230,7 @@ a:active {
         	<c:if test="${modulo=='req'}">
                 <tr id='f3' onMouseOver="color_over('f3')" onMouseOut="color_out('f3')" onclick="adminFunction(<c:out value='${cve_doc}'/>, '<c:out value='${modulo}'/>', 'cambiarFechaReqOtOs')">
                   <td height="27" align="center" style="cursor:pointer"><img src="../../imagenes/calendar_edit.png" width="16" height="16" /></td>
-                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha de Requisición de Mat./OS/OT</td>
+                  <td height="27" align="left" style="cursor:pointer">Cambiar la fecha de Requisición de Mat./OS/OT </td>
                 </tr>
             </c:if>
          </sec:authorize>

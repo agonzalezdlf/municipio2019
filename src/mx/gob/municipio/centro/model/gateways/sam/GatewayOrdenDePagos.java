@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import mx.gob.municipio.centro.model.bases.BaseGateway;
 import mx.gob.municipio.centro.model.gateways.sam.catalogos.GatewayMeses;
 
+import org.apache.log4j.ConsoleAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionStatus;
@@ -407,6 +408,7 @@ try{
 }*/
 
 public List getDocumentosOrdenes( Long idOrden ) {
+	log.info("Entro a impresion de los anexos de la orden de pago");
     //return this.getJdbcTemplate().queryForList("select a.CVE_OP,a.ANX_CONS,a.T_DOCTO,a.NUMERO,a.NOTAS , b.DESCR, a.FILENAME, a.FILETYPE, a.FILELENGTH, a.FILEPATH from SAM_OP_ANEXOS a , tipodoc_op b where a.t_docto=b.t_docto and cve_op=? ", new Object  []{idOrden});
 	return this.getJdbcTemplate().queryForList("select	a.CVE_OP, "+
 												"		a.ANX_CONS,"+
@@ -793,9 +795,11 @@ public void ejercerOrdenPagoFinal(Long cve_op, Date fecha_ejerce, int ejercicio,
 		
 		/*Insertar los consecutivos de requisicion de lado de peredo
 		String nota = OrdenPago.get("nota").toString();
-		if(nota.length()>240) nota = nota.substring(0, 239);
+		if(nota.length()>240) nota = nota.substring(0, 239);String totalOP=(String) (op.get("IMPORTE")==null ? "0":op.get("IMPORTE"));
 		*/
-		String concurso = OrdenPago.get("CONCURSO").toString();
+		if (OrdenPago.get("CONCURSO")==null)
+			throw new RuntimeException("LA ORDEN DE PAGO: " + OrdenPago.get("CVE_OP") + " CONTIENE EL DATO DEL CONCURSO NULLO Y DBERIA SER VACIO. CONSULTE A SU ADMISTRADOR");
+		String concurso = OrdenPago.get("CONCURSO").toString();//==null ? "0":OrdenPago.get("CONCURSO").toString();
 		if(concurso.length()>10) concurso = concurso.substring(0, 9);
 		
 		/*for(Map row: mov)
@@ -1138,6 +1142,16 @@ public boolean cambiarFechaOrdenPago(Long cve_op, String fechaNueva, int ejercic
 			
 	}
 	
+	//Validacion de Orden de Pago ingresada en la Dirección de Programación
+		public void RecibidoFinanzas(Long cve_op, String fecha, int ejercicio, int cve_pers, String motivo){
+			Date fechaActual = new Date();
+			Integer es_recibida = (Integer) getJdbcTemplate().queryForObject("SELECT COUNT(*) AS N FROM SAM_ORD_PAGO WHERE FECHA_RECEP_P IS NOT NULL AND CVE_OP = ?", new Object[]{cve_op},Integer.class);
+			String folio=rellenarCeros(cve_op.toString(),6);
+			this.getJdbcTemplate().update("UPDATE SAM_ORD_PAGO SET FECHA_RECEP_F=? WHERE CVE_OP=? ", new Object[]{this.formatoFecha(fecha),folio});
+			gatewayBitacora.guardarBitacora(gatewayBitacora.OP_RECEP_EN_FINANZAS, ejercicio, cve_pers, cve_op, folio, "OP", fechaActual, null, null, motivo, Double.parseDouble("0".toString()));
+				
+		}
+	
 	public List getDetallesNomina(Long cve_op){
 		String sql = "SELECT SAM_MOV_OP.ID_PROYECTO, "+
 							"CEDULA_TEC.N_PROGRAMA,"+ 
@@ -1287,18 +1301,22 @@ public boolean cambiarFechaOrdenPago(Long cve_op, String fechaNueva, int ejercic
 	            @Override
 	            protected void   doInTransactionWithoutResult(TransactionStatus status) {
 	            		/*Comprobar algunos datos antes*/
+	            		Double importe =0d;
+	            		
 		            	Map op = getJdbcTemplate().queryForMap("SELECT NUM_OP, CONVERT(varchar(10),FECHA,103) AS FECHA, IMPORTE, SAM_ORD_PAGO.CLV_BENEFI, C.NCOMERCIA "+  
 																	"FROM SAM_ORD_PAGO "+  
 																		"LEFT JOIN CAT_BENEFI AS C ON (C.CLV_BENEFI = SAM_ORD_PAGO.CLV_BENEFI) "+
 																		"WHERE SAM_ORD_PAGO.CVE_OP = ?", new Object[]{cve_op});
-		            	Map ben = getJdbcTemplate().queryForMap("SELECT NCOMERCIA FROM CAT_BENEFI WHERE CAT_BENEFI.CLV_BENEFI =?", new Object[]{clv_benefi});
+		            	Map ben = getJdbcTemplate().queryForMap("SELECT NCOMERCIA FROM CAT_BENEFI WHERE CAT_BENEFI.CLV_BENEFI =? ORDER BY NCOMERCIA ASC", new Object[]{clv_benefi});
 	            		String texto ="";
 	            		if(op.get("CLV_BENEFI")!=null)
-	            			texto = "Cambió el beneficiario CLV_BENEFI: ['"+op.get("CLV_BENEFI").toString()+"' "+op.get("NCOMERCIA").toString()+"] a: ['"+clv_benefi+"' "+ben.get("NCOMERCIA").toString()+"]";
+	            			texto = "Cambió el beneficiario CLV_BENEFI: ['"+op.get("CLV_BENEFI").toString()+"' "+op.get("NCOMERCIA").toString()+"] a: ['"+clv_benefi+"' "+ben.get("NCOMERCIA").toString()+"]";//idRetencion==null ?-1 :idRetencion
 	            		else
-	            			texto = "Cambió el beneficiario CLV_BENEFI: ['' ] a: ['"+clv_benefi+"' "+ben.get("NCOMERCIA").toString()+"]";
+	            			texto = "Cambió el beneficiario CLV_BENEFI: ['' ] a: ['"+clv_benefi+"' "+ben.get("NCOMERCIA").toString()+"]";//==null ? "": request.getParameter("cbocapitulo")
 		            	/*Graba en bitacora el cambio*/
-		            	gatewayBitacora.guardarBitacora(gatewayBitacora.OP_ACTUALIZAR, ejercicio, cve_pers, cve_op, op.get("NUM_OP").toString(), "OP", formatoFecha(op.get("FECHA").toString()), null, null, texto, Double.parseDouble(op.get("IMPORTE").toString()));
+	            		String totalOP=(String) (op.get("IMPORTE")==null ? "0":op.get("IMPORTE"));
+	            		
+	            		gatewayBitacora.guardarBitacora(gatewayBitacora.OP_ACTUALIZAR, ejercicio, cve_pers, cve_op, op.get("NUM_OP").toString(), "OP", formatoFecha(op.get("FECHA").toString()), null, null, texto,Double.parseDouble(totalOP));
 		            	/*Realiza el cambio*/
 		            	getJdbcTemplate().update("UPDATE SAM_ORD_PAGO SET CLV_BENEFI = ? WHERE CVE_OP = ?", new Object[]{clv_benefi, cve_op});
 		            	

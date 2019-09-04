@@ -75,6 +75,20 @@ public class GatewayUsuarios extends BaseGateway {
 		return false;
 	}
 		
+	public boolean conPrivilegios(Integer cve_pers){
+		log.debug("No cuenta con privilegios el usuario");
+		String sql ="select count(ID_USUARIO_ROL)rol from SAM_USUARIO_ROL where CVE_PERS = ?";
+		if (getJdbcTemplate().queryForInt(sql,new Object[]{cve_pers})>0)
+        {
+			log.debug("Cuenta con privilegios el usuario");
+			return true;
+        }
+        //
+		
+		return false;
+		
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Map<String,Object>>getPersonasPorEjemplo(String nombre, String aPaterno, String aMaterno ){
 		
@@ -236,7 +250,6 @@ public class GatewayUsuarios extends BaseGateway {
 						, new Object[]{login, estatus,idPersona});
 				
 		}
-		
 		
 		public SqlRowSet getPrivilegiosUsuario(Integer idUsuario){		
 			  return this.getJdbcTemplate().queryForRowSet("SELECT distinct SAM_PRIVILEGIO.PRI_DESCRIPCION PRIVILEGIO, SAM_MODULO.MOD_DESCRIPCION MODULO,  SAM_SISTEMA.SIS_DESCRIPCION SISTEMA"+
